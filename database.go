@@ -12,15 +12,6 @@ import (
 
 var DB *sqlx.DB
 
-type User struct {
-	Id          int
-	Email       string
-	Pwhash      string
-	Name        string
-	IsActive    bool `db:"is_active"`
-	IsSuperuser bool `db:"is_superuser"`
-}
-
 func DbInit() {
 	DB = sqlx.MustConnect("postgres", "user=vagrant dbname=people host=/var/run/postgresql sslmode=disable application_name=people-go")
 	log.Print("db connected")
