@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gocraft/web"
 	"log"
@@ -23,7 +24,7 @@ func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 	if !(email_ok || password_ok) {
 		status := http.StatusBadRequest
 		rw.WriteHeader(status)
-		fmt.Fprintf(rw, "Email and password are required")
+		fmt.Fprint(rw, "Email and password are required")
 		return
 	}
 
@@ -39,10 +40,15 @@ func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 	authed := user != nil && user.CheckPassword(password)
 	if authed {
 		log.Println("Logged in!")
-		fmt.Fprintf(rw, "Successfully logged in")
+		user_data, err := json.MarshalIndent(user, "", "  ")
+		if err != nil {
+			fmt.Fprint(rw, "Could not convert to JSON")
+			return
+		}
+		fmt.Fprint(rw, string(user_data))
 	} else {
 		log.Println("Nope.")
 		rw.WriteHeader(http.StatusForbidden)
-		fmt.Fprintf(rw, InvalidCredentials)
+		fmt.Fprint(rw, InvalidCredentials)
 	}
 }
