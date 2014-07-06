@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+const InvalidCredentials = "INVALID CREDENTIALS"
+
 func (c *Context) TestHello(rw web.ResponseWriter, req *web.Request) {
 	fmt.Fprint(rw, "Hello, world!")
 }
@@ -15,7 +17,6 @@ func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 	req.ParseForm()
 
 	form := req.PostForm
-	//log.Println(form)
 
 	emails, email_ok := form["email"]
 	passwords, password_ok := form["password"]
@@ -34,13 +35,14 @@ func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 	log.Print("Got password: ")
 	log.Print(password)
 
-	authed := CheckPassword(email, password)
+	user := GetUser(email)
+	authed := user != nil && user.CheckPassword(password)
 	if authed {
 		log.Println("Logged in!")
 		fmt.Fprintf(rw, "Successfully logged in")
 	} else {
 		log.Println("Nope.")
-		rw.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(rw, "Email or password is wrong")
+		rw.WriteHeader(http.StatusForbidden)
+		fmt.Fprintf(rw, InvalidCredentials)
 	}
 }
