@@ -21,7 +21,7 @@ func main() {
 	authRouter := rootRouter.Subrouter(Context{}, "")
 	authRouter.Post("/auth", (*Context).ApiAuth)
 
-	DbInit()
+	dbInit()
 
 	http.ListenAndServe("0.0.0.0:3000", rootRouter)
 }

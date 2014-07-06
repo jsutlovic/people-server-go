@@ -10,13 +10,28 @@ import (
 	"code.google.com/p/go.crypto/bcrypt"
 )
 
-var DB *sqlx.DB
+// Global database handle
+var db *sqlx.DB
 
-func DbInit() {
-	DB = sqlx.MustConnect("postgres", "user=vagrant dbname=people host=/var/run/postgresql sslmode=disable application_name=people-go")
+/*
+Connect to the database, and set the database handle
+
+This must be called before any database calls can happen
+
+Eventually, this should parse a given config file rather than using
+hardcoded values
+*/
+func dbInit() {
+	db = sqlx.MustConnect("postgres", "user=vagrant dbname=people host=/var/run/postgresql sslmode=disable application_name=people-go")
 	log.Print("db connected")
 }
 
+/*
+Basic user struct
+
+Used to model user data to and from the database, as well as to and from the
+frontend clients through JSON
+*/
 type User struct {
 	Id          int    `json:"id"`
 	Email       string `json:"email"`
@@ -27,11 +42,15 @@ type User struct {
 	ApiKey      string `db:"apikey" json:"api_key"`
 }
 
+/*
+Fetch a user given an email from the database
+Returns nil if no matching user is found
+*/
 func GetUser(email string) *User {
 	var err error
 	user := new(User)
 
-	err = DB.Get(user, DB.Rebind("SELECT * FROM \"user\" WHERE email=?"), email)
+	err = db.Get(user, db.Rebind("SELECT * FROM \"user\" WHERE email=?"), email)
 	if err != nil {
 		// We couldn't get the user
 		return nil
@@ -42,6 +61,7 @@ func GetUser(email string) *User {
 	return user
 }
 
+// Compare a given password to this user's current password (hashed)
 func (u *User) CheckPassword(password string) bool {
 	incorrect := bcrypt.CompareHashAndPassword([]byte(u.Pwhash), []byte(password))
 

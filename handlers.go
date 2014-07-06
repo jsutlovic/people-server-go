@@ -14,6 +14,15 @@ func (c *Context) TestHello(rw web.ResponseWriter, req *web.Request) {
 	fmt.Fprint(rw, "Hello, world!")
 }
 
+/*
+Handler to authenticate a user.
+
+Parses the current request form looking for 'email' and 'password'
+fields. Checks the database for the given user and password.
+
+If authentication is successful, return a JSON object representing the
+authenticated user. Otherwise returns 403 Forbidden.
+*/
 func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 	req.ParseForm()
 
