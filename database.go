@@ -12,23 +12,19 @@ import (
 
 var DB *sqlx.DB
 
-type User struct {
-	Id          int
-	Email       string
-	Pwhash      string
-	Name        string
-	IsActive    bool `db:"is_active"`
-	IsSuperuser bool `db:"is_superuser"`
-}
-
-type ApiKey struct {
-	UserId int    `db:"user_id"`
-	Key    string `db:"key"`
-}
-
 func DbInit() {
 	DB = sqlx.MustConnect("postgres", "user=vagrant dbname=people host=/var/run/postgresql sslmode=disable application_name=people-go")
 	log.Print("db connected")
+}
+
+type User struct {
+	Id          int    `json:"id"`
+	Email       string `json:"email"`
+	Pwhash      string `json:"-"`
+	Name        string `json:"name"`
+	IsActive    bool   `db:"is_active" json:"is_active"`
+	IsSuperuser bool   `db:"is_superuser" json:"is_superuser"`
+	ApiKey      string `db:"apikey" json:"api_key"`
 }
 
 func GetUser(email string) *User {
@@ -44,19 +40,6 @@ func GetUser(email string) *User {
 	log.Printf("User struct: %v", user)
 
 	return user
-}
-
-func GetApiKey(user User) string {
-	var err error
-	key := ApiKey{}
-
-	err = DB.Get(&key, DB.Rebind("SELECT * FROM \"api_key\" WHERE user_id=?"), user.Id)
-	if err != nil {
-		panic(err)
-	}
-
-	log.Printf("ApiKey found: %v", key)
-	return key.Key
 }
 
 func (u *User) CheckPassword(password string) bool {
