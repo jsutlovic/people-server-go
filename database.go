@@ -65,11 +65,10 @@ func GetUser(email string) *User {
 func (u *User) CheckPassword(password string) bool {
 	incorrect := bcrypt.CompareHashAndPassword([]byte(u.Pwhash), []byte(password))
 
-	if incorrect != nil {
-		log.Printf("Password did not match")
-		return false
-	} else {
+	if incorrect == nil {
 		log.Printf("Password matched")
 		return true
 	}
+	log.Printf("Password did not match")
+	return false
 }
