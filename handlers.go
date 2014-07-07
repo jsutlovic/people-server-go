@@ -39,9 +39,7 @@ func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 	email := emails[0]
 	password := passwords[0]
 
-	log.Print("Got email: ")
 	log.Println(email)
-	log.Print("Got password: ")
 	log.Print(password)
 
 	user := GetUser(email)
