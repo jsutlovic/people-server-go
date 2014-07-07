@@ -14,8 +14,7 @@ func main() {
 	plainRouter := rootRouter.Subrouter(Context{}, "").
 		Middleware(web.LoggerMiddleware).
 		Middleware(web.ShowErrorsMiddleware).
-		Middleware((*Context).AuthMiddleware).
-		Middleware((*Context).TestMiddleware)
+		Middleware((*Context).AuthMiddleware)
 	plainRouter.Get("/", (*Context).TestHello)
 
 	authRouter := rootRouter.Subrouter(Context{}, "")

@@ -10,7 +10,3 @@ func (c *Context) AuthMiddleware(rw web.ResponseWriter, req *web.Request, next w
 	// check against database
 	next(rw, req)
 }
-
-func (c *Context) TestMiddleware(rw web.ResponseWriter, req *web.Request, next web.NextMiddlewareFunc) {
-	next(rw, req)
-}
