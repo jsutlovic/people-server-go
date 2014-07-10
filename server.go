@@ -18,7 +18,7 @@ func main() {
 	plainRouter.Get("/", (*Context).TestHello)
 
 	authRouter := rootRouter.Subrouter(Context{}, "")
-	authRouter.Post("/auth", (*Context).ApiAuth)
+	authRouter.Post("/api/auth", (*Context).ApiAuth)
 
 	dbInit()
 
