@@ -37,7 +37,7 @@ func ParseRequestHeaders(req *http.Request) (authParams *AuthParams, err error) 
 	if !ok || len(h) == 0 {
 		return nil, errors.New("Authorization header not set")
 	}
-	scheme, creds, err := SplitHeader(h[0])
+	scheme, creds, err := SplitAuthHeader(h[0])
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,8 @@ func ParseRequestHeaders(req *http.Request) (authParams *AuthParams, err error) 
 	return authParams, nil
 }
 
-func SplitHeader(h string) (scheme, credentials string, err error) {
+// Split the header into auth scheme and credentials
+func SplitAuthHeader(h string) (scheme, credentials string, err error) {
 	parts := strings.SplitN(h, " ", 2)
 	if len(parts) == 2 {
 		return strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1]), nil
