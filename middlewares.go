@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func (c *ApiContext) AuthRequired(rw web.ResponseWriter, req *web.Request, next web.NextMiddlewareFunc) {
+func (c *AuthContext) AuthRequired(rw web.ResponseWriter, req *web.Request, next web.NextMiddlewareFunc) {
 	// Get API key
 	// Get Username
 	// check against database

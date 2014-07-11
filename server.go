@@ -8,7 +8,7 @@ import (
 type Context struct {
 }
 
-type ApiContext struct {
+type AuthContext struct {
 	*Context
 	User *User
 }
@@ -18,15 +18,15 @@ func main() {
 	rootRouter.Middleware(web.LoggerMiddleware)
 	rootRouter.Middleware(web.ShowErrorsMiddleware)
 
-	plainRouter := rootRouter.Subrouter(ApiContext{}, "")
-	plainRouter.Get("/", (*ApiContext).TestHello)
+	plainRouter := rootRouter.Subrouter(AuthContext{}, "")
+	plainRouter.Get("/", (*AuthContext).TestHello)
 
 	authRouter := rootRouter.Subrouter(Context{}, "")
 	authRouter.Post("/auth", (*Context).ApiAuth)
 
-	apiRouter := rootRouter.Subrouter(ApiContext{}, "/api")
-	apiRouter.Middleware((*ApiContext).AuthRequired)
-	apiRouter.Get("/user", (*ApiContext).GetUserApi)
+	apiRouter := rootRouter.Subrouter(AuthContext{}, "/api")
+	apiRouter.Middleware((*AuthContext).AuthRequired)
+	apiRouter.Get("/user", (*AuthContext).GetUserApi)
 
 	dbInit()
 
