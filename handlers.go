@@ -42,14 +42,21 @@ func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 	log.Println(email)
 	log.Print(password)
 
-	user := GetUser(email)
-	authed := user != nil && user.IsActive && user.CheckPassword(password)
+	user, err := GetUser(email)
+	authed := err == nil && user != nil && user.IsActive && user.CheckPassword(password)
 	if authed {
 		log.Println("Logged in!")
 		fmt.Fprint(rw, Jsonify(user))
 	} else {
-		log.Println("Nope.")
+		log.Printf("Could not log in: %v", err)
 		rw.WriteHeader(http.StatusForbidden)
 		fmt.Fprint(rw, InvalidCredentials)
 	}
+}
+
+/*
+Handler for the GET User API
+*/
+func (c *ApiContext) GetUserApi(rw web.ResponseWriter, req *web.Request) {
+	fmt.Fprint(rw, Jsonify(c.User))
 }

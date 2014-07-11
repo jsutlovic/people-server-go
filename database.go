@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"log"
 
 	_ "database/sql"
@@ -46,19 +47,17 @@ type User struct {
 Fetch a user given an email from the database
 Returns nil if no matching user is found
 */
-func GetUser(email string) *User {
-	var err error
-	user := new(User)
+func GetUser(email string) (user *User, err error) {
+	user = new(User)
 
 	err = db.Get(user, db.Rebind("SELECT * FROM \"user\" WHERE email=?"), email)
 	if err != nil {
 		// We couldn't get the user
-		return nil
+		log.Println(err)
+		return nil, errors.New("User could not be found")
 	}
-	log.Printf("Row %d: email %v, password %v\n", user.Id, user.Email, user.Pwhash)
-	log.Printf("User struct: %v", user)
 
-	return user
+	return user, nil
 }
 
 // Compare a given password to this user's current password (hashed)
@@ -71,4 +70,9 @@ func (u *User) CheckPassword(password string) bool {
 	}
 	log.Printf("Password did not match")
 	return false
+}
+
+// Compare a given apikey to this user's current apikey
+func (u *User) CheckApiKey(apikey string) bool {
+	return u.ApiKey == apikey
 }
