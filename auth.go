@@ -30,7 +30,9 @@ func Authorize(req *http.Request) (authParams *AuthParams, err error) {
 }
 
 /*
-Parse an http.Request
+Get authorization parameters from an http.Request
+
+Looks for the HTTP Authorization header and parses it
 */
 func ParseRequestHeaders(req *http.Request) (authParams *AuthParams, err error) {
 	h, ok := req.Header[http.CanonicalHeaderKey(AuthHeaderKey)]
@@ -66,6 +68,7 @@ func SplitAuthHeader(h string) (scheme, credentials string, err error) {
 	return "", "", errors.New("Could not parse Authorization header")
 }
 
+// Parse auth credentials into email and apikey fields
 func ParseCredentials(creds string) (email, apikey string, err error) {
 	fields := SplitFields(creds)
 
@@ -84,6 +87,12 @@ func ParseCredentials(creds string) (email, apikey string, err error) {
 	return email, apikey, nil
 }
 
+/*
+Split key/value HTTP Authorization parameters
+
+Parses: "email=\"test@example.com\", key=\"abcdefg\""
+into {email: "test@example.com" key: "abcdefg"}
+*/
 func SplitFields(text string) (fields map[string]string) {
 	fields = make(map[string]string)
 
@@ -102,6 +111,14 @@ func SplitFields(text string) (fields map[string]string) {
 	return fields
 }
 
+/*
+Split Authorization credentials into email and apikey
+
+Parses "test@example.com:abcdefg"
+into "test@example.com", "abcdefg"
+
+Supports base64 encoded strings
+*/
 func SplitAuth(raw_text string) (email, key string, err error) {
 	var text string
 	decoded, err := base64.StdEncoding.DecodeString(raw_text)
