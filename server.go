@@ -5,9 +5,11 @@ import (
 	"net/http"
 )
 
+// Basic Context available to all handlers
 type Context struct {
 }
 
+// Context supplying an authorized user. Used with AuthRequired middleware
 type AuthContext struct {
 	*Context
 	User *User
