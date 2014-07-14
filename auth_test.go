@@ -1,0 +1,71 @@
+package main
+
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func TestSplitAuth(t *testing.T) {
+	var splitAuthTests = []struct {
+		in    string
+		email string
+		key   string
+		err   error
+	}{
+		{
+			in:    "test@example.com:abcdefg",
+			email: "test@example.com",
+			key:   "abcdefg",
+			err:   nil,
+		},
+		{
+			in:    "dGVzdEBleGFtcGxlLmNvbTphYmNkZWZn",
+			email: "test@example.com",
+			key:   "abcdefg",
+			err:   nil,
+		},
+		{
+			in:    "test@example.com",
+			email: "",
+			key:   "",
+			err:   SplitAuthError,
+		},
+		{
+			in:    "abcdefg",
+			email: "",
+			key:   "",
+			err:   SplitAuthError,
+		},
+		{
+			in:    "dGVzdEBleGFtcGxlLmNvbQ==",
+			email: "",
+			key:   "",
+			err:   SplitAuthError,
+		},
+		{
+			in:    "YWJjZGVmZw==",
+			email: "",
+			key:   "",
+			err:   SplitAuthError,
+		},
+		{
+			in:    "test@example.com:abcdefg:hijk",
+			email: "test@example.com",
+			key:   "abcdefg:hijk",
+			err:   nil,
+		},
+		{
+			in:    "dGVzdEBleGFtcGxlLmNvbTphYmNkZWZnOmhpams=",
+			email: "test@example.com",
+			key:   "abcdefg:hijk",
+			err:   nil,
+		},
+	}
+
+	for _, test := range splitAuthTests {
+		actualEmail, actualKey, actualErr := SplitAuth(test.in)
+		assert.Equal(t, test.email, actualEmail)
+		assert.Equal(t, test.key, actualKey)
+		assert.Equal(t, test.err, actualErr)
+	}
+}
