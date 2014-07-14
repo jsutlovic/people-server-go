@@ -7,10 +7,20 @@ import (
 	"strings"
 )
 
+// Request fields
 const (
 	AuthHeaderKey string = "Authorization"
 	EmailField    string = "email"
 	KeyField      string = "key"
+)
+
+// Errors
+var (
+	SplitAuthError  error = errors.New("Could not parse auth string")
+	AuthParseError  error = errors.New("Could not parse authentication")
+	AuthHeaderError error = errors.New("Could not parse Authorization header")
+	AuthNotSetError error = errors.New("Authorization header not set")
+	AuthTypeError   error = errors.New("Authorization type is not Apikey")
 )
 
 type AuthParams struct {
@@ -37,14 +47,14 @@ Looks for the HTTP Authorization header and parses it
 func ParseRequestHeaders(req *http.Request) (authParams *AuthParams, err error) {
 	h, ok := req.Header[http.CanonicalHeaderKey(AuthHeaderKey)]
 	if !ok || len(h) == 0 {
-		return nil, errors.New("Authorization header not set")
+		return nil, AuthNotSetError
 	}
 	scheme, creds, err := SplitAuthHeader(h[0])
 	if err != nil {
 		return nil, err
 	}
 	if strings.ToLower(scheme) != "apikey" {
-		return nil, errors.New("Authorization type is not Apikey")
+		return nil, AuthTypeError
 	}
 	email, apikey, err := ParseCredentials(creds)
 	if err != nil {
@@ -65,7 +75,7 @@ func SplitAuthHeader(h string) (scheme, credentials string, err error) {
 	if len(parts) == 2 {
 		return strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1]), nil
 	}
-	return "", "", errors.New("Could not parse Authorization header")
+	return "", "", AuthHeaderError
 }
 
 // Parse auth credentials into email and apikey fields
@@ -82,7 +92,7 @@ func ParseCredentials(creds string) (email, apikey string, err error) {
 	apikey, apikeyOk := fields[KeyField]
 
 	if !(emailOk && apikeyOk) {
-		return "", "", errors.New("Could not parse authentication")
+		return "", "", AuthParseError
 	}
 	return email, apikey, nil
 }
@@ -131,7 +141,7 @@ func SplitAuth(raw_text string) (email, key string, err error) {
 
 	fields := strings.SplitN(text, ":", 2)
 	if len(fields) != 2 {
-		return "", "", errors.New("Could not parse auth string")
+		return "", "", SplitAuthError
 	}
 
 	email = strings.TrimSpace(fields[0])
