@@ -75,3 +75,36 @@ func TestSplitAuth(t *testing.T) {
 		assert.Equal(t, test.err, actualErr, "Input %d: %q", i, test.in)
 	}
 }
+
+func TestSplitFields(t *testing.T) {
+	var splitFieldsTests = []struct {
+		in  string
+		out map[string]string
+	}{
+		{
+			in: `email="test@example.com", key="abcdefg"`,
+			out: map[string]string{
+				"email": "test@example.com",
+				"key":   "abcdefg",
+			},
+		},
+		{
+			in: `email="test@example.com", key="abcdefg",`,
+			out: map[string]string{
+				"email": "test@example.com",
+				"key":   "abcdefg",
+			},
+		},
+		{
+			in: ``,
+			out: map[string]string{
+				"email": "test@example.com",
+			},
+		},
+	}
+
+	for i, test := range splitFieldsTests {
+		actual := SplitFields(test.in)
+		assert.Equal(t, test.out, actual, "Input %d: %q", i, test.in)
+	}
+}
