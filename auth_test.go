@@ -96,9 +96,82 @@ func TestSplitFields(t *testing.T) {
 			},
 		},
 		{
-			in: ``,
+			in:  ``,
+			out: map[string]string{},
+		},
+		{
+			in:  `test@example.com:abcdefg`,
+			out: map[string]string{},
+		},
+		{
+			in:  `dGVzdEBleGFtcGxlLmNvbTphYmNkZWZn`,
+			out: map[string]string{},
+		},
+		{
+			in: `a="abc" b="def"`,
 			out: map[string]string{
-				"email": "test@example.com",
+				"a": `abc" b="def`,
+			},
+		},
+		{
+			in: `a="abc"`,
+			out: map[string]string{
+				"a": "abc",
+			},
+		},
+		{
+			in: `"a"="abc"`,
+			out: map[string]string{
+				`"a"`: "abc",
+			},
+		},
+		{
+			in: ` a =   "abc"  `,
+			out: map[string]string{
+				"a": "abc",
+			},
+		},
+		{
+			in: `a = "abc"  ,  b = "def " `,
+			out: map[string]string{
+				"a": "abc",
+				"b": "def",
+			},
+		},
+		{
+			in: `a = " a b c ", b = "  d  e  f  ", c="ghi"`,
+			out: map[string]string{
+				"a": "a b c",
+				"b": "d  e  f",
+				"c": "ghi",
+			},
+		},
+		{
+			in: `a=abc,b=def`,
+			out: map[string]string{
+				"a": "abc",
+				"b": "def",
+			},
+		},
+		{
+			in: `a=abc, b="def"`,
+			out: map[string]string{
+				"a": "abc",
+				"b": "def",
+			},
+		},
+		{
+			in: `a="abc, b=def"`,
+			out: map[string]string{
+				"a": "abc",
+				"b": "def",
+			},
+		},
+		{
+			in: `a=abc", "b = def`,
+			out: map[string]string{
+				`a`:  "abc",
+				`"b`: "def",
 			},
 		},
 	}
