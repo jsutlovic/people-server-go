@@ -136,6 +136,10 @@ func TestSplitFields(t *testing.T) {
 			},
 		},
 		{
+			in:  `abc,def`,
+			out: map[string]string{},
+		},
+		{
 			in: `a="abc"`,
 			out: map[string]string{
 				"a": "abc",
