@@ -114,7 +114,7 @@ func SplitFields(text string) (fields map[string]string) {
 			continue
 		}
 		key := strings.ToLower(strings.TrimSpace(splitField[0]))
-		val := strings.Trim(splitField[1], "\" ")
+		val := strings.Trim(strings.TrimSpace(splitField[1]), "\"")
 		fields[key] = val
 	}
 
