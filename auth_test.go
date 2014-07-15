@@ -185,3 +185,44 @@ func TestSplitFields(t *testing.T) {
 		assert.Equal(t, test.out, actual, "Input %d: %q", i, test.in)
 	}
 }
+
+func TestParseCredentials(t *testing.T) {
+	var parseCredentialsTests = []struct {
+		in     string
+		email  string
+		apikey string
+		err    error
+	}{
+		{
+			in:     "test@example.com:abcdefg",
+			email:  "test@example.com",
+			apikey: "abcdefg",
+			err:    nil,
+		},
+		{
+			in:     `email="test@example.com", key="abcdefg"`,
+			email:  "test@example.com",
+			apikey: "abcdefg",
+			err:    nil,
+		},
+		{
+			in:     ``,
+			email:  "",
+			apikey: "",
+			err:    SplitAuthError,
+		},
+		{
+			in:     `a="A", b="B"`,
+			email:  "",
+			apikey: "",
+			err:    AuthParseError,
+		},
+	}
+
+	for i, test := range parseCredentialsTests {
+		actualEmail, actualKey, actualErr := ParseCredentials(test.in)
+		assert.Equal(t, test.email, actualEmail, "Input %d: %q", i, test.in)
+		assert.Equal(t, test.apikey, actualKey, "Input %d: %q", i, test.in)
+		assert.Equal(t, test.err, actualErr, "Input %d: %q", i, test.in)
+	}
+}
