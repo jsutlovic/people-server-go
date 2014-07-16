@@ -217,6 +217,24 @@ func TestParseCredentials(t *testing.T) {
 			apikey: "",
 			err:    AuthParseError,
 		},
+		{
+			in:     "dGVzdEBleGFtcGxlLmNvbTphYmNkZWZn",
+			email:  "test@example.com",
+			apikey: "abcdefg",
+			err:    nil,
+		},
+		{
+			in:     `email="test@example.com"`,
+			email:  "",
+			apikey: "",
+			err:    SplitAuthError,
+		},
+		{
+			in:     `apikey="abcdefg"`,
+			email:  "",
+			apikey: "",
+			err:    SplitAuthError,
+		},
 	}
 
 	for i, test := range parseCredentialsTests {
