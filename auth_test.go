@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -182,6 +183,7 @@ func TestSplitFields(t *testing.T) {
 
 	for i, test := range splitFieldsTests {
 		actual := SplitFields(test.in)
+
 		assert.Equal(t, test.out, actual, "Input %d: %q", i, test.in)
 	}
 }
@@ -239,8 +241,10 @@ func TestParseCredentials(t *testing.T) {
 
 	for i, test := range parseCredentialsTests {
 		actualEmail, actualKey, actualErr := ParseCredentials(test.in)
-		assert.Equal(t, test.email, actualEmail, "Input %d: %q", i, test.in)
-		assert.Equal(t, test.apikey, actualKey, "Input %d: %q", i, test.in)
-		assert.Equal(t, test.err, actualErr, "Input %d: %q", i, test.in)
+
+		errMsg := fmt.Sprintf("Input %d: %q", i, test.in)
+		assert.Equal(t, test.email, actualEmail, errMsg)
+		assert.Equal(t, test.apikey, actualKey, errMsg)
+		assert.Equal(t, test.err, actualErr, errMsg)
 	}
 }
