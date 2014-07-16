@@ -69,7 +69,7 @@ func ParseRequestHeaders(req *http.Request) (authParams *AuthParams, err error) 
 
 // Split the header into auth scheme and credentials
 func SplitAuthHeader(h string) (scheme, credentials string, err error) {
-	parts := strings.SplitN(h, " ", 2)
+	parts := strings.SplitN(strings.TrimSpace(h), " ", 2)
 	if len(parts) == 2 {
 		return strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1]), nil
 	}
