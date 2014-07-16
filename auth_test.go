@@ -248,3 +248,76 @@ func TestParseCredentials(t *testing.T) {
 		assert.Equal(t, test.err, actualErr, errMsg)
 	}
 }
+
+func TestSplitAuthHeader(t *testing.T) {
+	var splitAuthHeaderTests = []struct {
+		in     string
+		scheme string
+		creds  string
+		err    error
+	}{
+		{
+			in:     "Apikey test@example.com:abcdefg",
+			scheme: "Apikey",
+			creds:  "test@example.com:abcdefg",
+			err:    nil,
+		},
+		{
+			in:     "",
+			scheme: "",
+			creds:  "",
+			err:    AuthHeaderError,
+		},
+		{
+			in:     "Apikey",
+			scheme: "",
+			creds:  "",
+			err:    AuthHeaderError,
+		},
+		{
+			in:     "    Apikey   ",
+			scheme: "",
+			creds:  "",
+			err:    AuthHeaderError,
+		},
+		{
+			in:     " Apikey ",
+			scheme: "",
+			creds:  "",
+			err:    AuthHeaderError,
+		},
+		{
+			in:     " Apikey  test@example.com abcdefg ",
+			scheme: "Apikey",
+			creds:  "test@example.com abcdefg",
+			err:    nil,
+		},
+		{
+			in:     `Apikey email="test@example.com", key="abcdefg"`,
+			scheme: "Apikey",
+			creds:  `email="test@example.com", key="abcdefg"`,
+			err:    nil,
+		},
+		{
+			in:     `api key email="test@example.com", key="abcdefg"`,
+			scheme: "api",
+			creds:  `key email="test@example.com", key="abcdefg"`,
+			err:    nil,
+		},
+		{
+			in:     "Apikey dGVzdEBleGFtcGxlLmNvbTphYmNkZWZn",
+			scheme: "Apikey",
+			creds:  "dGVzdEBleGFtcGxlLmNvbTphYmNkZWZn",
+			err:    nil,
+		},
+	}
+
+	for i, test := range splitAuthHeaderTests {
+		actualScheme, actualCreds, actualErr := SplitAuthHeader(test.in)
+
+		errMsg := fmt.Sprintf("Input %d: %q", i, test.in)
+		assert.Equal(t, test.scheme, actualScheme, errMsg)
+		assert.Equal(t, test.creds, actualCreds, errMsg)
+		assert.Equal(t, test.err, actualErr, errMsg)
+	}
+}
