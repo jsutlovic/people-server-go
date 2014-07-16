@@ -24,7 +24,6 @@ var (
 )
 
 type AuthParams struct {
-	Authed bool
 	Email  string
 	Apikey string
 }
@@ -62,7 +61,6 @@ func ParseRequestHeaders(req *http.Request) (authParams *AuthParams, err error) 
 	}
 
 	authParams = new(AuthParams)
-	authParams.Authed = true
 	authParams.Email = email
 	authParams.Apikey = apikey
 
