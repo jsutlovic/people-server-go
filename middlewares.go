@@ -12,7 +12,14 @@ func (c *AuthContext) AuthRequired(rw web.ResponseWriter, req *web.Request, next
 	// Get Username
 	// check against database
 
-	authParams, err := Authorize(req.Request)
+	_, creds, err := GetAuthHeader(req.Request)
+	if err != nil {
+		log.Println(err)
+		UnauthorizedHeader(rw)
+		return
+	}
+
+	email, apikey, err := ParseCredentials(creds)
 	if err != nil {
 		log.Println("Error: could not authenticate")
 		log.Println(err)
@@ -20,7 +27,7 @@ func (c *AuthContext) AuthRequired(rw web.ResponseWriter, req *web.Request, next
 		return
 	}
 
-	user, err := GetUser(authParams.Email)
+	user, err := GetUser(email)
 	if err != nil {
 		log.Println("Error: could not get user from auth")
 		log.Println(err)
@@ -29,7 +36,7 @@ func (c *AuthContext) AuthRequired(rw web.ResponseWriter, req *web.Request, next
 		return
 	}
 
-	if !user.CheckApiKey(authParams.Apikey) {
+	if !user.CheckApiKey(apikey) {
 		log.Println("Error: API key does not match")
 		rw.WriteHeader(http.StatusForbidden)
 		fmt.Fprint(rw, "Incorrect API key")

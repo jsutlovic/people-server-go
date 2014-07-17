@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -28,43 +29,31 @@ type AuthParams struct {
 	Apikey string
 }
 
-func Authorize(req *http.Request) (authParams *AuthParams, err error) {
-	authParams, err = ParseRequestHeaders(req)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return authParams, nil
+// Set HTTP 401 and return WWW-Authenticate header with message
+func UnauthorizedHeader(rw http.ResponseWriter) {
+	rw.Header().Set("WWW-Authenticate", "Apikey")
+	rw.WriteHeader(http.StatusUnauthorized)
+	fmt.Fprint(rw, "Apikey authorization required")
 }
 
 /*
-Get authorization parameters from an http.Request
+Get the Authorization scheme and credentials from an http.Request
 
-Looks for the HTTP Authorization header and parses it
+If the request has no Authorization header, error
 */
-func ParseRequestHeaders(req *http.Request) (authParams *AuthParams, err error) {
+func GetAuthHeader(req *http.Request) (scheme, creds string, err error) {
 	h, ok := req.Header[http.CanonicalHeaderKey(AuthHeaderKey)]
 	if !ok || len(h) == 0 {
-		return nil, AuthNotSetError
+		return "", "", AuthNotSetError
 	}
-	scheme, creds, err := SplitAuthHeader(h[0])
+	scheme, creds, err = SplitAuthHeader(h[0])
 	if err != nil {
-		return nil, err
+		return "", "", err
 	}
 	if strings.ToLower(scheme) != "apikey" {
-		return nil, AuthTypeError
+		return "", "", AuthTypeError
 	}
-	email, apikey, err := ParseCredentials(creds)
-	if err != nil {
-		return nil, err
-	}
-
-	authParams = new(AuthParams)
-	authParams.Email = email
-	authParams.Apikey = apikey
-
-	return authParams, nil
+	return scheme, creds, nil
 }
 
 // Split the header into auth scheme and credentials
