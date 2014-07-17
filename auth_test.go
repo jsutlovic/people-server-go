@@ -321,3 +321,11 @@ func TestSplitAuthHeader(t *testing.T) {
 		assert.Equal(t, test.err, actualErr, errMsg)
 	}
 }
+
+func TestGetAuthHeader(t *testing.T) {
+	assert.True(t, false, "Not implemented yet.")
+}
+
+func TestUnauthorizedHeader(t *testing.T) {
+	assert.True(t, false, "Not implemented yet.")
+}
