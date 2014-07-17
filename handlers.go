@@ -9,8 +9,8 @@ import (
 
 const InvalidCredentials = "INVALID CREDENTIALS"
 
-func (c *Context) TestHello(rw web.ResponseWriter, req *web.Request) {
-	fmt.Fprint(rw, "Hello, world!")
+func (c *Context) Index(rw web.ResponseWriter, req *web.Request) {
+	fmt.Fprint(rw, "Welcome to People!")
 }
 
 /*
