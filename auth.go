@@ -41,8 +41,8 @@ Get the Authorization scheme and credentials from an http.Request
 
 If the request has no Authorization header, error
 */
-func GetAuthHeader(req *http.Request) (scheme, creds string, err error) {
-	h, ok := req.Header[http.CanonicalHeaderKey(AuthHeaderKey)]
+func GetAuthHeader(header http.Header) (scheme, creds string, err error) {
+	h, ok := header[http.CanonicalHeaderKey(AuthHeaderKey)]
 	if !ok || len(h) == 0 {
 		return "", "", AuthNotSetError
 	}

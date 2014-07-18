@@ -12,7 +12,7 @@ func (c *AuthContext) AuthRequired(rw web.ResponseWriter, req *web.Request, next
 	// Get Username
 	// check against database
 
-	_, creds, err := GetAuthHeader(req.Request)
+	_, creds, err := GetAuthHeader(req.Request.Header)
 	if err != nil {
 		log.Println(err)
 		UnauthorizedHeader(rw)
