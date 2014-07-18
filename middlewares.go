@@ -7,11 +7,14 @@ import (
 	"net/http"
 )
 
-func (c *AuthContext) AuthRequired(rw web.ResponseWriter, req *web.Request, next web.NextMiddlewareFunc) {
-	// Get API key
-	// Get Username
-	// check against database
+/*
+Middleware to require authorization via API key
 
+Checks for the Authorization HTTP header, with Apikey scheme
+Extracts credentials and authenticates
+If successful, sets a User to the current AuthContext
+*/
+func (c *AuthContext) AuthRequired(rw web.ResponseWriter, req *web.Request, next web.NextMiddlewareFunc) {
 	_, creds, err := GetAuthHeader(req.Request.Header)
 	if err != nil {
 		log.Println(err)
