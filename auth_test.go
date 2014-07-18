@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
@@ -397,5 +398,14 @@ func TestGetAuthHeader(t *testing.T) {
 }
 
 func TestUnauthorizedHeader(t *testing.T) {
-	assert.True(t, false, "Not implemented yet.")
+	testRw := httptest.NewRecorder()
+	UnauthorizedHeader(testRw)
+
+	assert.Equal(t, testRw.Code, http.StatusUnauthorized)
+	assert.Equal(t, testRw.Body.String(), "Apikey authorization required")
+
+	actualHeader, ok := testRw.HeaderMap[http.CanonicalHeaderKey("WWW-Authenticate")]
+	assert.True(t, ok, "WWW-Authenticate header should exist")
+	assert.Len(t, actualHeader, 1, "Header should have a value")
+	assert.Equal(t, actualHeader[0], "Apikey")
 }
