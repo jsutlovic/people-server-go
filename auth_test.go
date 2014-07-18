@@ -356,11 +356,33 @@ func TestGetAuthHeader(t *testing.T) {
 		},
 		{
 			in: http.Header{
-				"Authorization": []string{"Basic test@example.com:abcdefg"},
+				"Authorization": []string{"Basic test@example.com:asdf"},
 			},
 			scheme: "",
 			creds:  "",
 			err:    AuthTypeError,
+		},
+		{
+			in: http.Header{
+				"Authorization": []string{
+					"Basic test@example.com:asdf",
+					"Apikey test@example.com:abcdefg",
+				},
+			},
+			scheme: "",
+			creds:  "",
+			err:    AuthTypeError,
+		},
+		{
+			in: http.Header{
+				"Authorization": []string{
+					"Apikey test@example.com:abcdefg",
+					"Basic test@example.com:asdf",
+				},
+			},
+			scheme: "Apikey",
+			creds:  "test@example.com:abcdefg",
+			err:    nil,
 		},
 	}
 
