@@ -57,8 +57,8 @@ func GetAuthHeader(req *http.Request) (scheme, creds string, err error) {
 }
 
 // Split the header into auth scheme and credentials
-func SplitAuthHeader(h string) (scheme, credentials string, err error) {
-	parts := strings.SplitN(strings.TrimSpace(h), " ", 2)
+func SplitAuthHeader(authStr string) (scheme, credentials string, err error) {
+	parts := strings.SplitN(strings.TrimSpace(authStr), " ", 2)
 	if len(parts) == 2 {
 		return strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1]), nil
 	}
