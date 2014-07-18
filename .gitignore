@@ -1,2 +1,6 @@
 # don't include the binary
 people-server-go
+
+# Don't include godeps workspace
+Godeps/_workspace
+
