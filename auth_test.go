@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 )
 
@@ -323,7 +324,54 @@ func TestSplitAuthHeader(t *testing.T) {
 }
 
 func TestGetAuthHeader(t *testing.T) {
-	assert.True(t, false, "Not implemented yet.")
+	var getAuthHeaderTests = []struct {
+		in     http.Header
+		scheme string
+		creds  string
+		err    error
+	}{
+		{
+			in: http.Header{
+				"Authorization": []string{"Apikey test@example.com:abcdefg"},
+			},
+			scheme: "Apikey",
+			creds:  "test@example.com:abcdefg",
+			err:    nil,
+		},
+		{
+			in: http.Header{
+				"Authentication": []string{"Apikey test@example.com:abcdefg"},
+			},
+			scheme: "",
+			creds:  "",
+			err:    AuthNotSetError,
+		},
+		{
+			in: http.Header{
+				"Authorization": []string{""},
+			},
+			scheme: "",
+			creds:  "",
+			err:    AuthHeaderError,
+		},
+		{
+			in: http.Header{
+				"Authorization": []string{"Basic test@example.com:abcdefg"},
+			},
+			scheme: "",
+			creds:  "",
+			err:    AuthTypeError,
+		},
+	}
+
+	for i, test := range getAuthHeaderTests {
+		actualScheme, actualCreds, actualErr := GetAuthHeader(test.in)
+
+		errMsg := fmt.Sprintf("Input %d: %q", i, test.in)
+		assert.Equal(t, test.scheme, actualScheme, errMsg)
+		assert.Equal(t, test.creds, actualCreds, errMsg)
+		assert.Equal(t, test.err, actualErr, errMsg)
+	}
 }
 
 func TestUnauthorizedHeader(t *testing.T) {
