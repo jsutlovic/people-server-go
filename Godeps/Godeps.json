@@ -1,0 +1,32 @@
+{
+	"ImportPath": "github.com/jsutlovic/people-server-go",
+	"GoVersion": "go1.2.1",
+	"Deps": [
+		{
+			"ImportPath": "code.google.com/p/go.crypto/bcrypt",
+			"Comment": "null-213",
+			"Rev": "aa2644fe4aa50e3b38d75187b4799b1f0c9ddcef"
+		},
+		{
+			"ImportPath": "code.google.com/p/go.crypto/blowfish",
+			"Comment": "null-213",
+			"Rev": "aa2644fe4aa50e3b38d75187b4799b1f0c9ddcef"
+		},
+		{
+			"ImportPath": "github.com/gocraft/web",
+			"Rev": "91f6740db03bb0a8a1c7231e3464124057501a92"
+		},
+		{
+			"ImportPath": "github.com/jmoiron/sqlx",
+			"Rev": "4c1be0c511229430ab5aa9bfe9e633169c35e0da"
+		},
+		{
+			"ImportPath": "github.com/lib/pq",
+			"Rev": "529edd91735bdd4b3cc61dcb9ed82cd8ddb616c4"
+		},
+		{
+			"ImportPath": "github.com/stretchr/testify/assert",
+			"Rev": "ed6ea184117f7ae3168d1c05dbdbde1a86e2be68"
+		}
+	]
+}
