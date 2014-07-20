@@ -402,10 +402,14 @@ func TestUnauthorizedHeader(t *testing.T) {
 	UnauthorizedHeader(testRw)
 
 	assert.Equal(t, testRw.Code, http.StatusUnauthorized)
-	assert.Equal(t, testRw.Body.String(), "Apikey authorization required")
+	assert.Equal(t, testRw.Body.String(), "Apikey authorization required\n")
 
 	actualHeader, ok := testRw.HeaderMap[http.CanonicalHeaderKey("WWW-Authenticate")]
-	assert.True(t, ok, "WWW-Authenticate header should exist")
-	assert.Len(t, actualHeader, 1, "Header should have a value")
+	if !assert.True(t, ok, "WWW-Authenticate header should exist") {
+		return
+	}
+	if !assert.Len(t, actualHeader, 1, "Header should have a value") {
+		return
+	}
 	assert.Equal(t, actualHeader[0], "Apikey")
 }

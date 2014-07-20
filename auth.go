@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/base64"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 )
@@ -32,8 +31,7 @@ type AuthParams struct {
 // Set HTTP 401 and return WWW-Authenticate header with message
 func UnauthorizedHeader(rw http.ResponseWriter) {
 	rw.Header().Set("WWW-Authenticate", "Apikey")
-	rw.WriteHeader(http.StatusUnauthorized)
-	fmt.Fprint(rw, "Apikey authorization required")
+	http.Error(rw, "Apikey authorization required", http.StatusUnauthorized)
 }
 
 /*
