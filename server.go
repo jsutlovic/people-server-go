@@ -7,7 +7,7 @@ import (
 
 // Basic Context available to all handlers
 type Context struct {
-	DB *DbService
+	DB DbService
 }
 
 // Context supplying an authorized user. Used with AuthRequired middleware
@@ -17,7 +17,7 @@ type AuthContext struct {
 }
 
 func main() {
-	dbService := NewDbService()
+	dbService := NewPgDbService()
 
 	rootRouter := web.New(Context{})
 	rootRouter.Middleware(web.LoggerMiddleware)

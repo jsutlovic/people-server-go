@@ -16,12 +16,16 @@ Database service
 
 Provides an abstraction wrapper around the database
 */
-type DbService struct {
+type DbService interface {
+	GetUser(email string) (user *User, err error)
+}
+
+type pgDbService struct {
 	db *sqlx.DB
 }
 
-func NewDbService() *DbService {
-	s := new(DbService)
+func NewPgDbService() *pgDbService {
+	s := new(pgDbService)
 	s.dbInit()
 	return s
 }
@@ -34,7 +38,7 @@ This must be called before any database calls can happen
 Eventually, this should parse a given config file rather than using
 hardcoded values
 */
-func (s *DbService) dbInit() {
+func (s *pgDbService) dbInit() {
 	s.db = sqlx.MustConnect("postgres", "user=vagrant dbname=people host=/var/run/postgresql sslmode=disable application_name=people-go")
 	log.Print("db connected")
 }
@@ -59,7 +63,7 @@ type User struct {
 Fetch a user given an email from the database
 Returns nil if no matching user is found
 */
-func (s *DbService) GetUser(email string) (user *User, err error) {
+func (s *pgDbService) GetUser(email string) (user *User, err error) {
 	user = new(User)
 
 	err = s.db.Get(user, s.db.Rebind("SELECT * FROM \"user\" WHERE email=?"), email)
