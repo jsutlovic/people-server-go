@@ -17,9 +17,12 @@ type AuthContext struct {
 }
 
 func main() {
+	dbService := NewDbService()
+
 	rootRouter := web.New(Context{})
 	rootRouter.Middleware(web.LoggerMiddleware)
 	rootRouter.Middleware(web.ShowErrorsMiddleware)
+	rootRouter.Middleware(DbMiddleware(dbService))
 
 	plainRouter := rootRouter.Subrouter(AuthContext{}, "")
 	plainRouter.Get("/", (*AuthContext).Index)
@@ -30,8 +33,6 @@ func main() {
 	apiRouter := rootRouter.Subrouter(AuthContext{}, "/api")
 	apiRouter.Middleware((*AuthContext).AuthRequired)
 	apiRouter.Get("/user", (*AuthContext).GetUserApi)
-
-	dbInit()
 
 	http.ListenAndServe("0.0.0.0:3000", rootRouter)
 }
