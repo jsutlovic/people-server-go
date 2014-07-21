@@ -41,7 +41,7 @@ func (c *AuthContext) AuthRequired(rw web.ResponseWriter, req *web.Request, next
 		return
 	}
 
-	user, err := GetUser(email)
+	user, err := c.DB.GetUser(email)
 	if err != nil {
 		log.Println("Error: could not get user from auth")
 		log.Println(err)

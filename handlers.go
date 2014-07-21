@@ -42,7 +42,7 @@ func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 	log.Println(email)
 	log.Print(password)
 
-	user, err := GetUser(email)
+	user, err := c.DB.GetUser(email)
 	authed := err == nil && user != nil && user.IsActive && user.CheckPassword(password)
 	if authed {
 		log.Println("Logged in!")
