@@ -7,6 +7,7 @@ import (
 
 // Basic Context available to all handlers
 type Context struct {
+	DB *DbService
 }
 
 // Context supplying an authorized user. Used with AuthRequired middleware
