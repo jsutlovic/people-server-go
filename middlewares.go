@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gocraft/web"
 	"log"
 	"net/http"
@@ -34,15 +33,13 @@ func (c *AuthContext) AuthRequired(rw web.ResponseWriter, req *web.Request, next
 	if err != nil {
 		log.Println("Error: could not get user from auth")
 		log.Println(err)
-		rw.WriteHeader(http.StatusForbidden)
-		fmt.Fprint(rw, "Invalid user")
+		http.Error(rw, "Invalid user", http.StatusForbidden)
 		return
 	}
 
 	if !user.CheckApiKey(apikey) {
 		log.Println("Error: API key does not match")
-		rw.WriteHeader(http.StatusForbidden)
-		fmt.Fprint(rw, "Incorrect API key")
+		http.Error(rw, "Incorrect API key", http.StatusForbidden)
 		return
 	}
 
