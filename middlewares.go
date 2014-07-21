@@ -7,6 +7,18 @@ import (
 )
 
 /*
+Middleware to hook in the database service
+
+Closes over the DbService provided and simply sets it to each Context on request
+*/
+func DbMiddleware(s *DbService) func(*Context, web.ResponseWriter, *web.Request, web.NextMiddlewareFunc) {
+	return func(c *Context, rw web.ResponseWriter, req *web.Request, next web.NextMiddlewareFunc) {
+		c.DB = s
+		next(rw, req)
+	}
+}
+
+/*
 Middleware to require authorization via API key
 
 Checks for the Authorization HTTP header, with Apikey scheme
