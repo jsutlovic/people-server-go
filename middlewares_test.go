@@ -26,10 +26,7 @@ func (m *MockDbService) GetUser(email string) (user *User, err error) {
 	return new(User), nil
 }
 
-func TestDbMiddleware(t *testing.T) {
-	// Get our mock service
-	mockDbService := new(MockDbService)
-
+func mockMiddlewareParams() (web.ResponseWriter, *web.Request, *MockNext) {
 	// Build the ResponseRecorder
 	recorder := httptest.NewRecorder()
 	rw := web.AppResponseWriter{}
@@ -38,7 +35,7 @@ func TestDbMiddleware(t *testing.T) {
 	// Build the request
 	fakeRequest, err := http.NewRequest("GET", "http://example.com/", nil)
 	if err != nil {
-		t.Fatal(err)
+		panic(err)
 	}
 	req := web.Request{}
 	req.Request = fakeRequest
@@ -46,7 +43,16 @@ func TestDbMiddleware(t *testing.T) {
 	// Mock a NextMiddlewareFunc
 	next := new(MockNext)
 
-	next.Mock.On("Next", &rw, &req).Return()
+	return &rw, &req, next
+}
+
+func TestDbMiddleware(t *testing.T) {
+	// Get our mock service
+	mockDbService := new(MockDbService)
+
+	rw, req, next := mockMiddlewareParams()
+
+	next.Mock.On("Next", rw, req).Return()
 
 	// Create a Context
 	c := Context{}
@@ -55,10 +61,10 @@ func TestDbMiddleware(t *testing.T) {
 	dbMiddleware := DbMiddleware(mockDbService)
 
 	// Call the middleware
-	dbMiddleware(&c, &rw, &req, next.Next)
+	dbMiddleware(&c, rw, req, next.Next)
 
 	// Assertions
-	next.Mock.AssertCalled(t, "Next", &rw, &req)
+	next.Mock.AssertCalled(t, "Next", rw, req)
 	assert.Equal(t, c.DB, mockDbService)
 }
 
