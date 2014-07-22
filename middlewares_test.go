@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gocraft/web"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -20,10 +21,12 @@ func (m *MockNext) Next(rw web.ResponseWriter, req *web.Request) {
 
 type MockDbService struct {
 	mock.Mock
+	*User
 }
 
 func (m *MockDbService) GetUser(email string) (user *User, err error) {
-	return new(User), nil
+	m.Mock.Called(email)
+	return m.User, nil
 }
 
 func mockMiddlewareParams() (web.ResponseWriter, *web.Request, *MockNext) {
@@ -43,16 +46,32 @@ func mockMiddlewareParams() (web.ResponseWriter, *web.Request, *MockNext) {
 	// Mock a NextMiddlewareFunc
 	next := new(MockNext)
 
+	// Setup expecations for Next
+	next.Mock.On("Next", &rw, &req).Return()
+
 	return &rw, &req, next
+}
+
+func mockDbContext(user *User) Context {
+	// Create our mock database service to serve our fake user
+	mockDbService := new(MockDbService)
+	mockDbService.User = user
+
+	mockDbService.Mock.On("GetUser", user.Email).Return(user)
+
+	// Create Context and set the DB
+	c := Context{}
+	c.DB = mockDbService
+
+	return c
 }
 
 func TestDbMiddleware(t *testing.T) {
 	// Get our mock service
 	mockDbService := new(MockDbService)
 
+	// Build some basic middleware objects
 	rw, req, next := mockMiddlewareParams()
-
-	next.Mock.On("Next", rw, req).Return()
 
 	// Create a Context
 	c := Context{}
@@ -68,5 +87,34 @@ func TestDbMiddleware(t *testing.T) {
 	assert.Equal(t, c.DB, mockDbService)
 }
 
-func TestAuthRequired(t *testing.T) {
+func TestAuthRequiredAuthorizesValid(t *testing.T) {
+	// Create a fake user
+	user := User{
+		1,
+		"test@example.com",
+		"",
+		"Test User",
+		true,
+		false,
+		"abcdefg",
+	}
+
+	// Build our basic middleware objects
+	rw, req, next := mockMiddlewareParams()
+
+	// Add headers to request
+	req.Request.Header.Add("Authorization", fmt.Sprintf("Apikey %s:%s", user.Email, user.ApiKey))
+
+	// Setup contexts
+	c := mockDbContext(&user)
+
+	ac := AuthContext{}
+	ac.Context = &c
+
+	// Call the middleware
+	(*AuthContext).AuthRequired(&ac, rw, req, next.Next)
+
+	// Assertions
+	next.Mock.AssertCalled(t, "Next", rw, req)
+	assert.Equal(t, ac.User, &user)
 }
