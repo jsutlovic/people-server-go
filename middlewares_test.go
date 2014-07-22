@@ -29,7 +29,7 @@ func (m *MockDbService) GetUser(email string) (user *User, err error) {
 	return m.User, nil
 }
 
-func mockMiddlewareParams() (web.ResponseWriter, *web.Request, *MockNext) {
+func mockMiddlewareParams() (*web.AppResponseWriter, *web.Request, *MockNext, *httptest.ResponseRecorder) {
 	// Build the ResponseRecorder
 	recorder := httptest.NewRecorder()
 	rw := web.AppResponseWriter{}
@@ -49,10 +49,10 @@ func mockMiddlewareParams() (web.ResponseWriter, *web.Request, *MockNext) {
 	// Setup expecations for Next
 	next.Mock.On("Next", &rw, &req).Return()
 
-	return &rw, &req, next
+	return &rw, &req, next, recorder
 }
 
-func mockDbContext(user *User) Context {
+func mockDbContext(user *User) (Context, *MockDbService) {
 	// Create our mock database service to serve our fake user
 	mockDbService := new(MockDbService)
 	mockDbService.User = user
@@ -63,7 +63,22 @@ func mockDbContext(user *User) Context {
 	c := Context{}
 	c.DB = mockDbService
 
-	return c
+	return c, mockDbService
+}
+
+func newTestUser() User {
+	// Create a fake user
+	user := User{
+		1,
+		"test@example.com",
+		"",
+		"Test User",
+		true,
+		false,
+		"abcdefg",
+	}
+
+	return user
 }
 
 func TestDbMiddleware(t *testing.T) {
@@ -71,7 +86,7 @@ func TestDbMiddleware(t *testing.T) {
 	mockDbService := new(MockDbService)
 
 	// Build some basic middleware objects
-	rw, req, next := mockMiddlewareParams()
+	rw, req, next, _ := mockMiddlewareParams()
 
 	// Create a Context
 	c := Context{}
@@ -88,25 +103,16 @@ func TestDbMiddleware(t *testing.T) {
 }
 
 func TestAuthRequiredAuthorizesValid(t *testing.T) {
-	// Create a fake user
-	user := User{
-		1,
-		"test@example.com",
-		"",
-		"Test User",
-		true,
-		false,
-		"abcdefg",
-	}
+	user := newTestUser()
 
 	// Build our basic middleware objects
-	rw, req, next := mockMiddlewareParams()
+	rw, req, next, rec := mockMiddlewareParams()
 
 	// Add headers to request
 	req.Request.Header.Add("Authorization", fmt.Sprintf("Apikey %s:%s", user.Email, user.ApiKey))
 
 	// Setup contexts
-	c := mockDbContext(&user)
+	c, mockDbService := mockDbContext(&user)
 
 	ac := AuthContext{}
 	ac.Context = &c
@@ -114,7 +120,33 @@ func TestAuthRequiredAuthorizesValid(t *testing.T) {
 	// Call the middleware
 	(*AuthContext).AuthRequired(&ac, rw, req, next.Next)
 
-	// Assertions
+	// Assertions:
+
+	// Next was called
 	next.Mock.AssertCalled(t, "Next", rw, req)
+	// GetUser was called
+	mockDbService.Mock.AssertCalled(t, "GetUser", user.Email)
+	// User is set to the AuthContext
 	assert.Equal(t, ac.User, &user)
+	// Nothing was written to the responsewriter
+	assert.Equal(t, rec.Body.String(), "")
+}
+
+func TestAuthRequiredErrorsNoHeader(t *testing.T) {
+	user := newTestUser()
+
+	rw, req, next, rec := mockMiddlewareParams()
+
+	c, mockDbService := mockDbContext(&user)
+
+	ac := AuthContext{}
+	ac.Context = &c
+
+	(*AuthContext).AuthRequired(&ac, rw, req, next.Next)
+
+	next.Mock.AssertNotCalled(t, "Next", rw, req)
+	mockDbService.Mock.AssertNotCalled(t, "GetUser", user.Email)
+	assert.Nil(t, ac.User)
+	assert.Equal(t, rec.Code, http.StatusUnauthorized)
+	assert.Equal(t, rec.Body.String(), "Apikey authorization required\n")
 }
