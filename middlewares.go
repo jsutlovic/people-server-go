@@ -37,7 +37,7 @@ func (c *AuthContext) AuthRequired(rw web.ResponseWriter, req *web.Request, next
 	if err != nil {
 		log.Println("Error: could not authenticate")
 		log.Println(err)
-		rw.WriteHeader(http.StatusBadRequest)
+		http.Error(rw, "Invalid authentication params", http.StatusBadRequest)
 		return
 	}
 
