@@ -44,9 +44,9 @@ func TestDbMiddleware(t *testing.T) {
 	req.Request = fakeRequest
 
 	// Mock a NextMiddlewareFunc
-	mockNext := new(MockNext)
+	next := new(MockNext)
 
-	mockNext.Mock.On("Next", &rw, &req).Return()
+	next.Mock.On("Next", &rw, &req).Return()
 
 	// Create a Context
 	c := Context{}
@@ -55,10 +55,10 @@ func TestDbMiddleware(t *testing.T) {
 	dbMiddleware := DbMiddleware(mockDbService)
 
 	// Call the middleware
-	dbMiddleware(&c, &rw, &req, mockNext.Next)
+	dbMiddleware(&c, &rw, &req, next.Next)
 
 	// Assertions
-	mockNext.Mock.AssertCalled(t, "Next", &rw, &req)
+	next.Mock.AssertCalled(t, "Next", &rw, &req)
 	assert.Equal(t, c.DB, mockDbService)
 }
 
