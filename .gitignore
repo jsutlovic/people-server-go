@@ -4,3 +4,7 @@ people-server-go
 # Don't include godeps workspace
 Godeps/_workspace
 
+# Coverage tool output
+count.html
+count.out
+
