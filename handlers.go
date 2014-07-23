@@ -49,8 +49,7 @@ func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 		fmt.Fprint(rw, Jsonify(user))
 	} else {
 		log.Printf("Could not log in: %v", err)
-		rw.WriteHeader(http.StatusForbidden)
-		fmt.Fprint(rw, InvalidCredentials)
+		http.Error(rw, InvalidCredentials, http.StatusForbidden)
 	}
 }
 
