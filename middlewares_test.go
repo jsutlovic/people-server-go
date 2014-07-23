@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gocraft/web"
 	"github.com/stretchr/testify/assert"
@@ -25,8 +26,11 @@ type MockDbService struct {
 }
 
 func (m *MockDbService) GetUser(email string) (user *User, err error) {
-	m.Mock.Called(email)
-	return m.User, nil
+	args := m.Mock.Called(email)
+	if args.Get(0) != nil {
+		return args.Get(0).(*User), nil
+	}
+	return nil, args.Error(1)
 }
 
 func mockMiddlewareParams() (*web.AppResponseWriter, *web.Request, *MockNext, *httptest.ResponseRecorder) {
@@ -56,8 +60,6 @@ func mockDbContext(user *User) (Context, *MockDbService) {
 	// Create our mock database service to serve our fake user
 	dbs := new(MockDbService)
 	dbs.User = user
-
-	dbs.Mock.On("GetUser", user.Email).Return(user)
 
 	// Create Context and set the DB
 	c := Context{}
@@ -113,6 +115,7 @@ func TestAuthRequiredAuthorizesValid(t *testing.T) {
 
 	// Setup contexts
 	c, dbs := mockDbContext(&user)
+	dbs.Mock.On("GetUser", user.Email).Return(&user, nil)
 
 	ac := AuthContext{}
 	ac.Context = &c
@@ -132,12 +135,13 @@ func TestAuthRequiredAuthorizesValid(t *testing.T) {
 	assert.Equal(t, rec.Body.String(), "")
 }
 
-func TestAuthRequiredErrorsNoHeader(t *testing.T) {
+func TestAuthRequiredNoHeader(t *testing.T) {
 	user := newTestUser()
 
 	rw, req, next, rec := mockMiddlewareParams()
 
 	c, dbs := mockDbContext(&user)
+	dbs.Mock.On("GetUser", user.Email).Return(&user, nil)
 
 	ac := AuthContext{}
 	ac.Context = &c
@@ -149,4 +153,92 @@ func TestAuthRequiredErrorsNoHeader(t *testing.T) {
 	assert.Nil(t, ac.User)
 	assert.Equal(t, rec.Code, http.StatusUnauthorized)
 	assert.Equal(t, rec.Body.String(), "Apikey authorization required\n")
+}
+
+func TestAuthRequiredInvalidAuthScheme(t *testing.T) {
+	user := newTestUser()
+
+	rw, req, next, rec := mockMiddlewareParams()
+
+	req.Request.Header.Add("Authorization", "Basic YWJjOjEyMw==")
+
+	c, dbs := mockDbContext(&user)
+	dbs.Mock.On("GetUser", user.Email).Return(&user, nil)
+
+	ac := AuthContext{}
+	ac.Context = &c
+
+	(*AuthContext).AuthRequired(&ac, rw, req, next.Next)
+
+	next.Mock.AssertNotCalled(t, "Next", rw, req)
+	dbs.Mock.AssertNotCalled(t, "GetUser", user.Email)
+	assert.Nil(t, ac.User)
+	assert.Equal(t, rec.Code, http.StatusUnauthorized)
+	assert.Equal(t, rec.Body.String(), "Apikey authorization required\n")
+}
+
+func TestAuthRequiredBadCreds(t *testing.T) {
+	user := newTestUser()
+
+	rw, req, next, rec := mockMiddlewareParams()
+
+	req.Request.Header.Add("Authorization", "Apikey asdf")
+
+	c, dbs := mockDbContext(&user)
+	dbs.Mock.On("GetUser", user.Email).Return(&user, nil)
+
+	ac := AuthContext{}
+	ac.Context = &c
+
+	(*AuthContext).AuthRequired(&ac, rw, req, next.Next)
+
+	next.Mock.AssertNotCalled(t, "Next", rw, req)
+	dbs.Mock.AssertNotCalled(t, "GetUser", user.Email)
+	assert.Nil(t, ac.User)
+	assert.Equal(t, rec.Code, http.StatusBadRequest)
+	assert.Equal(t, rec.Body.String(), "Invalid authentication params\n")
+}
+
+func TestAuthRequiredInvalidUser(t *testing.T) {
+	user := newTestUser()
+
+	rw, req, next, rec := mockMiddlewareParams()
+	authHeader := fmt.Sprintf("Apikey %s:%s", user.Email, user.ApiKey)
+	req.Request.Header.Add("Authorization", authHeader)
+
+	c, dbs := mockDbContext(&user)
+	dbs.Mock.On("GetUser", user.Email).Return(nil, errors.New("Invalid user"))
+
+	ac := AuthContext{}
+	ac.Context = &c
+
+	(*AuthContext).AuthRequired(&ac, rw, req, next.Next)
+
+	next.Mock.AssertNotCalled(t, "Next", rw, req)
+	dbs.Mock.AssertCalled(t, "GetUser", user.Email)
+	assert.Nil(t, ac.User)
+	assert.Equal(t, rec.Code, http.StatusForbidden)
+	assert.Equal(t, rec.Body.String(), "Invalid user\n")
+}
+
+func TestAuthRequiredInvalidApikey(t *testing.T) {
+	user := newTestUser()
+
+	rw, req, next, rec := mockMiddlewareParams()
+	authHeader := fmt.Sprintf("Apikey %s:%s", user.Email, user.ApiKey+"!!!")
+	req.Request.Header.Add("Authorization", authHeader)
+
+	c, dbs := mockDbContext(&user)
+	dbs.Mock.On("GetUser", user.Email).Return(&user, nil)
+
+	ac := AuthContext{}
+	ac.Context = &c
+
+	(*AuthContext).AuthRequired(&ac, rw, req, next.Next)
+
+	next.Mock.AssertNotCalled(t, "Next", rw, req)
+	dbs.Mock.AssertCalled(t, "GetUser", user.Email)
+	assert.Nil(t, ac.User)
+	assert.Equal(t, rec.Code, http.StatusForbidden)
+	assert.Equal(t, rec.Body.String(), "Incorrect API key\n")
 }
