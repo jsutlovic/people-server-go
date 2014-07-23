@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-	"log"
+	"fmt"
 
 	_ "database/sql"
 	"github.com/jmoiron/sqlx"
@@ -40,7 +40,6 @@ hardcoded values
 */
 func (s *pgDbService) dbInit() {
 	s.db = sqlx.MustConnect("postgres", "user=vagrant dbname=people host=/var/run/postgresql sslmode=disable application_name=people-go")
-	log.Print("db connected")
 }
 
 /*
@@ -68,9 +67,8 @@ func (s *pgDbService) GetUser(email string) (user *User, err error) {
 
 	err = s.db.Get(user, s.db.Rebind("SELECT * FROM \"user\" WHERE email=?"), email)
 	if err != nil {
-		// We couldn't get the user
-		log.Println(err)
-		return nil, errors.New("User could not be found")
+		errMsg := fmt.Sprintf("User could not be found: %s", err)
+		return nil, errors.New(errMsg)
 	}
 
 	return user, nil
@@ -81,10 +79,8 @@ func (u *User) CheckPassword(password string) bool {
 	incorrect := bcrypt.CompareHashAndPassword([]byte(u.Pwhash), []byte(password))
 
 	if incorrect == nil {
-		log.Printf("Password matched")
 		return true
 	}
-	log.Printf("Password did not match")
 	return false
 }
 
