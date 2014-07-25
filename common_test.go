@@ -89,7 +89,7 @@ func mockAuthContext(user *User) (*AuthContext, *MockDbService) {
 	return ac, dbs
 }
 
-func mockHandlerParams(method, content string) (web.ResponseWriter, *web.Request, *httptest.ResponseRecorder) {
+func mockHandlerParams(method, contenttype, content string) (web.ResponseWriter, *web.Request, *httptest.ResponseRecorder) {
 	recorder := httptest.NewRecorder()
 	rw := new(web.AppResponseWriter)
 	rw.ResponseWriter = recorder
@@ -99,6 +99,8 @@ func mockHandlerParams(method, content string) (web.ResponseWriter, *web.Request
 	if err != nil {
 		panic(err)
 	}
+
+	fakeRequest.Header.Set("Content-Type", contenttype)
 
 	req := new(web.Request)
 	req.Request = fakeRequest
