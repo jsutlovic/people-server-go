@@ -39,8 +39,8 @@ func TestAuthRequiredAuthorizesValid(t *testing.T) {
 	req.Request.Header.Add("Authorization", fmt.Sprintf("Apikey %s:%s", user.Email, user.ApiKey))
 
 	// Setup contexts
-	c, dbs := mockDbContext(&user)
-	dbs.Mock.On("GetUser", user.Email).Return(&user, nil)
+	c, dbs := mockDbContext(user)
+	dbs.Mock.On("GetUser", user.Email).Return(user, nil)
 
 	ac := new(AuthContext)
 	ac.Context = c
@@ -55,7 +55,7 @@ func TestAuthRequiredAuthorizesValid(t *testing.T) {
 	// GetUser was called
 	dbs.Mock.AssertCalled(t, "GetUser", user.Email)
 	// User is set to the AuthContext
-	assert.Equal(t, ac.User, &user)
+	assert.Equal(t, ac.User, user)
 	// Nothing was written to the responsewriter
 	assert.Equal(t, rec.Body.String(), "")
 }
@@ -65,8 +65,8 @@ func TestAuthRequiredNoHeader(t *testing.T) {
 
 	rw, req, next, rec := mockMiddlewareParams()
 
-	c, dbs := mockDbContext(&user)
-	dbs.Mock.On("GetUser", user.Email).Return(&user, nil)
+	c, dbs := mockDbContext(user)
+	dbs.Mock.On("GetUser", user.Email).Return(user, nil)
 
 	ac := new(AuthContext)
 	ac.Context = c
@@ -87,8 +87,8 @@ func TestAuthRequiredInvalidAuthScheme(t *testing.T) {
 
 	req.Request.Header.Add("Authorization", "Basic YWJjOjEyMw==")
 
-	c, dbs := mockDbContext(&user)
-	dbs.Mock.On("GetUser", user.Email).Return(&user, nil)
+	c, dbs := mockDbContext(user)
+	dbs.Mock.On("GetUser", user.Email).Return(user, nil)
 
 	ac := new(AuthContext)
 	ac.Context = c
@@ -109,8 +109,8 @@ func TestAuthRequiredBadCreds(t *testing.T) {
 
 	req.Request.Header.Add("Authorization", "Apikey asdf")
 
-	c, dbs := mockDbContext(&user)
-	dbs.Mock.On("GetUser", user.Email).Return(&user, nil)
+	c, dbs := mockDbContext(user)
+	dbs.Mock.On("GetUser", user.Email).Return(user, nil)
 
 	ac := new(AuthContext)
 	ac.Context = c
@@ -131,7 +131,7 @@ func TestAuthRequiredInvalidUser(t *testing.T) {
 	authHeader := fmt.Sprintf("Apikey %s:%s", user.Email, user.ApiKey)
 	req.Request.Header.Add("Authorization", authHeader)
 
-	c, dbs := mockDbContext(&user)
+	c, dbs := mockDbContext(user)
 	dbs.Mock.On("GetUser", user.Email).Return(nil, errors.New("Invalid user"))
 
 	ac := new(AuthContext)
@@ -153,8 +153,8 @@ func TestAuthRequiredInvalidApikey(t *testing.T) {
 	authHeader := fmt.Sprintf("Apikey %s:%s", user.Email, user.ApiKey+"!!!")
 	req.Request.Header.Add("Authorization", authHeader)
 
-	c, dbs := mockDbContext(&user)
-	dbs.Mock.On("GetUser", user.Email).Return(&user, nil)
+	c, dbs := mockDbContext(user)
+	dbs.Mock.On("GetUser", user.Email).Return(user, nil)
 
 	ac := new(AuthContext)
 	ac.Context = c

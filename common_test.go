@@ -7,6 +7,20 @@ import (
 	"net/http/httptest"
 )
 
+func newTestUser() *User {
+	user := User{
+		1,
+		"test@example.com",
+		"",
+		"Test User",
+		true,
+		false,
+		"",
+	}
+
+	return &user
+}
+
 type MockNext struct {
 	mock.Mock
 }

@@ -5,20 +5,6 @@ import (
 	"testing"
 )
 
-func newTestUser() User {
-	user := User{
-		1,
-		"test@example.com",
-		"",
-		"Test User",
-		true,
-		false,
-		"",
-	}
-
-	return user
-}
-
 func TestUserCheckPassword(t *testing.T) {
 	var password string = "asdf"
 	var hashedInputs []string = []string{
