@@ -76,13 +76,13 @@ func TestDbMiddleware(t *testing.T) {
 	rw, req, next, _ := mockMiddlewareParams()
 
 	// Create a Context
-	c := Context{}
+	c := new(Context)
 
 	// Build the middleware (closure)
 	dbMiddleware := DbMiddleware(dbs)
 
 	// Call the middleware
-	dbMiddleware(&c, rw, req, next.Next)
+	dbMiddleware(c, rw, req, next.Next)
 
 	// Assertions
 	next.Mock.AssertCalled(t, "Next", rw, req)
@@ -102,11 +102,11 @@ func TestAuthRequiredAuthorizesValid(t *testing.T) {
 	c, dbs := mockDbContext(&user)
 	dbs.Mock.On("GetUser", user.Email).Return(&user, nil)
 
-	ac := AuthContext{}
-	ac.Context = &c
+	ac := new(AuthContext)
+	ac.Context = c
 
 	// Call the middleware
-	(*AuthContext).AuthRequired(&ac, rw, req, next.Next)
+	(*AuthContext).AuthRequired(ac, rw, req, next.Next)
 
 	// Assertions:
 
@@ -128,10 +128,10 @@ func TestAuthRequiredNoHeader(t *testing.T) {
 	c, dbs := mockDbContext(&user)
 	dbs.Mock.On("GetUser", user.Email).Return(&user, nil)
 
-	ac := AuthContext{}
-	ac.Context = &c
+	ac := new(AuthContext)
+	ac.Context = c
 
-	(*AuthContext).AuthRequired(&ac, rw, req, next.Next)
+	(*AuthContext).AuthRequired(ac, rw, req, next.Next)
 
 	next.Mock.AssertNotCalled(t, "Next", rw, req)
 	dbs.Mock.AssertNotCalled(t, "GetUser", user.Email)
@@ -150,10 +150,10 @@ func TestAuthRequiredInvalidAuthScheme(t *testing.T) {
 	c, dbs := mockDbContext(&user)
 	dbs.Mock.On("GetUser", user.Email).Return(&user, nil)
 
-	ac := AuthContext{}
-	ac.Context = &c
+	ac := new(AuthContext)
+	ac.Context = c
 
-	(*AuthContext).AuthRequired(&ac, rw, req, next.Next)
+	(*AuthContext).AuthRequired(ac, rw, req, next.Next)
 
 	next.Mock.AssertNotCalled(t, "Next", rw, req)
 	dbs.Mock.AssertNotCalled(t, "GetUser", user.Email)
@@ -172,10 +172,10 @@ func TestAuthRequiredBadCreds(t *testing.T) {
 	c, dbs := mockDbContext(&user)
 	dbs.Mock.On("GetUser", user.Email).Return(&user, nil)
 
-	ac := AuthContext{}
-	ac.Context = &c
+	ac := new(AuthContext)
+	ac.Context = c
 
-	(*AuthContext).AuthRequired(&ac, rw, req, next.Next)
+	(*AuthContext).AuthRequired(ac, rw, req, next.Next)
 
 	next.Mock.AssertNotCalled(t, "Next", rw, req)
 	dbs.Mock.AssertNotCalled(t, "GetUser", user.Email)
@@ -194,10 +194,10 @@ func TestAuthRequiredInvalidUser(t *testing.T) {
 	c, dbs := mockDbContext(&user)
 	dbs.Mock.On("GetUser", user.Email).Return(nil, errors.New("Invalid user"))
 
-	ac := AuthContext{}
-	ac.Context = &c
+	ac := new(AuthContext)
+	ac.Context = c
 
-	(*AuthContext).AuthRequired(&ac, rw, req, next.Next)
+	(*AuthContext).AuthRequired(ac, rw, req, next.Next)
 
 	next.Mock.AssertNotCalled(t, "Next", rw, req)
 	dbs.Mock.AssertCalled(t, "GetUser", user.Email)
@@ -216,10 +216,10 @@ func TestAuthRequiredInvalidApikey(t *testing.T) {
 	c, dbs := mockDbContext(&user)
 	dbs.Mock.On("GetUser", user.Email).Return(&user, nil)
 
-	ac := AuthContext{}
-	ac.Context = &c
+	ac := new(AuthContext)
+	ac.Context = c
 
-	(*AuthContext).AuthRequired(&ac, rw, req, next.Next)
+	(*AuthContext).AuthRequired(ac, rw, req, next.Next)
 
 	next.Mock.AssertNotCalled(t, "Next", rw, req)
 	dbs.Mock.AssertCalled(t, "GetUser", user.Email)
