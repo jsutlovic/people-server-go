@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 )
 
 func newTestUser() *User {
@@ -88,12 +89,13 @@ func mockAuthContext(user *User) (*AuthContext, *MockDbService) {
 	return ac, dbs
 }
 
-func mockHandlerParams(method string) (web.ResponseWriter, *web.Request, *httptest.ResponseRecorder) {
+func mockHandlerParams(method, content string) (web.ResponseWriter, *web.Request, *httptest.ResponseRecorder) {
 	recorder := httptest.NewRecorder()
 	rw := new(web.AppResponseWriter)
 	rw.ResponseWriter = recorder
 
-	fakeRequest, err := http.NewRequest(method, "http://example.com/", nil)
+	buf := strings.NewReader(content)
+	fakeRequest, err := http.NewRequest(method, "http://example.com/", buf)
 	if err != nil {
 		panic(err)
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 func TestGetUserApi(t *testing.T) {
-	rw, req, rec := mockHandlerParams("GET")
+	rw, req, rec := mockHandlerParams("GET", "")
 
 	user := newTestUser()
 
