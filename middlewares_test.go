@@ -68,21 +68,6 @@ func mockDbContext(user *User) (Context, *MockDbService) {
 	return c, dbs
 }
 
-func newTestUser() User {
-	// Create a fake user
-	user := User{
-		1,
-		"test@example.com",
-		"",
-		"Test User",
-		true,
-		false,
-		"abcdefg",
-	}
-
-	return user
-}
-
 func TestDbMiddleware(t *testing.T) {
 	// Get our mock service
 	dbs := new(MockDbService)
