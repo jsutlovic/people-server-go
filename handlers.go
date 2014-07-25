@@ -55,6 +55,8 @@ func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 
 /*
 Handler for the GET User API
+
+Returns a JSON representation of the currently authenticated User
 */
 func (c *AuthContext) GetUserApi(rw web.ResponseWriter, req *web.Request) {
 	fmt.Fprint(rw, Jsonify(c.User))
