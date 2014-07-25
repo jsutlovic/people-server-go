@@ -33,10 +33,10 @@ func (m *MockDbService) GetUser(email string) (user *User, err error) {
 	return nil, args.Error(1)
 }
 
-func mockMiddlewareParams() (*web.AppResponseWriter, *web.Request, *MockNext, *httptest.ResponseRecorder) {
+func mockMiddlewareParams() (web.ResponseWriter, *web.Request, *MockNext, *httptest.ResponseRecorder) {
 	// Build the ResponseRecorder
 	recorder := httptest.NewRecorder()
-	rw := web.AppResponseWriter{}
+	rw := new(web.AppResponseWriter)
 	rw.ResponseWriter = recorder
 
 	// Build the request
@@ -51,9 +51,9 @@ func mockMiddlewareParams() (*web.AppResponseWriter, *web.Request, *MockNext, *h
 	next := new(MockNext)
 
 	// Setup expecations for Next
-	next.Mock.On("Next", &rw, &req).Return()
+	next.Mock.On("Next", rw, &req).Return()
 
-	return &rw, &req, next, recorder
+	return rw, &req, next, recorder
 }
 
 func mockDbContext(user *User) (Context, *MockDbService) {
