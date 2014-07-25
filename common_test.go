@@ -83,6 +83,7 @@ func mockAuthContext(user *User) (*AuthContext, *MockDbService) {
 
 	ac := new(AuthContext)
 	ac.Context = c
+	ac.User = user
 
 	return ac, dbs
 }
