@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/gocraft/web"
-	"log"
 	"net/http"
 )
 
@@ -39,16 +38,11 @@ func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 	email := emails[0]
 	password := passwords[0]
 
-	log.Println(email)
-	log.Print(password)
-
 	user, err := c.DB.GetUser(email)
 	authed := err == nil && user != nil && user.IsActive && user.CheckPassword(password)
 	if authed {
-		log.Println("Logged in!")
 		fmt.Fprint(rw, Jsonify(user))
 	} else {
-		log.Printf("Could not log in: %v", err)
 		http.Error(rw, InvalidCredentials, http.StatusForbidden)
 	}
 }
