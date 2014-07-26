@@ -6,7 +6,11 @@ import (
 	"net/http"
 )
 
-const InvalidCredentials = "INVALID CREDENTIALS"
+const (
+	InvalidCredentials = "Invalid credentials"
+	ParamsRequired     = "Email and password are required"
+	InactiveUser       = "User disabled"
+)
 
 func (c *Context) Index(rw web.ResponseWriter, req *web.Request) {
 	fmt.Fprint(rw, "Welcome to People!")
@@ -31,7 +35,7 @@ func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 	if !(email_ok && password_ok) {
 		status := http.StatusBadRequest
 		rw.WriteHeader(status)
-		fmt.Fprint(rw, "Email and password are required")
+		fmt.Fprint(rw, ParamsRequired)
 		return
 	}
 
@@ -39,9 +43,13 @@ func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 	password := passwords[0]
 
 	user, err := c.DB.GetUser(email)
-	authed := err == nil && user != nil && user.IsActive && user.CheckPassword(password)
+	authed := err == nil && user != nil && user.CheckPassword(password)
 	if authed {
-		fmt.Fprint(rw, Jsonify(user))
+		if user.IsActive {
+			fmt.Fprint(rw, Jsonify(user))
+		} else {
+			http.Error(rw, "User disabled", http.StatusForbidden)
+		}
 	} else {
 		http.Error(rw, InvalidCredentials, http.StatusForbidden)
 	}
