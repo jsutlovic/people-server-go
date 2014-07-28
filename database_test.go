@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/stretchr/testify/assert"
+	"reflect"
 	"testing"
 )
 
@@ -54,4 +55,35 @@ func TestUserCheckApiKey(t *testing.T) {
 		assert.False(t, user.CheckApiKey(lastInput))
 		lastInput = apikey
 	}
+}
+
+func TestUserJsonTags(t *testing.T) {
+	u := User{}
+	userType := reflect.TypeOf(u)
+
+	fieldCount := userType.NumField()
+	idField, idExists := userType.FieldByName("Id")
+	emailField, emailExists := userType.FieldByName("Email")
+	pwField, pwExists := userType.FieldByName("Pwhash")
+	nameField, nameExists := userType.FieldByName("Name")
+	activeField, activeExists := userType.FieldByName("IsActive")
+	superField, superExists := userType.FieldByName("IsSuperuser")
+	apikeyField, apikeyExists := userType.FieldByName("ApiKey")
+
+	assert.Equal(t, fieldCount, 7)
+	assert.True(t, idExists)
+	assert.True(t, emailExists)
+	assert.True(t, pwExists)
+	assert.True(t, nameExists)
+	assert.True(t, activeExists)
+	assert.True(t, activeExists)
+	assert.True(t, superExists)
+	assert.True(t, apikeyExists)
+	assert.Equal(t, idField.Tag.Get("json"), "id")
+	assert.Equal(t, emailField.Tag.Get("json"), "email")
+	assert.Equal(t, pwField.Tag.Get("json"), "-")
+	assert.Equal(t, nameField.Tag.Get("json"), "name")
+	assert.Equal(t, activeField.Tag.Get("json"), "is_active")
+	assert.Equal(t, superField.Tag.Get("json"), "is_superuser")
+	assert.Equal(t, apikeyField.Tag.Get("json"), "api_key")
 }
