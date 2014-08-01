@@ -63,3 +63,18 @@ func (c *AuthContext) GetUserApi(rw web.ResponseWriter, req *web.Request) {
 	rw.Header().Set("Content-Type", JsonContentType)
 	fmt.Fprint(rw, Jsonify(c.User))
 }
+
+/*
+Handler for the POST User API
+
+Takes a JSON representation of a user and creates an account for it
+If a duplicate email is found, return 409 Conflict
+Otherwise, if creation is successful return 201 Created
+*/
+func (c *Context) CreateUserApi(rw web.ResponseWriter, req *web.Request) {
+	ct, ctok := req.Header["Content-Type"]
+	if !ctok || len(ct) < 1 || (len(ct) >= 1 && ct[0] != "application/json") {
+		http.Error(rw, JsonContentTypeError, http.StatusBadRequest)
+		return
+	}
+}
