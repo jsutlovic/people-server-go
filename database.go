@@ -24,9 +24,9 @@ type pgDbService struct {
 	db *sqlx.DB
 }
 
-func NewPgDbService() *pgDbService {
+func NewPgDbService(dbType, creds string) *pgDbService {
 	s := new(pgDbService)
-	s.dbInit()
+	s.dbInit(dbType, creds)
 	return s
 }
 
@@ -38,8 +38,8 @@ This must be called before any database calls can happen
 Eventually, this should parse a given config file rather than using
 hardcoded values
 */
-func (s *pgDbService) dbInit() {
-	s.db = sqlx.MustConnect("postgres", "user=vagrant dbname=people host=/var/run/postgresql sslmode=disable application_name=people-go")
+func (s *pgDbService) dbInit(dbType, creds string) {
+	s.db = sqlx.MustConnect(dbType, creds)
 }
 
 /*

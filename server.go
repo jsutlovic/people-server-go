@@ -17,7 +17,7 @@ type AuthContext struct {
 }
 
 func main() {
-	dbService := NewPgDbService()
+	dbService := NewPgDbService("postgres", "user=vagrant dbname=people host=/var/run/postgresql sslmode=disable application_name=people-go")
 
 	rootRouter := web.New(Context{})
 	rootRouter.Middleware(web.LoggerMiddleware)
