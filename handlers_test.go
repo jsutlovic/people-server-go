@@ -220,3 +220,28 @@ func TestCreateUserApiBadJson(t *testing.T) {
 		assert.Equal(t, rec.Body.String(), InvalidUserDataError+"\n")
 	}
 }
+
+func TestCreateUserApiMalformedJson(t *testing.T) {
+	malformed := []string{
+		"",
+		"asdf",
+		"email=test@example.com",
+		"email=test@example.com&name=Test+User",
+		"email=test@example.com&password=asdf",
+		"email:test@example.com",
+		`"email":"test@example.com"`,
+		`"email":"test@example.com","password":"asdf"`,
+		`"email":"test@example.com","name":"Test User"`,
+	}
+
+	for _, data := range malformed {
+		rw, req, rec := mockHandlerParams("POST", "application/json", data)
+
+		c, _ := mockDbContext(nil)
+
+		(*Context).CreateUserApi(c, rw, req)
+
+		assert.Equal(t, rec.Code, http.StatusBadRequest)
+		assert.Equal(t, rec.Body.String(), JsonMalformedError+"\n")
+	}
+}

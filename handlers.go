@@ -12,6 +12,7 @@ const (
 	InactiveUser         = "User disabled"
 	JsonContentType      = "application/json"
 	JsonContentTypeError = "Content-Type is not JSON"
+	JsonMalformedError   = "Malformed JSON"
 	InvalidUserDataError = "Invalid User data"
 )
 
