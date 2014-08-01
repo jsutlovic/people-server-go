@@ -7,9 +7,11 @@ import (
 )
 
 const (
-	InvalidCredentials = "Invalid credentials"
-	ParamsRequired     = "Email and password are required"
-	InactiveUser       = "User disabled"
+	InvalidCredentials   = "Invalid credentials"
+	ParamsRequired       = "Email and password are required"
+	InactiveUser         = "User disabled"
+	JsonContentType      = "application/json"
+	JsonContentTypeError = "Content-Type is not JSON"
 )
 
 /*
@@ -42,7 +44,7 @@ func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 	authed := err == nil && user != nil && user.CheckPassword(password)
 	if authed {
 		if user.IsActive {
-			rw.Header().Set("Content-Type", "application/json")
+			rw.Header().Set("Content-Type", JsonContentType)
 			fmt.Fprint(rw, Jsonify(user))
 		} else {
 			http.Error(rw, "User disabled", http.StatusForbidden)
@@ -58,6 +60,6 @@ Handler for the GET User API
 Returns a JSON representation of the currently authenticated User
 */
 func (c *AuthContext) GetUserApi(rw web.ResponseWriter, req *web.Request) {
-	rw.Header().Set("Content-Type", "application/json")
+	rw.Header().Set("Content-Type", JsonContentType)
 	fmt.Fprint(rw, Jsonify(c.User))
 }
