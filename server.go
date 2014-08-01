@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gocraft/web"
 	"net/http"
 )
@@ -34,5 +35,6 @@ func main() {
 	apiRouter.Middleware((*AuthContext).AuthRequired)
 	apiRouter.Get("/user", (*AuthContext).GetUserApi)
 
+	fmt.Println("Starting server")
 	http.ListenAndServe("0.0.0.0:3000", rootRouter)
 }
