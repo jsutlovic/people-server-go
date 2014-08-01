@@ -42,6 +42,7 @@ func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 	authed := err == nil && user != nil && user.CheckPassword(password)
 	if authed {
 		if user.IsActive {
+			rw.Header().Set("Content-Type", "application/json")
 			fmt.Fprint(rw, Jsonify(user))
 		} else {
 			http.Error(rw, "User disabled", http.StatusForbidden)
@@ -57,5 +58,6 @@ Handler for the GET User API
 Returns a JSON representation of the currently authenticated User
 */
 func (c *AuthContext) GetUserApi(rw web.ResponseWriter, req *web.Request) {
+	rw.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(rw, Jsonify(c.User))
 }

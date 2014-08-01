@@ -20,6 +20,12 @@ func TestGetUserApi(t *testing.T) {
 
 	assert.Equal(t, rec.Code, http.StatusOK)
 	assert.Equal(t, rec.Body.String(), Jsonify(user))
+
+	ct, ctok := rec.HeaderMap["Content-Type"]
+	if !assert.True(t, ctok, "No Content-Type header") {
+		return
+	}
+	assert.Equal(t, ct[0], "application/json")
 }
 
 func TestApiAuth(t *testing.T) {
@@ -47,6 +53,12 @@ func TestApiAuth(t *testing.T) {
 	dbs.Mock.AssertCalled(t, "GetUser", user.Email)
 	assert.Equal(t, rec.Code, http.StatusOK)
 	assert.Equal(t, rec.Body.String(), Jsonify(user))
+
+	ct, ctok := rec.HeaderMap["Content-Type"]
+	if !assert.True(t, ctok, "No Content-Type header") {
+		return
+	}
+	assert.Equal(t, ct[0], "application/json")
 }
 
 func TestApiAuthInvalidForm(t *testing.T) {
