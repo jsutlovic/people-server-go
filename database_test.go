@@ -57,20 +57,20 @@ func TestUserCheckApiKey(t *testing.T) {
 	}
 }
 
-func TestUserJsonTags(t *testing.T) {
+func TestUserFields(t *testing.T) {
 	u := User{}
 	userType := reflect.TypeOf(u)
 
 	fieldCount := userType.NumField()
-	idField, idExists := userType.FieldByName("Id")
-	emailField, emailExists := userType.FieldByName("Email")
-	pwField, pwExists := userType.FieldByName("Pwhash")
-	nameField, nameExists := userType.FieldByName("Name")
-	activeField, activeExists := userType.FieldByName("IsActive")
-	superField, superExists := userType.FieldByName("IsSuperuser")
-	apikeyField, apikeyExists := userType.FieldByName("ApiKey")
-
 	assert.Equal(t, fieldCount, 7)
+	_, idExists := userType.FieldByName("Id")
+	_, emailExists := userType.FieldByName("Email")
+	_, pwExists := userType.FieldByName("Pwhash")
+	_, nameExists := userType.FieldByName("Name")
+	_, activeExists := userType.FieldByName("IsActive")
+	_, superExists := userType.FieldByName("IsSuperuser")
+	_, apikeyExists := userType.FieldByName("ApiKey")
+
 	assert.True(t, idExists)
 	assert.True(t, emailExists)
 	assert.True(t, pwExists)
@@ -79,6 +79,20 @@ func TestUserJsonTags(t *testing.T) {
 	assert.True(t, activeExists)
 	assert.True(t, superExists)
 	assert.True(t, apikeyExists)
+}
+
+func TestUserJsonTags(t *testing.T) {
+	u := User{}
+	userType := reflect.TypeOf(u)
+
+	idField, _ := userType.FieldByName("Id")
+	emailField, _ := userType.FieldByName("Email")
+	pwField, _ := userType.FieldByName("Pwhash")
+	nameField, _ := userType.FieldByName("Name")
+	activeField, _ := userType.FieldByName("IsActive")
+	superField, _ := userType.FieldByName("IsSuperuser")
+	apikeyField, _ := userType.FieldByName("ApiKey")
+
 	assert.Equal(t, idField.Tag.Get("json"), "id")
 	assert.Equal(t, emailField.Tag.Get("json"), "email")
 	assert.Equal(t, pwField.Tag.Get("json"), "-")
@@ -86,4 +100,25 @@ func TestUserJsonTags(t *testing.T) {
 	assert.Equal(t, activeField.Tag.Get("json"), "is_active")
 	assert.Equal(t, superField.Tag.Get("json"), "is_superuser")
 	assert.Equal(t, apikeyField.Tag.Get("json"), "api_key")
+}
+
+func TestUserDbTags(t *testing.T) {
+	u := User{}
+	userType := reflect.TypeOf(u)
+
+	idField, _ := userType.FieldByName("Id")
+	emailField, _ := userType.FieldByName("Email")
+	pwField, _ := userType.FieldByName("Pwhash")
+	nameField, _ := userType.FieldByName("Name")
+	activeField, _ := userType.FieldByName("IsActive")
+	superField, _ := userType.FieldByName("IsSuperuser")
+	apikeyField, _ := userType.FieldByName("ApiKey")
+
+	assert.Equal(t, idField.Tag.Get("db"), "")
+	assert.Equal(t, emailField.Tag.Get("db"), "")
+	assert.Equal(t, pwField.Tag.Get("db"), "")
+	assert.Equal(t, nameField.Tag.Get("db"), "")
+	assert.Equal(t, activeField.Tag.Get("db"), "is_active")
+	assert.Equal(t, superField.Tag.Get("db"), "is_superuser")
+	assert.Equal(t, apikeyField.Tag.Get("db"), "apikey")
 }
