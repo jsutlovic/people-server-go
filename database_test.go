@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -121,4 +123,46 @@ func TestUserDbTags(t *testing.T) {
 	assert.Equal(t, activeField.Tag.Get("db"), "is_active")
 	assert.Equal(t, superField.Tag.Get("db"), "is_superuser")
 	assert.Equal(t, apikeyField.Tag.Get("db"), "apikey")
+}
+
+func TestGetUser(t *testing.T) {
+	pgdbs := NewPgDbService("mock", "")
+
+	userEmail := "test@example.com"
+	cols := []string{"id", "email", "pwhash", "name", "is_active", "is_superuser", "apikey"}
+	data := "1,test@example.com,,Test User,true,false,abcdefg"
+
+	sqlmock.ExpectQuery(`SELECT \* FROM "user" WHERE email=?`).
+		WithArgs(userEmail).
+		WillReturnRows(sqlmock.NewRows(cols).FromCSVString(data))
+
+	u, err := pgdbs.GetUser(userEmail)
+	if !assert.Nil(t, err, "Query should not error") {
+		return
+	}
+
+	if !assert.NotNil(t, u, "User should not be nil") {
+		return
+	}
+
+	assert.Equal(t, u.Email, userEmail)
+}
+
+func TestGetUserError(t *testing.T) {
+	pgdbs := NewPgDbService("mock", "")
+
+	userEmail := "test2@example.com"
+
+	sqlmock.ExpectQuery(`SELECT \* FROM "user" WHERE email=?`).
+		WithArgs(userEmail).
+		WillReturnError(errors.New("Could not find user"))
+
+	u, err := pgdbs.GetUser(userEmail)
+	if !assert.Nil(t, u, "User should be nil") {
+		return
+	}
+
+	if !assert.NotNil(t, err, "Should have an error") {
+		return
+	}
 }

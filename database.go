@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	_ "database/sql"
+	_ "github.com/DATA-DOG/go-sqlmock"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 
