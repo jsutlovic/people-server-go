@@ -2,6 +2,7 @@ package main
 
 import (
 	"code.google.com/p/go.crypto/bcrypt"
+	"encoding/json"
 	"errors"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -175,4 +176,47 @@ func TestCreateUserApiJsonOnly(t *testing.T) {
 
 	assert.Equal(t, rec.Code, http.StatusBadRequest)
 	assert.Equal(t, rec.Body.String(), JsonContentTypeError+"\n")
+}
+
+// CreateUserApi does not allow invalid/malformed JSON
+func TestCreateUserApiBadJson(t *testing.T) {
+	badformats := []map[string]string{
+		map[string]string{
+			"user": "test@example.com",
+		},
+		map[string]string{
+			"email": "test@example.com",
+		},
+		map[string]string{
+			"email": "test@example.com",
+			"name":  "Test User",
+		},
+		map[string]string{
+			"email":    "test@example.com",
+			"password": "asdf",
+		},
+		map[string]string{
+			"password": "asdf",
+			"name":     "Test User",
+		},
+		map[string]string{},
+		map[string]string{
+			"username": "testuser",
+		},
+	}
+
+	for _, data := range badformats {
+		jsonBytes, err := json.Marshal(data)
+		if err != nil {
+			t.Error(err)
+		}
+		rw, req, rec := mockHandlerParams("POST", "application/json", string(jsonBytes))
+
+		c, _ := mockDbContext(nil)
+
+		(*Context).CreateUserApi(c, rw, req)
+
+		assert.Equal(t, rec.Code, http.StatusBadRequest)
+		assert.Equal(t, rec.Body.String(), InvalidUserDataError+"\n")
+	}
 }
