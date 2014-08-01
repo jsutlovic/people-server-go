@@ -164,3 +164,15 @@ func TestApiAuthInactiveUser(t *testing.T) {
 	assert.Equal(t, rec.Code, http.StatusForbidden)
 	assert.Equal(t, rec.Body.String(), InactiveUser+"\n")
 }
+
+// CreateUserApi allows only JSON data
+func TestCreateUserApiJsonOnly(t *testing.T) {
+	rw, req, rec := mockHandlerParams("POST", "application/x-www-form-urlencode", "")
+
+	c, _ := mockDbContext(nil)
+
+	(*Context).CreateUserApi(c, rw, req)
+
+	assert.Equal(t, rec.Code, http.StatusBadRequest)
+	assert.Equal(t, rec.Body.String(), JsonContentTypeError+"\n")
+}
