@@ -12,10 +12,6 @@ const (
 	InactiveUser       = "User disabled"
 )
 
-func (c *Context) Index(rw web.ResponseWriter, req *web.Request) {
-	fmt.Fprint(rw, "Welcome to People!")
-}
-
 /*
 Handler to authenticate a user.
 

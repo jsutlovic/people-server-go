@@ -25,9 +25,6 @@ func main() {
 	rootRouter.Middleware(web.ShowErrorsMiddleware)
 	rootRouter.Middleware(DbMiddleware(dbService))
 
-	plainRouter := rootRouter.Subrouter(AuthContext{}, "")
-	plainRouter.Get("/", (*AuthContext).Index)
-
 	authRouter := rootRouter.Subrouter(Context{}, "")
 	authRouter.Post("/auth", (*Context).ApiAuth)
 
