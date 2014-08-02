@@ -209,8 +209,9 @@ func TestCreateUserApiInvalidUserDataJson(t *testing.T) {
 		jsonBytes, err := json.Marshal(data)
 		if err != nil {
 			t.Error(err)
+			return
 		}
-		rw, req, rec := mockHandlerParams("POST", "application/json", string(jsonBytes))
+		rw, req, rec := mockHandlerParams("POST", JsonContentType, string(jsonBytes))
 
 		c, _ := mockDbContext(nil)
 
@@ -235,7 +236,7 @@ func TestCreateUserApiMalformedJson(t *testing.T) {
 	}
 
 	for _, data := range malformed {
-		rw, req, rec := mockHandlerParams("POST", "application/json", data)
+		rw, req, rec := mockHandlerParams("POST", JsonContentType, data)
 
 		c, _ := mockDbContext(nil)
 
