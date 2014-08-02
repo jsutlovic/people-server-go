@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gocraft/web"
 	"net/http"
@@ -66,6 +67,12 @@ func (c *AuthContext) GetUserApi(rw web.ResponseWriter, req *web.Request) {
 	fmt.Fprint(rw, Jsonify(c.User))
 }
 
+type UserCreate struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Name     string `json:"name"`
+}
+
 /*
 Handler for the POST User API
 
@@ -78,5 +85,17 @@ func (c *Context) CreateUserApi(rw web.ResponseWriter, req *web.Request) {
 	if !ctok || len(ct) < 1 || (len(ct) >= 1 && ct[0] != "application/json") {
 		http.Error(rw, JsonContentTypeError, http.StatusBadRequest)
 		return
+	}
+
+	dec := json.NewDecoder(req.Body)
+	var newUser UserCreate
+	err := dec.Decode(&newUser)
+	if err != nil {
+		http.Error(rw, JsonMalformedError, http.StatusBadRequest)
+		return
+	}
+
+	if newUser.Email == "" || newUser.Password == "" || newUser.Name == "" {
+		http.Error(rw, InvalidUserDataError, http.StatusBadRequest)
 	}
 }
