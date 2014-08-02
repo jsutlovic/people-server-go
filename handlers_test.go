@@ -179,7 +179,7 @@ func TestCreateUserApiJsonOnly(t *testing.T) {
 }
 
 // CreateUserApi does not allow invalid/malformed JSON
-func TestCreateUserApiBadJson(t *testing.T) {
+func TestCreateUserApiInvalidUserDataJson(t *testing.T) {
 	badformats := []map[string]string{
 		map[string]string{
 			"user": "test@example.com",
