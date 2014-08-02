@@ -100,4 +100,9 @@ func (c *Context) CreateUserApi(rw web.ResponseWriter, req *web.Request) {
 		http.Error(rw, InvalidUserDataError, http.StatusBadRequest)
 		return
 	}
+
+	if existing, _ := c.DB.GetUser(newUser.Email); existing != nil {
+		http.Error(rw, UserExistsError, http.StatusConflict)
+		return
+	}
 }
