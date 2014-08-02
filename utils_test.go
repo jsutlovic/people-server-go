@@ -49,3 +49,24 @@ func TestCreatePassword(t *testing.T) {
 		}
 	}
 }
+
+func TestCreateApiKey(t *testing.T) {
+	// Create a number of keys
+	loops := 10
+	keys := make([]string, loops)
+
+	for i := 0; i < loops; i++ {
+		key := GenerateApiKey()
+
+		// Key length should be 40
+		assert.Len(t, key, 40)
+
+		// Previous keys should not match
+		for j := 0; j < i; j++ {
+			if !assert.NotEqual(t, keys[j], key) {
+				break
+			}
+		}
+		keys[i] = key
+	}
+}
