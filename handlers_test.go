@@ -246,3 +246,25 @@ func TestCreateUserApiMalformedJson(t *testing.T) {
 		assert.Equal(t, rec.Body.String(), JsonMalformedError+"\n")
 	}
 }
+
+func TestCreateUserApiUserExists(t *testing.T) {
+	newUser := UserCreate{"test@example.com", "asdf", "Test User"}
+	user := newTestUser()
+	user.Email = newUser.Email
+
+	jsonBytes, err := json.Marshal(newUser)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	rw, req, rec := mockHandlerParams("POST", JsonContentType, string(jsonBytes))
+
+	c, dbs := mockDbContext(user)
+
+	dbs.Mock.On("GetUser", user.Email).Return(user, nil)
+
+	(*Context).CreateUserApi(c, rw, req)
+
+	assert.Equal(t, rec.Code, http.StatusConflict)
+	assert.Equal(t, rec.Body.String(), UserExistsError+"\n")
+}

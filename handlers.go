@@ -15,6 +15,7 @@ const (
 	JsonContentTypeError = "Content-Type is not JSON"
 	JsonMalformedError   = "Malformed JSON"
 	InvalidUserDataError = "Invalid User data"
+	UserExistsError      = "User already exists"
 )
 
 /*
