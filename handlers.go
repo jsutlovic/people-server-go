@@ -88,7 +88,7 @@ func (c *Context) CreateUserApi(rw web.ResponseWriter, req *web.Request) {
 	}
 
 	dec := json.NewDecoder(req.Body)
-	var newUser UserCreate
+	newUser := new(UserCreate)
 	err := dec.Decode(&newUser)
 	if err != nil {
 		http.Error(rw, JsonMalformedError, http.StatusBadRequest)
