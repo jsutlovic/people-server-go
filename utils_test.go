@@ -7,7 +7,7 @@ import (
 
 func TestCreatePasswordCostTooLarge(t *testing.T) {
 	cost := 32
-	_, err := CreatePassword("asdf", cost)
+	_, err := GeneratePasswordHash("asdf", cost)
 
 	if !assert.NotNil(t, err, "Cost should error") {
 		t.Logf("Cost: %d", cost)
@@ -36,7 +36,7 @@ func TestCreatePassword(t *testing.T) {
 	user := new(User)
 
 	for _, password := range passwords {
-		hashed, err := CreatePassword(password, 4)
+		hashed, err := GeneratePasswordHash(password, 4)
 
 		if !assert.Nil(t, err, "Password should not error") {
 			break

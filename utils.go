@@ -18,7 +18,7 @@ func Jsonify(v interface{}) string {
 	return string(json_data)
 }
 
-func CreatePassword(password string, cost int) (string, error) {
+func GeneratePasswordHash(password string, cost int) (string, error) {
 	pwhash, err := bcrypt.GenerateFromPassword([]byte(password), cost)
 	if err != nil {
 		return "", err
