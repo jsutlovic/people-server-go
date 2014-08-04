@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/url"
+	"reflect"
 	"testing"
 )
 
@@ -166,6 +167,217 @@ func TestApiAuthInactiveUser(t *testing.T) {
 	assert.Equal(t, rec.Body.String(), InactiveUser+"\n")
 }
 
+func TestUserCreateFields(t *testing.T) {
+	uc := UserCreate{}
+	userCreateType := reflect.TypeOf(uc)
+
+	fieldCount := userCreateType.NumField()
+	assert.Equal(t, fieldCount, 4)
+
+	_, emailExists := userCreateType.FieldByName("Email")
+	_, passwordExists := userCreateType.FieldByName("Password")
+	_, nameExists := userCreateType.FieldByName("Name")
+	_, errorExists := userCreateType.FieldByName("errors")
+
+	assert.True(t, emailExists)
+	assert.True(t, passwordExists)
+	assert.True(t, nameExists)
+	assert.True(t, errorExists)
+}
+
+func TestUserCreateJsonTags(t *testing.T) {
+	uc := UserCreate{}
+	userCreateType := reflect.TypeOf(uc)
+
+	emailField, _ := userCreateType.FieldByName("Email")
+	passwordField, _ := userCreateType.FieldByName("Password")
+	nameField, _ := userCreateType.FieldByName("Name")
+	errorsField, _ := userCreateType.FieldByName("errors")
+
+	assert.Equal(t, emailField.Tag.Get("json"), "email")
+	assert.Equal(t, passwordField.Tag.Get("json"), "password")
+	assert.Equal(t, nameField.Tag.Get("json"), "name")
+	assert.Equal(t, errorsField.Tag.Get("json"), "-")
+}
+
+func TestUserCreateValidateCreatesNewErrors(t *testing.T) {
+	uc := UserCreate{}
+	uc.Validate()
+
+	firstErrors := uc.Errors()
+	secondErrors := uc.Errors()
+
+	assert.Equal(t, firstErrors, secondErrors)
+
+	uc.Email = "test@example.com"
+	uc.Validate()
+
+	thirdErrors := uc.Errors()
+	assert.NotEqual(t, firstErrors, thirdErrors)
+}
+
+func TestUserCreateValidate(t *testing.T) {
+	validateTests := []struct {
+		in     UserCreate
+		out    bool
+		errors UserErrors
+	}{
+		// Invalid
+		{
+			in:  UserCreate{"", "", "", nil},
+			out: false,
+			errors: UserErrors{
+				"email":    UserCreateEmailEmpty,
+				"password": UserCreatePasswordEmpty,
+				"name":     UserCreateNameEmpty,
+			},
+		},
+		{
+			in:  UserCreate{" ", " ", " ", nil},
+			out: false,
+			errors: UserErrors{
+				"email": UserCreateEmailEmpty,
+				"name":  UserCreateNameEmpty,
+			},
+		},
+		{
+			in:  UserCreate{"\t", "", "\t ", nil},
+			out: false,
+			errors: UserErrors{
+				"email":    UserCreateEmailEmpty,
+				"password": UserCreatePasswordEmpty,
+				"name":     UserCreateNameEmpty,
+			},
+		},
+		{
+			in:  UserCreate{" \n\r ", "", "\r\n ", nil},
+			out: false,
+			errors: UserErrors{
+				"email":    UserCreateEmailEmpty,
+				"password": UserCreatePasswordEmpty,
+				"name":     UserCreateNameEmpty,
+			},
+		},
+		{
+			in:  UserCreate{" \n\t\r ", "", "\r\n ", nil},
+			out: false,
+			errors: UserErrors{
+				"email":    UserCreateEmailEmpty,
+				"password": UserCreatePasswordEmpty,
+				"name":     UserCreateNameEmpty,
+			},
+		},
+		{
+			in:  UserCreate{"test@example.com", "", "", nil},
+			out: false,
+			errors: UserErrors{
+				"password": UserCreatePasswordEmpty,
+				"name":     UserCreateNameEmpty,
+			},
+		},
+		{
+			in:  UserCreate{"", "asdf", "", nil},
+			out: false,
+			errors: UserErrors{
+				"email": UserCreateEmailEmpty,
+				"name":  UserCreateNameEmpty,
+			},
+		},
+		{
+			in:  UserCreate{"", "", "Test User", nil},
+			out: false,
+			errors: UserErrors{
+				"email":    UserCreateEmailEmpty,
+				"password": UserCreatePasswordEmpty,
+			},
+		},
+		{
+			in:  UserCreate{"test@example.com", "asdf", "", nil},
+			out: false,
+			errors: UserErrors{
+				"name": UserCreateNameEmpty,
+			},
+		},
+		{
+			in:  UserCreate{"", "asdf", "Test User", nil},
+			out: false,
+			errors: UserErrors{
+				"email": UserCreateEmailEmpty,
+			},
+		},
+		{
+			in:  UserCreate{"test@example.com", "", "Test User", nil},
+			out: false,
+			errors: UserErrors{
+				"password": UserCreatePasswordEmpty,
+			},
+		},
+		{
+			in:  UserCreate{"test@example.com", "asd", "Test User", nil},
+			out: false,
+			errors: UserErrors{
+				"password": UserCreatePasswordLength,
+			},
+		},
+		{
+			in:  UserCreate{"test", "asdf", "Test User", nil},
+			out: false,
+			errors: UserErrors{
+				"email": UserCreateInvalidEmail,
+			},
+		},
+		{
+			in:  UserCreate{"test@example", "asdf", "Test User", nil},
+			out: false,
+			errors: UserErrors{
+				"email": UserCreateInvalidEmail,
+			},
+		},
+		{
+			in:  UserCreate{"@example", "asdf", "Test User", nil},
+			out: false,
+			errors: UserErrors{
+				"email": UserCreateInvalidEmail,
+			},
+		},
+		{
+			in:  UserCreate{"@example.com", "asdf", "Test User", nil},
+			out: false,
+			errors: UserErrors{
+				"email": UserCreateInvalidEmail,
+			},
+		},
+		{
+			in:  UserCreate{"@example.co.uk", "asdf", "Test User", nil},
+			out: false,
+			errors: UserErrors{
+				"email": UserCreateInvalidEmail,
+			},
+		},
+		{
+			in:  UserCreate{"example.com", "asdf", "Test User", nil},
+			out: false,
+			errors: UserErrors{
+				"email": UserCreateInvalidEmail,
+			},
+		},
+
+		// Valid
+		{
+			in:     UserCreate{"test@example.com", "asdf", "Test User", nil},
+			out:    true,
+			errors: UserErrors{},
+		},
+	}
+
+	for _, test := range validateTests {
+		actualValid := test.in.Validate()
+
+		assert.Equal(t, actualValid, test.out)
+		assert.Equal(t, test.in.Errors(), test.errors)
+	}
+}
+
 // CreateUserApi allows only JSON data
 func TestCreateUserApiJsonOnly(t *testing.T) {
 	rw, req, rec := mockHandlerParams("POST", "application/x-www-form-urlencode", "")
@@ -248,7 +460,7 @@ func TestCreateUserApiMalformedJson(t *testing.T) {
 }
 
 func TestCreateUserApiUserExists(t *testing.T) {
-	newUser := UserCreate{"test@example.com", "asdf", "Test User"}
+	newUser := UserCreate{"test@example.com", "asdf", "Test User", map[string]string{}}
 	user := newTestUser()
 	user.Email = newUser.Email
 
