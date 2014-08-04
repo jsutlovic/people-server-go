@@ -361,6 +361,35 @@ func TestUserCreateValidate(t *testing.T) {
 				"email": UserCreateInvalidEmail,
 			},
 		},
+		{
+			in:  UserCreate{"test@example", "a", "Test User", nil},
+			out: false,
+			errors: UserErrors{
+				"email":    UserCreateInvalidEmail,
+				"password": UserCreatePasswordLength,
+			},
+		},
+		{
+			in:  UserCreate{"test@example", "a", "", nil},
+			out: false,
+			errors: UserErrors{
+				"name": UserCreateNameEmpty,
+			},
+		},
+		{
+			in:  UserCreate{"", "a", "Test User", nil},
+			out: false,
+			errors: UserErrors{
+				"email": UserCreateEmailEmpty,
+			},
+		},
+		{
+			in:  UserCreate{"test@example", "", "Test User", nil},
+			out: false,
+			errors: UserErrors{
+				"password": UserCreatePasswordEmpty,
+			},
+		},
 
 		// Valid
 		{
