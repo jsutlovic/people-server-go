@@ -173,4 +173,18 @@ func (c *Context) CreateUserApi(rw web.ResponseWriter, req *web.Request) {
 		http.Error(rw, UserExistsError, http.StatusConflict)
 		return
 	}
+
+	user, err := c.DB.CreateUser(
+		newUser.Email,
+		GeneratePasswordHash(newUser.Password, c.DB.PasswordCost()),
+		newUser.Name,
+		GenerateApiKey())
+
+	if err != nil {
+		http.Error(rw, UserCreateError, http.StatusInternalServerError)
+		return
+	}
+
+	rw.Header().Set("Content-Type", JsonContentType)
+	fmt.Fprint(rw, Jsonify(user))
 }
