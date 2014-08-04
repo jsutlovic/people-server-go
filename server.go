@@ -28,6 +28,9 @@ func main() {
 	authRouter := rootRouter.Subrouter(Context{}, "")
 	authRouter.Post("/auth", (*Context).ApiAuth)
 
+	createUserRouter := rootRouter.Subrouter(Context{}, "")
+	createUserRouter.Post("/api/user", (*Context).CreateUserApi)
+
 	apiRouter := rootRouter.Subrouter(AuthContext{}, "/api")
 	apiRouter.Middleware((*AuthContext).AuthRequired)
 	apiRouter.Get("/user", (*AuthContext).GetUserApi)
