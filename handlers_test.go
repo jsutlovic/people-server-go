@@ -392,45 +392,95 @@ func TestCreateUserApiJsonOnly(t *testing.T) {
 
 // CreateUserApi does not allow invalid/malformed JSON
 func TestCreateUserApiInvalidUserDataJson(t *testing.T) {
-	badformats := []map[string]string{
-		map[string]string{
-			"user": "test@example.com",
+	badformats := []struct {
+		in  map[string]string
+		out map[string]string
+	}{
+		{
+			in: map[string]string{
+				"user": "test@example.com",
+			},
+			out: map[string]string{
+				"email":    UserCreateEmailEmpty,
+				"password": UserCreatePasswordEmpty,
+				"name":     UserCreateNameEmpty,
+			},
 		},
-		map[string]string{
-			"email": "test@example.com",
+		{
+			in: map[string]string{
+				"email": "test@example.com",
+			},
+			out: map[string]string{
+				"password": UserCreatePasswordEmpty,
+				"name":     UserCreateNameEmpty,
+			},
 		},
-		map[string]string{
-			"email": "test@example.com",
-			"name":  "Test User",
+		{
+			in: map[string]string{
+				"email": "test@example.com",
+				"name":  "Test User",
+			},
+			out: map[string]string{
+				"password": UserCreatePasswordEmpty,
+			},
 		},
-		map[string]string{
-			"email":    "test@example.com",
-			"password": "asdf",
+		{
+			in: map[string]string{
+				"email":    "test@example.com",
+				"password": "asdf",
+			},
+			out: map[string]string{
+				"name": UserCreateNameEmpty,
+			},
 		},
-		map[string]string{
-			"password": "asdf",
-			"name":     "Test User",
+		{
+			in: map[string]string{
+				"password": "asdf",
+				"name":     "Test User",
+			},
+			out: map[string]string{
+				"email": UserCreateEmailEmpty,
+			},
 		},
-		map[string]string{},
-		map[string]string{
-			"username": "testuser",
+		{
+			in: map[string]string{},
+			out: map[string]string{
+				"email":    UserCreateEmailEmpty,
+				"password": UserCreatePasswordEmpty,
+				"name":     UserCreateNameEmpty,
+			},
+		},
+		{
+			in: map[string]string{
+				"username": "testuser",
+			},
+			out: map[string]string{
+				"email":    UserCreateEmailEmpty,
+				"password": UserCreatePasswordEmpty,
+				"name":     UserCreateNameEmpty,
+			},
 		},
 	}
 
-	for _, data := range badformats {
-		jsonBytes, err := json.Marshal(data)
+	for _, test := range badformats {
+		inputBytes, err := json.Marshal(test.in)
 		if err != nil {
 			t.Error(err)
 			return
 		}
-		rw, req, rec := mockHandlerParams("POST", JsonContentType, string(jsonBytes))
+
+		rw, req, rec := mockHandlerParams("POST", JsonContentType, string(inputBytes))
 
 		c, _ := mockDbContext(nil)
 
 		(*Context).CreateUserApi(c, rw, req)
 
 		assert.Equal(t, rec.Code, http.StatusBadRequest)
-		assert.Equal(t, rec.Body.String(), InvalidUserDataError+"\n")
+
+		dec := json.NewDecoder(rec.Body)
+		var actualOutJson map[string]string
+		dec.Decode(&actualOutJson)
+		assert.Equal(t, actualOutJson, test.out)
 	}
 }
 
