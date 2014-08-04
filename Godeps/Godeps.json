@@ -3,6 +3,11 @@
 	"GoVersion": "go1.2.1",
 	"Deps": [
 		{
+			"ImportPath": "code.google.com/p/go-uuid/uuid",
+			"Comment": "null-12",
+			"Rev": "7dda39b2e7d5e265014674c5af696ba4186679e9"
+		},
+		{
 			"ImportPath": "code.google.com/p/go.crypto/bcrypt",
 			"Comment": "null-213",
 			"Rev": "aa2644fe4aa50e3b38d75187b4799b1f0c9ddcef"
@@ -11,6 +16,10 @@
 			"ImportPath": "code.google.com/p/go.crypto/blowfish",
 			"Comment": "null-213",
 			"Rev": "aa2644fe4aa50e3b38d75187b4799b1f0c9ddcef"
+		},
+		{
+			"ImportPath": "github.com/DATA-DOG/go-sqlmock",
+			"Rev": "4c6f0e69c36ab40d4cc7754465dca350ca7f0ce2"
 		},
 		{
 			"ImportPath": "github.com/gocraft/web",
@@ -25,7 +34,15 @@
 			"Rev": "529edd91735bdd4b3cc61dcb9ed82cd8ddb616c4"
 		},
 		{
+			"ImportPath": "github.com/stretchr/objx",
+			"Rev": "cbeaeb16a013161a98496fad62933b1d21786672"
+		},
+		{
 			"ImportPath": "github.com/stretchr/testify/assert",
+			"Rev": "ed6ea184117f7ae3168d1c05dbdbde1a86e2be68"
+		},
+		{
+			"ImportPath": "github.com/stretchr/testify/mock",
 			"Rev": "ed6ea184117f7ae3168d1c05dbdbde1a86e2be68"
 		}
 	]
