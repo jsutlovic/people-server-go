@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/gocraft/web"
 	"net/http"
+	"regexp"
+	"strings"
 )
 
 const (
@@ -28,6 +30,65 @@ const (
 	InvalidUserDataError = "Invalid User data"
 	UserExistsError      = "User already exists"
 )
+
+// JSON structs for web APIs
+
+type UserErrors map[string]string
+
+// Expected format of JSON data for creating a User
+type UserCreate struct {
+	Email    string     `json:"email"`
+	Password string     `json:"password"`
+	Name     string     `json:"name"`
+	errors   UserErrors `json:"-"`
+}
+
+func (u *UserCreate) Errors() UserErrors {
+	if u.errors == nil {
+		u.errors = UserErrors{}
+	}
+	return u.errors
+}
+
+func (u *UserCreate) Validate() bool {
+	anyblank := false
+
+	u.errors = UserErrors{}
+
+	email := strings.TrimSpace(u.Email)
+	name := strings.TrimSpace(u.Name)
+
+	if email == "" {
+		u.errors["email"] = UserCreateEmailEmpty
+		anyblank = true
+	}
+	// Spaces are valid in passwords
+	if u.Password == "" {
+		u.errors["password"] = UserCreatePasswordEmpty
+		anyblank = true
+	}
+	if name == "" {
+		u.errors["name"] = UserCreateNameEmpty
+		anyblank = true
+	}
+	if anyblank {
+		return false
+	}
+
+	if len(u.Password) < 4 {
+		u.errors["password"] = UserCreatePasswordLength
+		return false
+	}
+
+	re := regexp.MustCompile(".+@.+\\..+")
+	matched := re.Match([]byte(email))
+	if !matched {
+		u.errors["email"] = UserCreateInvalidEmail
+		return false
+	}
+
+	return true
+}
 
 /*
 Handler to authenticate a user.
@@ -77,12 +138,6 @@ Returns a JSON representation of the currently authenticated User
 func (c *AuthContext) GetUserApi(rw web.ResponseWriter, req *web.Request) {
 	rw.Header().Set("Content-Type", JsonContentType)
 	fmt.Fprint(rw, Jsonify(c.User))
-}
-
-type UserCreate struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
 }
 
 /*
