@@ -108,14 +108,14 @@ func (s *pgDbService) CreateUser(email, pwhash, name, apikey string) (*User, err
 	newUser.IsSuperuser = false
 	newUser.ApiKey = apikey
 
-	insertSql := `INSERT INTO "user" (
+	insertSql := s.db.Rebind(`INSERT INTO "user" (
 		email,
 		pwhash,
 		name,
 		is_active,
 		is_superuser,
 		apikey
-	) VALUES (?, ?, ?, ?, ?, ?) RETURNING id;`
+	) VALUES (?, ?, ?, ?, ?, ?) RETURNING id;`)
 
 	err := s.db.QueryRowx(insertSql,
 		newUser.Email,
