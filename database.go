@@ -63,10 +63,10 @@ type User struct {
 Fetch a user given an email from the database
 Returns nil if no matching user is found
 */
-func (s *pgDbService) GetUser(email string) (user *User, err error) {
-	user = new(User)
+func (s *pgDbService) GetUser(email string) (*User, error) {
+	user := new(User)
 
-	err = s.db.Get(user, s.db.Rebind(`SELECT * FROM "user" WHERE email=?`), email)
+	err := s.db.Get(user, s.db.Rebind(`SELECT * FROM "user" WHERE email=?`), email)
 	if err != nil {
 		errMsg := fmt.Sprintf("User could not be found: %s", err)
 		return nil, errors.New(errMsg)
