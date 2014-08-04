@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -578,4 +579,53 @@ func TestCreateUserApiUserExists(t *testing.T) {
 
 	assert.Equal(t, rec.Code, http.StatusConflict)
 	assert.Equal(t, rec.Body.String(), UserExistsError+"\n")
+}
+
+func TestCreateUserApiInsertError(t *testing.T) {
+	userEmail := "test@example.com"
+	userPassword := "asdf"
+	userName := "Test User"
+	newUser := UserCreate{userEmail, userPassword, userName, nil}
+
+	rw, req, rec := mockHandlerParams("POST", JsonContentType, Jsonify(newUser))
+
+	c, dbs := mockDbContext(nil)
+
+	dbs.Mock.On("GetUser", userEmail).Return(nil, errors.New("No user found"))
+
+	pwhash := mock.AnythingOfType("string")
+	apikey := mock.AnythingOfType("string")
+	dbs.Mock.On("CreateUser", userEmail, pwhash, userName, apikey).Return(nil, errors.New(""))
+
+	(*Context).CreateUserApi(c, rw, req)
+
+	assert.Equal(t, rec.Code, http.StatusInternalServerError)
+	assert.Equal(t, rec.Body.String(), UserCreateError+"\n")
+}
+
+func TestCreateUserApi(t *testing.T) {
+	userEmail := "test@example.com"
+	userPassword := "asdf"
+	userName := "Test User"
+	newUser := UserCreate{userEmail, userPassword, userName, nil}
+	user := newTestUser()
+	user.Email = userEmail
+	user.Name = userName
+
+	rw, req, rec := mockHandlerParams("POST", JsonContentType, Jsonify(newUser))
+
+	c, dbs := mockDbContext(nil)
+
+	dbs.Mock.On("GetUser", userEmail).Return(nil, errors.New("No user found"))
+
+	pwhash := mock.AnythingOfType("string")
+	apikey := mock.AnythingOfType("string")
+	dbs.Mock.On("CreateUser", userEmail, pwhash, userName, apikey).Return(user, nil)
+
+	(*Context).CreateUserApi(c, rw, req)
+
+	assert.Equal(t, rec.Code, http.StatusOK)
+	assert.Equal(t, rec.Body.String(), Jsonify(user))
+	assert.True(t, user.CheckPassword(userPassword))
+	assert.Len(t, user.ApiKey, 40)
 }
