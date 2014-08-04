@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	_ "database/sql"
 	_ "github.com/DATA-DOG/go-sqlmock"
@@ -12,13 +13,18 @@ import (
 	"code.google.com/p/go.crypto/bcrypt"
 )
 
+const (
+	PasswordCost = 10
+)
+
 /*
 Database service
 
 Provides an abstraction wrapper around the database
 */
 type DbService interface {
-	GetUser(email string) (user *User, err error)
+	GetUser(email string) (*User, error)
+	CreateUser(email, pwhash, name, apikey string) (*User, error)
 }
 
 type pgDbService struct {
@@ -73,6 +79,53 @@ func (s *pgDbService) GetUser(email string) (*User, error) {
 	}
 
 	return user, nil
+}
+
+/*
+Create a User in the database with the given email, password hash, name and apikey
+
+IsActive is set to true, IsSuperuser is set to false for the user
+*/
+func (s *pgDbService) CreateUser(email, pwhash, name, apikey string) (*User, error) {
+	newUser := new(User)
+
+	if strings.TrimSpace(email) == "" {
+		return nil, errors.New("Email cannot be empty")
+	}
+
+	var userId int
+
+	newUser.Email = email
+	newUser.Pwhash = pwhash
+	newUser.Name = name
+	newUser.IsActive = true
+	newUser.IsSuperuser = false
+	newUser.ApiKey = apikey
+
+	insertSql := `INSERT INTO "user" (
+		email,
+		pwhash,
+		name,
+		is_active,
+		is_superuser,
+		apikey
+	) VALUES (?, ?, ?, ?, ?, ?) RETURNING id;`
+
+	err := s.db.QueryRowx(insertSql,
+		newUser.Email,
+		newUser.Pwhash,
+		newUser.Name,
+		newUser.IsActive,
+		newUser.IsSuperuser,
+		newUser.ApiKey).Scan(&userId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	newUser.Id = userId
+
+	return newUser, nil
 }
 
 // Compare a given password to this user's current password (hashed)
