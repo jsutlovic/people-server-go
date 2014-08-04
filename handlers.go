@@ -51,7 +51,8 @@ func (u *UserCreate) Errors() UserErrors {
 }
 
 func (u *UserCreate) Validate() bool {
-	anyblank := false
+	anyBlank := false
+	fieldErrors := false
 
 	u.errors = UserErrors{}
 
@@ -60,34 +61,34 @@ func (u *UserCreate) Validate() bool {
 
 	if email == "" {
 		u.errors["email"] = UserCreateEmailEmpty
-		anyblank = true
+		anyBlank = true
 	}
 	// Spaces are valid in passwords
 	if u.Password == "" {
 		u.errors["password"] = UserCreatePasswordEmpty
-		anyblank = true
+		anyBlank = true
 	}
 	if name == "" {
 		u.errors["name"] = UserCreateNameEmpty
-		anyblank = true
+		anyBlank = true
 	}
-	if anyblank {
+	if anyBlank {
 		return false
 	}
 
 	if len(u.Password) < 4 {
 		u.errors["password"] = UserCreatePasswordLength
-		return false
+		fieldErrors = true
 	}
 
 	re := regexp.MustCompile(".+@.+\\..+")
 	matched := re.Match([]byte(email))
 	if !matched {
 		u.errors["email"] = UserCreateInvalidEmail
-		return false
+		fieldErrors = true
 	}
 
-	return true
+	return !fieldErrors
 }
 
 /*
