@@ -168,3 +168,75 @@ func TestGetUserError(t *testing.T) {
 
 	assert.Equal(t, err.Error(), "User could not be found: Could not find user")
 }
+
+func TestCreateUserInsertError(t *testing.T) {
+	pgdbs := NewPgDbService("mock", "")
+
+	userEmail := "test@example.com"
+	userPwhash := "$2a$04$2a2qnoery/ULUw2WgKVd0OyeHhsHWINab9w9WTPoXqe8xY4PBrwXe"
+	userName := "Test User"
+	userApikey := GenerateApiKey()
+
+	sqlmock.ExpectQuery(`INSERT INTO "user" \( email, pwhash, name, is_active, is_superuser, apikey \) VALUES \(\?, \?, \?, \?, \?, \?\) RETURNING id;`).
+		WithArgs(userEmail, userPwhash, userName, true, false, userApikey).
+		WillReturnError(errors.New("Could not insert"))
+
+	u, err := pgdbs.CreateUser(userEmail, userPwhash, userName, userApikey)
+
+	if !assert.Nil(t, u, "User should be nil") {
+		return
+	}
+
+	if !assert.NotNil(t, err, "Error should not be nil") {
+		return
+	}
+
+	assert.Equal(t, err.Error(), "Could not insert")
+}
+
+func TestCreateUserEmailError(t *testing.T) {
+	pgdbs := NewPgDbService("mock", "")
+
+	userEmail := ""
+	userPwhash := "$2a$04$2a2qnoery/ULUw2WgKVd0OyeHhsHWINab9w9WTPoXqe8xY4PBrwXe"
+	userName := "Test User"
+	userApikey := GenerateApiKey()
+
+	u, err := pgdbs.CreateUser(userEmail, userPwhash, userName, userApikey)
+
+	if !assert.Nil(t, u, "User should be nil") {
+		return
+	}
+
+	if !assert.NotNil(t, err, "Error should not be nil") {
+		return
+	}
+
+	assert.Equal(t, err.Error(), "Email cannot be empty")
+}
+
+func TestCreateUser(t *testing.T) {
+	pgdbs := NewPgDbService("mock", "")
+
+	userNewId := 1
+	userEmail := "test@example.com"
+	userPwhash := "$2a$04$2a2qnoery/ULUw2WgKVd0OyeHhsHWINab9w9WTPoXqe8xY4PBrwXe"
+	userName := "Test User"
+	userApikey := GenerateApiKey()
+
+	sqlmock.ExpectQuery(`INSERT INTO "user" \( email, pwhash, name, is_active, is_superuser, apikey \) VALUES \(\?, \?, \?, \?, \?, \?\) RETURNING id;`).
+		WithArgs(userEmail, userPwhash, userName, true, false, userApikey).
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(userNewId))
+
+	u, err := pgdbs.CreateUser(userEmail, userPwhash, userName, userApikey)
+
+	if !assert.Nil(t, err, "Error should be nil") {
+		return
+	}
+
+	if !assert.NotNil(t, u, "User should not be nil") {
+		return
+	}
+
+	assert.Equal(t, u.Id, userNewId)
+}
