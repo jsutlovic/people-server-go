@@ -18,12 +18,12 @@ func Jsonify(v interface{}) string {
 	return string(json_data)
 }
 
-func GeneratePasswordHash(password string, cost int) (string, error) {
+func GeneratePasswordHash(password string, cost int) string {
 	pwhash, err := bcrypt.GenerateFromPassword([]byte(password), cost)
 	if err != nil {
-		return "", err
+		panic(err)
 	}
-	return string(pwhash), nil
+	return string(pwhash)
 }
 
 // Generate a unique string of length 40

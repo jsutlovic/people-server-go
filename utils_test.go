@@ -7,11 +7,9 @@ import (
 
 func TestCreatePasswordCostTooLarge(t *testing.T) {
 	cost := 32
-	_, err := GeneratePasswordHash("asdf", cost)
-
-	if !assert.NotNil(t, err, "Cost should error") {
-		t.Logf("Cost: %d", cost)
-	}
+	assert.Panics(t, func() {
+		GeneratePasswordHash("asdf", cost)
+	})
 }
 
 func TestCreatePassword(t *testing.T) {
@@ -36,11 +34,7 @@ func TestCreatePassword(t *testing.T) {
 	user := new(User)
 
 	for _, password := range passwords {
-		hashed, err := GeneratePasswordHash(password, 4)
-
-		if !assert.Nil(t, err, "Password should not error") {
-			break
-		}
+		hashed := GeneratePasswordHash(password, 4)
 
 		user.Pwhash = hashed
 
