@@ -460,6 +460,37 @@ func TestCreateUserApiInvalidUserDataJson(t *testing.T) {
 				"name":     UserCreateNameEmpty,
 			},
 		},
+		{
+			in: map[string]string{
+				"email":    "test",
+				"password": "asdf",
+				"name":     "Test User",
+			},
+			out: map[string]string{
+				"email": UserCreateInvalidEmail,
+			},
+		},
+		{
+			in: map[string]string{
+				"email":    "test@example.com",
+				"password": "a",
+				"name":     "Test User",
+			},
+			out: map[string]string{
+				"password": UserCreatePasswordLength,
+			},
+		},
+		{
+			in: map[string]string{
+				"email":    "test@example",
+				"password": "a",
+				"name":     "Test User",
+			},
+			out: map[string]string{
+				"email":    UserCreateInvalidEmail,
+				"password": UserCreatePasswordLength,
+			},
+		},
 	}
 
 	for _, test := range badformats {
