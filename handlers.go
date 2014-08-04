@@ -8,10 +8,21 @@ import (
 )
 
 const (
-	InvalidCredentials   = "Invalid credentials"
-	ParamsRequired       = "Email and password are required"
-	InactiveUser         = "User disabled"
-	JsonContentType      = "application/json"
+	JsonContentType = "application/json"
+
+	// Auth errors
+	InvalidCredentials = "Invalid credentials"
+	ParamsRequired     = "Email and password are required"
+	InactiveUser       = "User disabled"
+
+	// UserCreate.Validate errors
+	UserCreateEmailEmpty     = "Email cannot be empty"
+	UserCreatePasswordEmpty  = "Password cannot be empty"
+	UserCreateNameEmpty      = "Name cannot be empty"
+	UserCreatePasswordLength = "Password must be at least 6 characters long"
+	UserCreateInvalidEmail   = "Invalid email address"
+
+	// UserCreateApi errors
 	JsonContentTypeError = "Content-Type is not JSON"
 	JsonMalformedError   = "Malformed JSON"
 	InvalidUserDataError = "Invalid User data"
