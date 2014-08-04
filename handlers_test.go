@@ -523,13 +523,7 @@ func TestCreateUserApiInvalidUserDataJson(t *testing.T) {
 	}
 
 	for _, test := range badformats {
-		inputBytes, err := json.Marshal(test.in)
-		if err != nil {
-			t.Error(err)
-			return
-		}
-
-		rw, req, rec := mockHandlerParams("POST", JsonContentType, string(inputBytes))
+		rw, req, rec := mockHandlerParams("POST", JsonContentType, Jsonify(test.in))
 
 		c, _ := mockDbContext(nil)
 
@@ -570,16 +564,11 @@ func TestCreateUserApiMalformedJson(t *testing.T) {
 }
 
 func TestCreateUserApiUserExists(t *testing.T) {
-	newUser := UserCreate{"test@example.com", "asdf", "Test User", map[string]string{}}
+	newUser := UserCreate{"test@example.com", "asdf", "Test User", nil}
 	user := newTestUser()
 	user.Email = newUser.Email
 
-	jsonBytes, err := json.Marshal(newUser)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	rw, req, rec := mockHandlerParams("POST", JsonContentType, string(jsonBytes))
+	rw, req, rec := mockHandlerParams("POST", JsonContentType, Jsonify(newUser))
 
 	c, dbs := mockDbContext(user)
 
