@@ -38,11 +38,7 @@
 			"Rev": "cbeaeb16a013161a98496fad62933b1d21786672"
 		},
 		{
-			"ImportPath": "github.com/stretchr/testify/assert",
-			"Rev": "ed6ea184117f7ae3168d1c05dbdbde1a86e2be68"
-		},
-		{
-			"ImportPath": "github.com/stretchr/testify/mock",
+			"ImportPath": "github.com/stretchr/testify",
 			"Rev": "ed6ea184117f7ae3168d1c05dbdbde1a86e2be68"
 		}
 	]
