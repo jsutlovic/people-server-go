@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	PasswordCost = 10
+	passwordCost = 10
 )
 
 /*
@@ -24,6 +24,7 @@ Provides an abstraction wrapper around the database
 */
 type DbService interface {
 	GetUser(email string) (*User, error)
+	PasswordCost() int
 	CreateUser(email, pwhash, name, apikey string) (*User, error)
 }
 
@@ -79,6 +80,11 @@ func (s *pgDbService) GetUser(email string) (*User, error) {
 	}
 
 	return user, nil
+}
+
+// Return the default password cost
+func (s *pgDbService) PasswordCost() int {
+	return passwordCost
 }
 
 /*

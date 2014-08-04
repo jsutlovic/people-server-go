@@ -44,6 +44,10 @@ func (m *MockDbService) GetUser(email string) (*User, error) {
 	return nil, args.Error(1)
 }
 
+func (m *MockDbService) PasswordCost() int {
+	return 4
+}
+
 func (m *MockDbService) CreateUser(email, pwhash, name, apikey string) (*User, error) {
 	args := m.Mock.Called(email, pwhash, name, apikey)
 	if args.Get(0) != nil {
