@@ -162,8 +162,8 @@ func (c *Context) CreateUserApi(rw web.ResponseWriter, req *web.Request) {
 		return
 	}
 
-	if newUser.Email == "" || newUser.Password == "" || newUser.Name == "" {
-		http.Error(rw, InvalidUserDataError, http.StatusBadRequest)
+	if !newUser.Validate() {
+		http.Error(rw, Jsonify(newUser.Errors()), http.StatusBadRequest)
 		return
 	}
 
