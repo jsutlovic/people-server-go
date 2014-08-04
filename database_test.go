@@ -165,4 +165,6 @@ func TestGetUserError(t *testing.T) {
 	if !assert.NotNil(t, err, "Should have an error") {
 		return
 	}
+
+	assert.Equal(t, err.Error(), "User could not be found: Could not find user")
 }
