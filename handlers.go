@@ -92,6 +92,11 @@ func (u *UserCreate) Validate() bool {
 	return !fieldErrors
 }
 
+func jsonResponse(rw web.ResponseWriter, data interface{}) {
+	rw.Header().Set("Content-Type", JsonContentType)
+	fmt.Fprint(rw, Jsonify(data))
+}
+
 /*
 Handler to authenticate a user.
 
@@ -122,8 +127,7 @@ func (c *Context) ApiAuth(rw web.ResponseWriter, req *web.Request) {
 	authed := err == nil && user != nil && user.CheckPassword(password)
 	if authed {
 		if user.IsActive {
-			rw.Header().Set("Content-Type", JsonContentType)
-			fmt.Fprint(rw, Jsonify(user))
+			jsonResponse(rw, user)
 		} else {
 			http.Error(rw, "User disabled", http.StatusForbidden)
 		}
@@ -138,8 +142,7 @@ Handler for the GET User API
 Returns a JSON representation of the currently authenticated User
 */
 func (c *AuthContext) GetUserApi(rw web.ResponseWriter, req *web.Request) {
-	rw.Header().Set("Content-Type", JsonContentType)
-	fmt.Fprint(rw, Jsonify(c.User))
+	jsonResponse(rw, c.User)
 }
 
 /*
@@ -185,6 +188,5 @@ func (c *Context) CreateUserApi(rw web.ResponseWriter, req *web.Request) {
 		return
 	}
 
-	rw.Header().Set("Content-Type", JsonContentType)
-	fmt.Fprint(rw, Jsonify(user))
+	jsonResponse(rw, user)
 }
