@@ -14,10 +14,6 @@ func TestUserCheckPassword(t *testing.T) {
 		"$2a$04$2a2qnoery/ULUw2WgKVd0OyeHhsHWINab9w9WTPoXqe8xY4PBrwXe",
 		"$2a$05$grq2.qlk2BmVFHQ8Uih/L.qt7rJjJjpgsEmVw7BBeIqjCid9UTCxe",
 		"$2a$06$7A7qeAPNl/4jcYvzsYRngudI.MdeHh944QU/25fcecrIxnyTv4ria",
-		"$2a$07$CBk.ZLMUbZczyH1MOObo1em9kMaue/MFdIg.0vNBzefCInMbZ.hRK",
-		"$2a$08$6FSu6citVZco8DldlFztoegK1Q0LWQ66Nu5MlHUb.R6ocj2UEp3Cy",
-		"$2a$09$Bnm489iWApygcN2SObO5u.U.HGnOSXi5UuoNfEc3eyorLf218KVnu",
-		"$2a$10$Favll94j6lFbNU4iLgFlDe.PRZNzNBmK.I7vU15bmulv2RCLAFpRK",
 	}
 	var badInputs []string = []string{
 		"asdf",
