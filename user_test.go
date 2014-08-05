@@ -56,8 +56,7 @@ func TestUserCheckApiKey(t *testing.T) {
 }
 
 func TestUserFields(t *testing.T) {
-	u := User{}
-	userType := reflect.TypeOf(u)
+	userType := reflect.TypeOf(User{})
 
 	fieldCount := userType.NumField()
 	assert.Equal(t, fieldCount, 7)
@@ -80,8 +79,7 @@ func TestUserFields(t *testing.T) {
 }
 
 func TestUserJsonTags(t *testing.T) {
-	u := User{}
-	userType := reflect.TypeOf(u)
+	userType := reflect.TypeOf(User{})
 
 	idField, _ := userType.FieldByName("Id")
 	emailField, _ := userType.FieldByName("Email")
@@ -101,8 +99,7 @@ func TestUserJsonTags(t *testing.T) {
 }
 
 func TestUserDbTags(t *testing.T) {
-	u := User{}
-	userType := reflect.TypeOf(u)
+	userType := reflect.TypeOf(User{})
 
 	idField, _ := userType.FieldByName("Id")
 	emailField, _ := userType.FieldByName("Email")
