@@ -8,6 +8,10 @@ import (
 	"code.google.com/p/go.crypto/bcrypt"
 )
 
+const (
+	passwordCost = 10
+)
+
 /*
 Basic user struct
 

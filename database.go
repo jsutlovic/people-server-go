@@ -7,10 +7,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const (
-	passwordCost = 10
-)
-
 /*
 Database service
 
