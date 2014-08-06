@@ -162,6 +162,12 @@ func TestGetUserError(t *testing.T) {
 	assert.Equal(t, err.Error(), "User could not be found: Could not find user")
 }
 
+func TestPasswordCost(t *testing.T) {
+	pgDbService := NewPgDbService("mock", "")
+
+	assert.Equal(t, pgDbService.PasswordCost(), passwordCost)
+}
+
 func TestCreateUserInsertError(t *testing.T) {
 	pgdbs := NewPgDbService("mock", "")
 

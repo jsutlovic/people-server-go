@@ -78,7 +78,7 @@ func TestGetPersonNotFound(t *testing.T) {
 		return
 	}
 
-	//assert.Equal(t, err.Error(), )
+	assert.Equal(t, err.Error(), "Could not find person")
 }
 
 func TestGetPerson(t *testing.T) {

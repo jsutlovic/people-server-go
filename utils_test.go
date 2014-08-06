@@ -5,6 +5,17 @@ import (
 	"testing"
 )
 
+func TestJsonifyError(t *testing.T) {
+	assert.Panics(t, func() {
+		Jsonify(func() {})
+	})
+
+	assert.Panics(t, func() {
+		var test complex128 = 0
+		Jsonify(test)
+	})
+}
+
 func TestCreatePasswordCostTooLarge(t *testing.T) {
 	cost := 32
 	assert.Panics(t, func() {

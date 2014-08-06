@@ -203,6 +203,10 @@ func TestUserCreateJsonTags(t *testing.T) {
 
 func TestUserCreateValidateCreatesNewErrors(t *testing.T) {
 	uc := UserCreate{}
+
+	nilErrors := uc.Errors()
+	assert.NotNil(t, nilErrors, "Calling Errors() does not fail if errors is not initialized")
+
 	uc.Validate()
 
 	firstErrors := uc.Errors()
