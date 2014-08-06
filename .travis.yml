@@ -1,13 +1,21 @@
 language: go
 go:
     - 1.2
+    - 1.3
+    - tip
 
 before_install:
     - go get code.google.com/p/go.tools/cmd/cover
     - go get github.com/tools/godep
+    - go get github.com/mattn/goveralls
     - export PATH=$HOME/gopath/bin:$PATH
 
 install: godep restore
 
 script:
     - godep go test -v -cover ./...
+    - goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+
+env:
+  global:
+    secure: eUTFtu9IhGXDnY8zsddOS/o+ydfVrtfXunQpZ+YhCak7vQH2zcKkwJ+gkvUDdbo8y/+hSC8Y1sJv8bGD4R26/ZrIfFy/BGFmxYyNVa2Rim75XThVTK4m9aubWHJpw+4Q9hlHupiUQZp8yzAnWOELdP45tvA/do10qEZ8Lkmwt6g=
