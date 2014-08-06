@@ -60,6 +60,14 @@ func (m *MockDbService) CreateUser(email, pwhash, name, apikey string) (*User, e
 	return nil, args.Error(1)
 }
 
+func (m *MockDbService) GetPerson(id int) (*Person, error) {
+	args := m.Mock.Called(id)
+	if args.Get(0) != nil {
+		return args.Get(0).(*Person), nil
+	}
+	return nil, args.Error(1)
+}
+
 func mockMiddlewareParams() (web.ResponseWriter, *web.Request, *MockNext, *httptest.ResponseRecorder) {
 	// Build the ResponseRecorder
 	recorder := httptest.NewRecorder()
