@@ -13,10 +13,10 @@ type Person struct {
 	Color  sql.NullInt64 `json:"color"`
 }
 
-func (s *pgDbService) GetPerson(id int) (*Person, error) {
+func (s *pgDbService) GetPerson(userId, id int) (*Person, error) {
 	person := new(Person)
 
-	err := s.db.Get(person, s.db.Rebind(`SELECT * FROM "person" WHERE id=?`), id)
+	err := s.db.Get(person, s.db.Rebind(`SELECT * FROM "person" WHERE id=? AND user_id=?`), id, userId)
 	if err != nil {
 		return nil, err
 	}

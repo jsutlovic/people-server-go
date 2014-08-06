@@ -19,7 +19,7 @@ type DbService interface {
 	CreateUser(email, pwhash, name, apikey string) (*User, error)
 
 	// People related methods
-	GetPerson(id int) (*Person, error)
+	GetPerson(userId, id int) (*Person, error)
 }
 
 type pgDbService struct {

@@ -63,12 +63,13 @@ func TestGetPersonNotFound(t *testing.T) {
 	pgdbs := NewPgDbService("mock", "")
 
 	personId := 1
+	userId := 2
 
-	sqlmock.ExpectQuery(`SELECT \* FROM "person" WHERE id=?`).
-		WithArgs(personId).
+	sqlmock.ExpectQuery(`SELECT \* FROM "person" WHERE id=\? AND user_id=\?`).
+		WithArgs(personId, userId).
 		WillReturnError(errors.New("Could not find person"))
 
-	p, err := pgdbs.GetPerson(personId)
+	p, err := pgdbs.GetPerson(userId, personId)
 	if !assert.Nil(t, p, "Person should be nil") {
 		return
 	}
@@ -84,13 +85,14 @@ func TestGetPerson(t *testing.T) {
 	pgdbs := NewPgDbService("mock", "")
 
 	personId := 1
+	userId := 2
 	cols := []string{"id", "user_id", "name", "meta", "color"}
 
-	sqlmock.ExpectQuery(`SELECT \* FROM "person" WHERE id=?`).
-		WithArgs(personId).
-		WillReturnRows(sqlmock.NewRows(cols).AddRow(1, 1, "Person 1", nil, nil))
+	sqlmock.ExpectQuery(`SELECT \* FROM "person" WHERE id=\? AND user_id=\?`).
+		WithArgs(personId, userId).
+		WillReturnRows(sqlmock.NewRows(cols).AddRow(1, userId, "Person 1", nil, nil))
 
-	p, err := pgdbs.GetPerson(personId)
+	p, err := pgdbs.GetPerson(userId, personId)
 	if !assert.Nil(t, err, "Query should not error") {
 		return
 	}
