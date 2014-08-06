@@ -13,7 +13,7 @@ before_install:
 install: godep restore
 
 script:
-    - godep go test -v -cover ./...
+    - godep go test -v -covermode=count -coverprofile=coverage.out ./...
     - goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
 
 env:
