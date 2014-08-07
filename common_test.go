@@ -61,7 +61,7 @@ func (m *MockDbService) CreateUser(email, pwhash, name, apikey string) (*User, e
 }
 
 func (m *MockDbService) GetPerson(userId, id int) (*Person, error) {
-	args := m.Mock.Called(id)
+	args := m.Mock.Called(userId, id)
 	if args.Get(0) != nil {
 		return args.Get(0).(*Person), nil
 	}
