@@ -6,11 +6,11 @@ import (
 )
 
 type Person struct {
-	Id     int           `json:"id"`
-	UserId int           `db:"user_id" json:"user_id"`
-	Name   string        `json:"name"`
-	Meta   hstore.Hstore `json:"meta"`
-	Color  sql.NullInt64 `json:"color"`
+	Id     int            `json:"id"`
+	UserId int            `db:"user_id" json:"user_id"`
+	Name   string         `json:"name"`
+	Meta   *hstore.Hstore `json:"meta"`
+	Color  *sql.NullInt64 `json:"color"`
 }
 
 func (s *pgDbService) GetPerson(userId, id int) (*Person, error) {
