@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
+	"strconv"
 	"testing"
 )
 
@@ -632,4 +633,81 @@ func TestCreateUserApi(t *testing.T) {
 	assert.Equal(t, rec.Body.String(), Jsonify(user))
 	assert.True(t, user.CheckPassword(userPassword))
 	assert.Len(t, user.ApiKey, 40)
+}
+
+func TestGetPersonApiNoId(t *testing.T) {
+	userId := 2
+	personId := 1
+
+	rw, req, rec := mockHandlerParams("GET", "", "")
+
+	user := newTestUser()
+	user.Id = userId
+
+	ac, dbs := mockAuthContext(user)
+
+	(*AuthContext).GetPersonApi(ac, rw, req)
+
+	dbs.Mock.AssertNotCalled(t, "GetPerson", userId, personId)
+	assert.Equal(t, rec.Code, http.StatusBadRequest)
+}
+
+func TestGetPersonApiInvalidId(t *testing.T) {
+	userId := 2
+	personId := 1
+
+	rw, req, rec := mockHandlerParams("GET", "", "")
+	req.PathParams = map[string]string{"id": "sadf"}
+
+	user := newTestUser()
+	user.Id = userId
+
+	ac, dbs := mockAuthContext(user)
+
+	(*AuthContext).GetPersonApi(ac, rw, req)
+
+	dbs.Mock.AssertNotCalled(t, "GetPerson", userId, personId)
+	assert.Equal(t, rec.Code, http.StatusBadRequest)
+}
+
+func TestGetPersonApiNonExisting(t *testing.T) {
+	userId := 2
+	personId := 1
+
+	rw, req, rec := mockHandlerParams("GET", "", "")
+	req.PathParams = map[string]string{"id": strconv.Itoa(personId)}
+
+	user := newTestUser()
+	user.Id = userId
+
+	ac, dbs := mockAuthContext(user)
+
+	dbs.Mock.On("GetPerson", userId, personId).Return(nil, errors.New("Not found"))
+
+	(*AuthContext).GetPersonApi(ac, rw, req)
+
+	dbs.Mock.AssertExpectations(t)
+	assert.Equal(t, rec.Code, http.StatusNotFound)
+}
+
+func TestGetPersonApi(t *testing.T) {
+	userId := 2
+	personId := 1
+
+	rw, req, rec := mockHandlerParams("GET", "", "")
+	req.PathParams = map[string]string{"id": strconv.Itoa(personId)}
+
+	user := newTestUser()
+	user.Id = userId
+	person := newTestPerson(user)
+
+	ac, dbs := mockAuthContext(user)
+
+	dbs.Mock.On("GetPerson", userId, personId).Return(person, nil)
+
+	(*AuthContext).GetPersonApi(ac, rw, req)
+
+	dbs.Mock.AssertExpectations(t)
+	assert.Equal(t, rec.Code, http.StatusOK)
+	assert.Equal(t, rec.Body.String(), Jsonify(person))
 }
