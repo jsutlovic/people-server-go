@@ -51,6 +51,7 @@ func (u *UserCreate) Errors() UserErrors {
 	return u.errors
 }
 
+// Validation for UserCreate struct
 func (u *UserCreate) Validate() bool {
 	anyBlank := false
 	fieldErrors := false
