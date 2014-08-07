@@ -6,6 +6,7 @@ import (
 	"github.com/gocraft/web"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -190,4 +191,34 @@ func (c *Context) CreateUserApi(rw web.ResponseWriter, req *web.Request) {
 	}
 
 	jsonResponse(rw, user)
+}
+
+/*
+Handler for GET Person API
+
+Returns a single Person as JSON, or 404 if the user does not have access to that Person
+*/
+func (c *AuthContext) GetPersonApi(rw web.ResponseWriter, req *web.Request) {
+	idStr, idExists := req.PathParams["id"]
+
+	if !idExists {
+		http.Error(rw, "Invalid Path", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		http.Error(rw, "id must be an integer", http.StatusBadRequest)
+		return
+	}
+
+	person, err := c.DB.GetPerson(c.User.Id, id)
+
+	if err != nil {
+		http.Error(rw, "Person not found", http.StatusNotFound)
+		return
+	}
+
+	jsonResponse(rw, person)
 }
