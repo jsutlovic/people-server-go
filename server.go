@@ -28,11 +28,15 @@ func main() {
 	authRouter := rootRouter.Subrouter(Context{}, "")
 	authRouter.Post("/auth", (*Context).ApiAuth)
 
+	// CreateUser endpoint cannot require auth
 	createUserRouter := rootRouter.Subrouter(Context{}, "")
 	createUserRouter.Post("/api/user", (*Context).CreateUserApi)
 
+	// API subrouter for all other API endpoints
 	apiRouter := rootRouter.Subrouter(AuthContext{}, "/api")
 	apiRouter.Middleware((*AuthContext).AuthRequired)
+
+	// User-related
 	apiRouter.Get("/user", (*AuthContext).GetUserApi)
 
 	fmt.Println("Starting server")
