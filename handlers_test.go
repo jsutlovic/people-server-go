@@ -53,7 +53,7 @@ func TestApiAuth(t *testing.T) {
 
 	(*AuthContext).ApiAuth(ac, rw, req)
 
-	dbs.Mock.AssertCalled(t, "GetUser", user.Email)
+	dbs.Mock.AssertExpectations(t)
 	assert.Equal(t, rec.Code, http.StatusOK)
 	assert.Equal(t, rec.Body.String(), Jsonify(user))
 
@@ -108,7 +108,7 @@ func TestApiAuthNoUser(t *testing.T) {
 
 	(*AuthContext).ApiAuth(ac, rw, req)
 
-	dbs.Mock.AssertCalled(t, "GetUser", user.Email)
+	dbs.Mock.AssertExpectations(t)
 	assert.Equal(t, rec.Code, http.StatusForbidden)
 	assert.Equal(t, rec.Body.String(), InvalidCredentials+"\n")
 }
@@ -135,7 +135,7 @@ func TestApiAuthWrongPassword(t *testing.T) {
 
 	(*AuthContext).ApiAuth(ac, rw, req)
 
-	dbs.Mock.AssertCalled(t, "GetUser", user.Email)
+	dbs.Mock.AssertExpectations(t)
 	assert.Equal(t, rec.Code, http.StatusForbidden)
 	assert.Equal(t, rec.Body.String(), InvalidCredentials+"\n")
 }
@@ -163,7 +163,7 @@ func TestApiAuthInactiveUser(t *testing.T) {
 
 	(*AuthContext).ApiAuth(ac, rw, req)
 
-	dbs.Mock.AssertCalled(t, "GetUser", user.Email)
+	dbs.Mock.AssertExpectations(t)
 	assert.Equal(t, rec.Code, http.StatusForbidden)
 	assert.Equal(t, rec.Body.String(), InactiveUser+"\n")
 }
