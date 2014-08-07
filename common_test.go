@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gocraft/web"
+	"github.com/lib/pq/hstore"
 	"github.com/stretchr/testify/mock"
 	"net/http"
 	"net/http/httptest"
@@ -20,6 +21,18 @@ func newTestUser() *User {
 	}
 
 	return &user
+}
+
+func newTestPerson(user *User) *Person {
+	person := Person{
+		1,
+		user.Id,
+		"Test Person",
+		new(hstore.Hstore),
+		nil,
+	}
+
+	return &person
 }
 
 type MockNext struct {
