@@ -699,7 +699,7 @@ func TestGetPersonApi(t *testing.T) {
 
 	user := newTestUser()
 	user.Id = userId
-	person := newTestPerson(user)
+	person := newTestPerson(userId)
 
 	ac, dbs := mockAuthContext(user)
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/lib/pq/hstore"
@@ -92,9 +93,12 @@ func TestGetPerson(t *testing.T) {
 	meta := new(hstore.Hstore)
 	meta.Scan([]byte(`"type"=>"asdf"`))
 
+	color := new(sql.NullInt64)
+	color.Scan(1)
+
 	sqlmock.ExpectQuery(`SELECT \* FROM "person" WHERE id=\? AND user_id=\?`).
 		WithArgs(personId, userId).
-		WillReturnRows(sqlmock.NewRows(cols).AddRow(1, userId, "Person 1", meta, nil))
+		WillReturnRows(sqlmock.NewRows(cols).AddRow(1, userId, "Person 1", meta, color))
 
 	p, err := pgdbs.GetPerson(userId, personId)
 	if !assert.Nil(t, err, "Query should not error") {

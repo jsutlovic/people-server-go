@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"github.com/gocraft/web"
 	"github.com/lib/pq/hstore"
 	"github.com/stretchr/testify/mock"
@@ -23,13 +24,19 @@ func newTestUser() *User {
 	return &user
 }
 
-func newTestPerson(user *User) *Person {
+func newTestPerson(userId int) *Person {
+	meta := new(hstore.Hstore)
+	meta.Scan([]byte(`"type"=>"asdf"`))
+
+	color := new(sql.NullInt64)
+	color.Scan(1)
+
 	person := Person{
 		1,
-		user.Id,
+		userId,
 		"Test Person",
-		new(hstore.Hstore),
-		nil,
+		meta,
+		color,
 	}
 
 	return &person
