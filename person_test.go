@@ -90,15 +90,15 @@ func TestGetPerson(t *testing.T) {
 	userId := 2
 	cols := []string{"id", "user_id", "name", "meta", "color"}
 
-	meta := new(hstore.Hstore)
-	meta.Scan([]byte(`"type"=>"asdf"`))
+	meta := hstore.Hstore{map[string]sql.NullString{"type": sql.NullString{"asdf", true}}}
+	metaVal, _ := meta.Value()
 
-	color := new(sql.NullInt64)
-	color.Scan(1)
+	color := sql.NullInt64{1, true}
+	colorVal, _ := color.Value()
 
 	sqlmock.ExpectQuery(`SELECT \* FROM "person" WHERE id=\? AND user_id=\?`).
 		WithArgs(personId, userId).
-		WillReturnRows(sqlmock.NewRows(cols).AddRow(1, userId, "Person 1", meta, color))
+		WillReturnRows(sqlmock.NewRows(cols).AddRow(1, userId, "Person 1", metaVal, colorVal))
 
 	p, err := pgdbs.GetPerson(userId, personId)
 	if !assert.Nil(t, err, "Query should not error") {
@@ -110,4 +110,6 @@ func TestGetPerson(t *testing.T) {
 	}
 
 	assert.Equal(t, p.Id, personId)
+	assert.Equal(t, p.Meta, meta)
+	assert.Equal(t, p.Color, color)
 }
