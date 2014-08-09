@@ -29,22 +29,6 @@ func TestPersonFields(t *testing.T) {
 	assert.True(t, colorExists)
 }
 
-func TestPersonFieldsJson(t *testing.T) {
-	personType := reflect.TypeOf(Person{})
-
-	idField, _ := personType.FieldByName("Id")
-	userIdField, _ := personType.FieldByName("UserId")
-	nameField, _ := personType.FieldByName("Name")
-	metaField, _ := personType.FieldByName("Meta")
-	colorField, _ := personType.FieldByName("Color")
-
-	assert.Equal(t, idField.Tag.Get("json"), "id")
-	assert.Equal(t, userIdField.Tag.Get("json"), "user_id")
-	assert.Equal(t, nameField.Tag.Get("json"), "name")
-	assert.Equal(t, metaField.Tag.Get("json"), "meta")
-	assert.Equal(t, colorField.Tag.Get("json"), "color")
-}
-
 func TestPersonFieldsDb(t *testing.T) {
 	personType := reflect.TypeOf(Person{})
 
@@ -112,4 +96,92 @@ func TestGetPerson(t *testing.T) {
 	assert.Equal(t, p.Id, personId)
 	assert.Equal(t, p.Meta, meta)
 	assert.Equal(t, p.Color, color)
+}
+
+var personJSONtests = []struct {
+	p    Person
+	json string
+}{
+	{
+		p: Person{
+			Id:     1,
+			UserId: 1,
+			Name:   "Test 1",
+			Meta: hstore.Hstore{map[string]sql.NullString{
+				"type": sql.NullString{"asdf", true},
+			}},
+			Color: sql.NullInt64{1, true},
+		},
+		json: "{\"id\":1,\"user_id\":1,\"name\":\"Test 1\",\"meta\":{\"type\":\"asdf\"},\"color\":1}",
+	},
+	{
+		p: Person{
+			Id:     2,
+			UserId: 2,
+			Name:   "Test 2",
+			Meta:   hstore.Hstore{map[string]sql.NullString{}},
+			Color:  sql.NullInt64{0, false},
+		},
+		json: "{\"id\":2,\"user_id\":2,\"name\":\"Test 2\",\"meta\":{},\"color\":null}",
+	},
+}
+
+var personJSONAnomaloustests = []struct {
+	p    Person
+	json string
+}{
+	{
+		p: Person{
+			Id:     1,
+			UserId: 1,
+			Name:   "Test 1",
+			Meta: hstore.Hstore{map[string]sql.NullString{
+				"type":  sql.NullString{"asdf", true},
+				"other": sql.NullString{"", false},
+			}},
+			Color: sql.NullInt64{1, true},
+		},
+		json: "{\"id\":1,\"user_id\":1,\"name\":\"Test 1\",\"meta\":{\"type\":\"asdf\"},\"color\":1}",
+	},
+	{
+		p: Person{
+			Id:     2,
+			UserId: 2,
+			Name:   "Test 2",
+			Meta:   hstore.Hstore{nil},
+			Color:  sql.NullInt64{0, false},
+		},
+		json: "{\"id\":2,\"user_id\":2,\"name\":\"Test 2\",\"meta\":{},\"color\":null}",
+	},
+}
+
+func TestPersonMarshalJSON(t *testing.T) {
+	for _, test := range personJSONtests {
+		marshaled, err := test.p.MarshalJSON()
+		if !assert.Nil(t, err) {
+			break
+		}
+		assert.Equal(t, string(marshaled), test.json)
+	}
+}
+
+func TestPersonMarshalAnomalousJSON(t *testing.T) {
+	for _, test := range personJSONAnomaloustests {
+		marshaled, err := test.p.MarshalJSON()
+		if !assert.Nil(t, err) {
+			break
+		}
+		assert.Equal(t, string(marshaled), test.json)
+	}
+}
+
+func TestPersonUnmarshalJSON(t *testing.T) {
+	for _, test := range personJSONtests {
+		unmarshaled := Person{}
+		err := unmarshaled.UnmarshalJSON([]byte(test.json))
+		if !assert.Nil(t, err) {
+			break
+		}
+		assert.Equal(t, unmarshaled, test.p)
+	}
 }
