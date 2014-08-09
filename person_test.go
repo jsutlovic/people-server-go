@@ -190,6 +190,7 @@ func TestPersonUnmarshalError(t *testing.T) {
 	personUnmarshalErrorTests := []string{
 		"",
 		"{id: 1}",
+		`"id": 1`,
 	}
 
 	for _, test := range personUnmarshalErrorTests {
