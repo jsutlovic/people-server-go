@@ -112,7 +112,7 @@ var personJSONtests = []struct {
 			}},
 			Color: sql.NullInt64{1, true},
 		},
-		json: "{\"id\":1,\"user_id\":1,\"name\":\"Test 1\",\"meta\":{\"type\":\"asdf\"},\"color\":1}",
+		json: `{"id":1,"user_id":1,"name":"Test 1","meta":{"type":"asdf"},"color":1}`,
 	},
 	{
 		p: Person{
@@ -122,7 +122,7 @@ var personJSONtests = []struct {
 			Meta:   hstore.Hstore{map[string]sql.NullString{}},
 			Color:  sql.NullInt64{0, false},
 		},
-		json: "{\"id\":2,\"user_id\":2,\"name\":\"Test 2\",\"meta\":{},\"color\":null}",
+		json: `{"id":2,"user_id":2,"name":"Test 2","meta":{},"color":null}`,
 	},
 }
 
@@ -141,7 +141,7 @@ var personJSONAnomaloustests = []struct {
 			}},
 			Color: sql.NullInt64{1, true},
 		},
-		json: "{\"id\":1,\"user_id\":1,\"name\":\"Test 1\",\"meta\":{\"type\":\"asdf\"},\"color\":1}",
+		json: `{"id":1,"user_id":1,"name":"Test 1","meta":{"type":"asdf"},"color":1}`,
 	},
 	{
 		p: Person{
@@ -151,7 +151,7 @@ var personJSONAnomaloustests = []struct {
 			Meta:   hstore.Hstore{nil},
 			Color:  sql.NullInt64{0, false},
 		},
-		json: "{\"id\":2,\"user_id\":2,\"name\":\"Test 2\",\"meta\":{},\"color\":null}",
+		json: `{"id":2,"user_id":2,"name":"Test 2","meta":{},"color":null}`,
 	},
 }
 
