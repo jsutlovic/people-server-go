@@ -126,35 +126,6 @@ var personJSONtests = []struct {
 	},
 }
 
-var personJSONAnomaloustests = []struct {
-	p    Person
-	json string
-}{
-	{
-		p: Person{
-			Id:     1,
-			UserId: 1,
-			Name:   "Test 1",
-			Meta: hstore.Hstore{map[string]sql.NullString{
-				"type":  sql.NullString{"asdf", true},
-				"other": sql.NullString{"", false},
-			}},
-			Color: sql.NullInt64{1, true},
-		},
-		json: `{"id":1,"user_id":1,"name":"Test 1","meta":{"type":"asdf"},"color":1}`,
-	},
-	{
-		p: Person{
-			Id:     2,
-			UserId: 2,
-			Name:   "Test 2",
-			Meta:   hstore.Hstore{nil},
-			Color:  sql.NullInt64{0, false},
-		},
-		json: `{"id":2,"user_id":2,"name":"Test 2","meta":{},"color":null}`,
-	},
-}
-
 func TestPersonMarshalJSON(t *testing.T) {
 	for _, test := range personJSONtests {
 		marshaled, err := test.p.MarshalJSON()
@@ -166,6 +137,35 @@ func TestPersonMarshalJSON(t *testing.T) {
 }
 
 func TestPersonMarshalAnomalousJSON(t *testing.T) {
+	personJSONAnomaloustests := []struct {
+		p    Person
+		json string
+	}{
+		{
+			p: Person{
+				Id:     1,
+				UserId: 1,
+				Name:   "Test 1",
+				Meta: hstore.Hstore{map[string]sql.NullString{
+					"type":  sql.NullString{"asdf", true},
+					"other": sql.NullString{"", false},
+				}},
+				Color: sql.NullInt64{1, true},
+			},
+			json: `{"id":1,"user_id":1,"name":"Test 1","meta":{"type":"asdf"},"color":1}`,
+		},
+		{
+			p: Person{
+				Id:     2,
+				UserId: 2,
+				Name:   "Test 2",
+				Meta:   hstore.Hstore{nil},
+				Color:  sql.NullInt64{0, false},
+			},
+			json: `{"id":2,"user_id":2,"name":"Test 2","meta":{},"color":null}`,
+		},
+	}
+
 	for _, test := range personJSONAnomaloustests {
 		marshaled, err := test.p.MarshalJSON()
 		if !assert.Nil(t, err) {
@@ -177,6 +177,46 @@ func TestPersonMarshalAnomalousJSON(t *testing.T) {
 
 func TestPersonUnmarshalJSON(t *testing.T) {
 	for _, test := range personJSONtests {
+		unmarshaled := Person{}
+		err := unmarshaled.UnmarshalJSON([]byte(test.json))
+		if !assert.Nil(t, err) {
+			break
+		}
+		assert.Equal(t, unmarshaled, test.p)
+	}
+}
+
+func TestPersonUnmarshalAnomalousJSON(t *testing.T) {
+	var personUnmarshalAnomalousTests = []struct {
+		p    Person
+		json string
+	}{
+		{
+			p: Person{
+				Id:     1,
+				UserId: 1,
+				Name:   "Test 1",
+				Meta: hstore.Hstore{map[string]sql.NullString{
+					"type":  sql.NullString{"asdf", true},
+					"other": sql.NullString{"", true},
+				}},
+				Color: sql.NullInt64{1, true},
+			},
+			json: `{"id":1,"user_id":1,"name":"Test 1","meta":{"type":"asdf", "other": null},"color":1}`,
+		},
+		{
+			p: Person{
+				Id:     2,
+				UserId: 2,
+				Name:   "Test 2",
+				Meta:   hstore.Hstore{map[string]sql.NullString{}},
+				Color:  sql.NullInt64{0, false},
+			},
+			json: `{"id":2,"user_id":2,"name":"Test 2","meta":null,"color":null}`,
+		},
+	}
+
+	for _, test := range personUnmarshalAnomalousTests {
 		unmarshaled := Person{}
 		err := unmarshaled.UnmarshalJSON([]byte(test.json))
 		if !assert.Nil(t, err) {
