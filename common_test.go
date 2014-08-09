@@ -25,18 +25,15 @@ func newTestUser() *User {
 }
 
 func newTestPerson(userId int) *Person {
-	meta := new(hstore.Hstore)
-	meta.Scan([]byte(`"type"=>"asdf"`))
-
-	color := new(sql.NullInt64)
-	color.Scan(1)
-
 	person := Person{
 		1,
 		userId,
 		"Test Person",
-		meta,
-		color,
+		hstore.Hstore{map[string]sql.NullString{
+			"type":  sql.NullString{"asdf", true},
+			"other": sql.NullString{"", false},
+		}},
+		sql.NullInt64{1, true},
 	}
 
 	return &person
