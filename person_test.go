@@ -185,3 +185,16 @@ func TestPersonUnmarshalJSON(t *testing.T) {
 		assert.Equal(t, unmarshaled, test.p)
 	}
 }
+
+func TestPersonUnmarshalError(t *testing.T) {
+	personUnmarshalErrorTests := []string{
+		"",
+		"{id: 1}",
+	}
+
+	for _, test := range personUnmarshalErrorTests {
+		unmarshaled := Person{}
+		err := unmarshaled.UnmarshalJSON([]byte(test))
+		assert.NotNil(t, err)
+	}
+}
