@@ -85,3 +85,14 @@ func (s *pgDbService) GetPerson(userId, id int) (*Person, error) {
 	}
 	return person, nil
 }
+
+func (s *pgDbService) GetPeople(userId int) ([]Person, error) {
+	people := []Person{}
+
+	err := s.db.Select(&people, s.db.Rebind(`SELECT * FROM "person" WHERE user_id=?`), userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return people, nil
+}
