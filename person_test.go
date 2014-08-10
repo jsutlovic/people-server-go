@@ -98,6 +98,89 @@ func TestGetPerson(t *testing.T) {
 	assert.Equal(t, p.Color, color)
 }
 
+func TestGetPeopleError(t *testing.T) {
+	pgdbs := NewPgDbService("mock", "")
+
+	userId := 1
+
+	sqlmock.ExpectQuery(`SELECT \* FROM "person" WHERE user_id=\?`).
+		WithArgs(userId).
+		WillReturnError(errors.New("Could not find person (list)"))
+
+	pp, err := pgdbs.GetPeople(userId)
+	if !assert.Nil(t, pp, "Person list should be null") {
+		return
+	}
+
+	if !assert.NotNil(t, err, "Should have an error") {
+		return
+	}
+
+	assert.Equal(t, err.Error(), "Could not find person (list)")
+}
+
+func TestGetPeople(t *testing.T) {
+	pgdbs := NewPgDbService("mock", "")
+
+	userId := 1
+	personId1 := 2
+	personId2 := 3
+
+	cols := []string{"id", "user_id", "name", "meta", "color"}
+
+	name1 := "Person 1"
+	name2 := "Person 2"
+
+	meta1 := hstore.Hstore{nil}
+	meta2 := hstore.Hstore{map[string]sql.NullString{"type": sql.NullString{"asdf", true}}}
+
+	metaVal1, _ := meta1.Value()
+	metaVal2, _ := meta2.Value()
+
+	color1 := sql.NullInt64{0, false}
+	color2 := sql.NullInt64{1, true}
+
+	colorVal1, _ := color1.Value()
+	colorVal2, _ := color2.Value()
+
+	sqlmock.ExpectQuery(`SELECT \* FROM "person" WHERE user_id=\?`).
+		WithArgs(userId).
+		WillReturnRows(sqlmock.NewRows(cols).
+		AddRow(personId1, userId, name1, metaVal1, colorVal1).
+		AddRow(personId2, userId, name2, metaVal2, colorVal2))
+
+	pp, err := pgdbs.GetPeople(userId)
+	if !assert.Nil(t, err, "Query should not error") {
+		return
+	}
+
+	if !assert.NotNil(t, pp, "People result should not be nil") {
+		return
+	}
+
+	if !assert.Len(t, pp, 2, "People result should have a length of 2") {
+		return
+	}
+
+	p1 := pp[0]
+	p2 := pp[1]
+
+	assert.Equal(t, p1.Id, personId1)
+	assert.Equal(t, p2.Id, personId2)
+
+	assert.Equal(t, p1.UserId, userId)
+	assert.Equal(t, p2.UserId, userId)
+
+	assert.Equal(t, p1.Name, name1)
+	assert.Equal(t, p2.Name, name2)
+
+	assert.Equal(t, p1.Meta, meta1)
+	assert.Equal(t, p2.Meta, meta2)
+
+	assert.Equal(t, p1.Color, color1)
+	assert.Equal(t, p2.Color, color2)
+}
+
 var personJSONtests = []struct {
 	p    Person
 	json string
