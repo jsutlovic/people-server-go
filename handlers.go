@@ -222,3 +222,19 @@ func (c *AuthContext) GetPersonApi(rw web.ResponseWriter, req *web.Request) {
 
 	jsonResponse(rw, person)
 }
+
+/*
+Handler for GET Person List API
+
+Returns all the Person objects associated with the current User
+*/
+func (c *AuthContext) GetPersonListApi(rw web.ResponseWriter, req *web.Request) {
+	people, err := c.DB.GetPeople(c.User.Id)
+
+	if err != nil {
+		http.Error(rw, "No people found", http.StatusNotFound)
+		return
+	}
+
+	jsonResponse(rw, people)
+}
