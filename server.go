@@ -41,6 +41,7 @@ func main() {
 
 	// Person-related
 	apiRouter.Get("/person/:id:\\d+/", (*AuthContext).GetPersonApi)
+	apiRouter.Get("/person/", (*AuthContext).GetPersonListApi)
 
 	fmt.Println("Starting server")
 	http.ListenAndServe("0.0.0.0:3000", rootRouter)
