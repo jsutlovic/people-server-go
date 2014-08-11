@@ -711,3 +711,71 @@ func TestGetPersonApi(t *testing.T) {
 	assert.Equal(t, rec.Code, http.StatusOK)
 	assert.Equal(t, rec.Body.String(), Jsonify(person))
 }
+
+func TestGetPersonListApiError(t *testing.T) {
+	userId := 1
+
+	rw, req, rec := mockHandlerParams("GET", "", "")
+
+	user := newTestUser()
+	user.Id = userId
+
+	ac, dbs := mockAuthContext(user)
+
+	dbs.Mock.On("GetPeople", userId).Return(nil, errors.New("DB Error"))
+
+	(*AuthContext).GetPersonListApi(ac, rw, req)
+
+	dbs.Mock.AssertExpectations(t)
+	assert.Equal(t, rec.Code, http.StatusNotFound)
+}
+
+func TestGetPersonListApiEmpty(t *testing.T) {
+	userId := 1
+
+	rw, req, rec := mockHandlerParams("GET", "", "")
+
+	user := newTestUser()
+	user.Id = userId
+
+	ac, dbs := mockAuthContext(user)
+
+	pp := []Person{}
+
+	dbs.Mock.On("GetPeople", userId).Return(pp, nil)
+
+	(*AuthContext).GetPersonListApi(ac, rw, req)
+
+	dbs.Mock.AssertExpectations(t)
+	assert.Equal(t, rec.Code, http.StatusOK)
+	assert.Equal(t, rec.Body.String(), "[]")
+}
+
+func TestGetPersonListApi(t *testing.T) {
+	userId := 1
+
+	rw, req, rec := mockHandlerParams("GET", "", "")
+
+	user := newTestUser()
+	user.Id = userId
+
+	p1 := newTestPerson(userId)
+	p1.Id = 1
+	p1.Name = "Test 1"
+
+	p2 := newTestPerson(userId)
+	p2.Id = 2
+	p2.Name = "Test 2"
+
+	ac, dbs := mockAuthContext(user)
+
+	pp := []Person{*p1, *p2}
+
+	dbs.Mock.On("GetPeople", userId).Return(pp, nil)
+
+	(*AuthContext).GetPersonListApi(ac, rw, req)
+
+	dbs.Mock.AssertExpectations(t)
+	assert.Equal(t, rec.Code, http.StatusOK)
+	assert.Equal(t, rec.Body.String(), Jsonify(pp))
+}
