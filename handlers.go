@@ -33,6 +33,17 @@ const (
 	UserExistsError      = "User already exists"
 )
 
+// Basic Context available to all handlers
+type Context struct {
+	DB DbService
+}
+
+// Context supplying an authorized user. Used with AuthRequired middleware
+type AuthContext struct {
+	*Context
+	User *User
+}
+
 // JSON structs for web APIs
 
 type UserErrors map[string]string

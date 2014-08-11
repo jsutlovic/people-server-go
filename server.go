@@ -6,17 +6,6 @@ import (
 	"net/http"
 )
 
-// Basic Context available to all handlers
-type Context struct {
-	DB DbService
-}
-
-// Context supplying an authorized user. Used with AuthRequired middleware
-type AuthContext struct {
-	*Context
-	User *User
-}
-
 func main() {
 	dbService := NewPgDbService("postgres", "user=vagrant dbname=people host=/var/run/postgresql sslmode=disable application_name=people-go")
 
