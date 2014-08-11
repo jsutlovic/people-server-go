@@ -20,6 +20,7 @@ type DbService interface {
 
 	// People related methods
 	GetPerson(userId, id int) (*Person, error)
+	GetPeople(userId int) ([]Person, error)
 }
 
 type pgDbService struct {
