@@ -102,3 +102,7 @@ func (s *pgDbService) GetPeople(userId int) ([]Person, error) {
 
 	return people, nil
 }
+
+func (s *pgDbService) CreatePerson(userId int, name string, meta map[string]string, color sql.NullInt64) (*Person, error) {
+	return nil, nil
+}

@@ -322,3 +322,18 @@ func TestPersonUnmarshalError(t *testing.T) {
 		assert.NotNil(t, err)
 	}
 }
+
+func TestCreatePersonEmptyName(t *testing.T) {
+	pgdbs := NewPgDbService("mock", "")
+
+	userId := 1
+	meta := map[string]string{}
+	color := sql.NullInt64{1, true}
+
+	names := []string{"", " ", "\t", "\n"}
+
+	for _, name := range names {
+		_, err := pgdbs.CreatePerson(userId, name, meta, color)
+		assert.Error(t, err, "Empty name should cause error")
+	}
+}
