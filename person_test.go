@@ -338,3 +338,28 @@ func TestCreatePersonEmptyName(t *testing.T) {
 		assert.Equal(t, err.Error(), "Person name cannot be empty")
 	}
 }
+
+func TestCreatePersonQueryError(t *testing.T) {
+	pgdbs := NewPgDbService("mock", "")
+
+	userId := -1
+	name := "Person1"
+	meta := map[string]string{}
+	color := sql.NullInt64{0, false}
+
+	sqlmock.ExpectQuery(`INSERT INTO "person" \( user_id, name, meta, color \) VALUES \(\?, \?, \?, \?\) RETURNING id;`).
+		WithArgs(userId, name, meta, color).
+		WillReturnError(errors.New("Could not insert"))
+
+	p, err := pgdbs.CreatePerson(userId, name, meta, color)
+
+	if !assert.Nil(t, p, "Person should be nil") {
+		return
+	}
+
+	if !assert.NotNil(t, err, "Error should not be nil") {
+		return
+	}
+
+	assert.Equal(t, err.Error(), "Could not insert")
+}
