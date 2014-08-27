@@ -335,5 +335,6 @@ func TestCreatePersonEmptyName(t *testing.T) {
 	for _, name := range names {
 		_, err := pgdbs.CreatePerson(userId, name, meta, color)
 		assert.Error(t, err, "Empty name should cause error")
+		assert.Equal(t, err, errors.New("Person name cannot be empty"))
 	}
 }
