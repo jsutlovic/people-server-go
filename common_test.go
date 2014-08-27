@@ -39,6 +39,10 @@ func newTestPerson(userId int) *Person {
 	return &person
 }
 
+func newTestConfig() *Config {
+	return &Config{"mock", "", "127.0.0.1:3000"}
+}
+
 type MockNext struct {
 	mock.Mock
 }
