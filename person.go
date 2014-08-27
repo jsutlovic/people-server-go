@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"github.com/lib/pq/hstore"
+	"strings"
 )
 
 type PersonService interface {
@@ -104,5 +106,10 @@ func (s *pgDbService) GetPeople(userId int) ([]Person, error) {
 }
 
 func (s *pgDbService) CreatePerson(userId int, name string, meta map[string]string, color sql.NullInt64) (*Person, error) {
-	return nil, nil
+	newPerson := new(Person)
+
+	if strings.TrimSpace(name) == "" {
+		return nil, errors.New("Person name cannot be empty")
+	}
+	return newPerson, nil
 }
