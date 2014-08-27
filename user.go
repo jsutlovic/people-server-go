@@ -12,6 +12,13 @@ const (
 	passwordCost = 10
 )
 
+type UserService interface {
+	// User related methods
+	GetUser(email string) (*User, error)
+	PasswordCost() int
+	CreateUser(email, pwhash, name, apikey string) (*User, error)
+}
+
 /*
 Basic user struct
 

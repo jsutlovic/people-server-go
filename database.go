@@ -13,14 +13,8 @@ Database service
 Provides an abstraction wrapper around the database
 */
 type DbService interface {
-	// User related methods
-	GetUser(email string) (*User, error)
-	PasswordCost() int
-	CreateUser(email, pwhash, name, apikey string) (*User, error)
-
-	// People related methods
-	GetPerson(userId, id int) (*Person, error)
-	GetPeople(userId int) ([]Person, error)
+	UserService
+	PersonService
 }
 
 type pgDbService struct {

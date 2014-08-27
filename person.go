@@ -7,6 +7,12 @@ import (
 	"github.com/lib/pq/hstore"
 )
 
+type PersonService interface {
+	// People related methods
+	GetPerson(userId, id int) (*Person, error)
+	GetPeople(userId int) ([]Person, error)
+}
+
 type Person struct {
 	Id     int
 	UserId int `db:"user_id"`
