@@ -327,7 +327,7 @@ func TestCreatePersonEmptyName(t *testing.T) {
 	pgdbs := NewPgDbService("mock", "")
 
 	userId := 1
-	meta := map[string]string{}
+	meta := hstore.Hstore{}
 	color := sql.NullInt64{1, true}
 
 	names := []string{"", " ", "\t", "\n"}
@@ -344,7 +344,8 @@ func TestCreatePersonQueryError(t *testing.T) {
 
 	userId := -1
 	name := "Person1"
-	meta := map[string]string{}
+	meta := hstore.Hstore{}
+	MapToHstore(map[string]string{}, &meta)
 	color := sql.NullInt64{0, false}
 
 	sqlmock.ExpectQuery(`INSERT INTO "person" \( user_id, name, meta, color \) VALUES \(\?, \?, \?, \?\) RETURNING id;`).
