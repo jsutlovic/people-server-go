@@ -36,14 +36,7 @@ func (p *Person) MarshalJSON() ([]byte, error) {
 	colorVal, _ := p.Color.Value()
 	colorJSON := []byte(Jsonify(colorVal))
 
-	metaVal := make(map[string]string)
-	if p.Meta.Map != nil {
-		for key, val := range p.Meta.Map {
-			if val.Valid {
-				metaVal[key] = val.String
-			}
-		}
-	}
+	metaVal := HstoreToMap(&p.Meta)
 
 	pJson := personJSON{
 		Id:     p.Id,
@@ -68,11 +61,7 @@ func (p *Person) UnmarshalJSON(b []byte) error {
 	p.UserId = pJson.UserId
 	p.Name = pJson.Name
 
-	p.Meta.Map = make(map[string]sql.NullString)
-
-	for key, val := range pJson.Meta {
-		p.Meta.Map[key] = sql.NullString{val, true}
-	}
+	MapToHstore(pJson.Meta, &p.Meta)
 
 	if bytes.Equal(pJson.Color, []byte("null")) {
 		p.Color = sql.NullInt64{0, false}
