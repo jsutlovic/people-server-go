@@ -13,6 +13,7 @@ type PersonService interface {
 	// People related methods
 	GetPerson(userId, id int) (*Person, error)
 	GetPeople(userId int) ([]Person, error)
+	CreatePerson(userId int, name string, meta hstore.Hstore, color sql.NullInt64) (*Person, error)
 }
 
 type Person struct {
@@ -105,7 +106,7 @@ func (s *pgDbService) GetPeople(userId int) ([]Person, error) {
 	return people, nil
 }
 
-func (s *pgDbService) CreatePerson(userId int, name string, meta map[string]string, color sql.NullInt64) (*Person, error) {
+func (s *pgDbService) CreatePerson(userId int, name string, meta hstore.Hstore, color sql.NullInt64) (*Person, error) {
 	newPerson := new(Person)
 
 	if strings.TrimSpace(name) == "" {
