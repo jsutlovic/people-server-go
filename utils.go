@@ -5,8 +5,10 @@ import (
 	"code.google.com/p/go.crypto/bcrypt"
 	"crypto/hmac"
 	"crypto/sha1"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
+	"github.com/lib/pq/hstore"
 )
 
 // Convert a given interface to JSON with indentation
@@ -31,4 +33,25 @@ func GeneratePasswordHash(password string, cost int) string {
 func GenerateApiKey() string {
 	mac := hmac.New(sha1.New, uuid.NewRandom())
 	return hex.EncodeToString(mac.Sum(nil))
+}
+
+func MapToHstore(m map[string]string, h *hstore.Hstore) {
+	h.Map = make(map[string]sql.NullString)
+
+	for key, val := range m {
+		h.Map[key] = sql.NullString{val, true}
+	}
+}
+
+func HstoreToMap(h *hstore.Hstore) map[string]string {
+	m := make(map[string]string)
+	if h.Map != nil {
+		for key, val := range h.Map {
+			if val.Valid {
+				m[key] = val.String
+			}
+		}
+	}
+
+	return m
 }

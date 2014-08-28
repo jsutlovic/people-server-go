@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"github.com/lib/pq/hstore"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -73,5 +75,90 @@ func TestCreateApiKey(t *testing.T) {
 			}
 		}
 		keys[i] = key
+	}
+}
+
+func TestMapToHstore(t *testing.T) {
+	var mapToHstoreTests = []struct {
+		in  map[string]string
+		out hstore.Hstore
+	}{
+		{
+			in: map[string]string{
+				"a": "b",
+				"c": "d",
+			},
+			out: hstore.Hstore{map[string]sql.NullString{
+				"a": sql.NullString{"b", true},
+				"c": sql.NullString{"d", true},
+			}},
+		},
+		{
+			in: map[string]string{
+				"a": "",
+				"b": "",
+			},
+			out: hstore.Hstore{map[string]sql.NullString{
+				"a": sql.NullString{"", true},
+				"b": sql.NullString{"", true},
+			}},
+		},
+		{
+			in:  map[string]string{},
+			out: hstore.Hstore{map[string]sql.NullString{}},
+		},
+		{
+			in:  nil,
+			out: hstore.Hstore{map[string]sql.NullString{}},
+		},
+	}
+
+	for _, test := range mapToHstoreTests {
+		h := hstore.Hstore{}
+		MapToHstore(test.in, &h)
+		assert.Equal(t, h, test.out)
+	}
+}
+
+func TestHstoreToMap(t *testing.T) {
+	var hstoreToMapTests = []struct {
+		in  hstore.Hstore
+		out map[string]string
+	}{
+		{
+			in: hstore.Hstore{map[string]sql.NullString{
+				"a": sql.NullString{"b", true},
+				"c": sql.NullString{"d", true},
+			}},
+			out: map[string]string{
+				"a": "b",
+				"c": "d",
+			},
+		},
+		{
+			in: hstore.Hstore{map[string]sql.NullString{
+				"a": sql.NullString{"", true},
+				"b": sql.NullString{"", true},
+			}},
+			out: map[string]string{
+				"a": "",
+				"b": "",
+			},
+		},
+		{
+			in: hstore.Hstore{map[string]sql.NullString{
+				"a": sql.NullString{"", false},
+				"b": sql.NullString{"asdfasdf", false},
+			}},
+			out: map[string]string{},
+		},
+		{
+			in:  hstore.Hstore{nil},
+			out: map[string]string{},
+		},
+	}
+
+	for _, test := range hstoreToMapTests {
+		assert.Equal(t, HstoreToMap(&test.in), test.out)
 	}
 }
