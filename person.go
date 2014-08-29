@@ -101,5 +101,32 @@ func (s *pgDbService) CreatePerson(userId int, name string, meta hstore.Hstore, 
 	if strings.TrimSpace(name) == "" {
 		return nil, errors.New("Person name cannot be empty")
 	}
+
+	var personId int
+
+	newPerson.UserId = userId
+	newPerson.Name = name
+	newPerson.Meta = meta
+	newPerson.Color = color
+
+	insertSql := s.db.Rebind(`INSERT INTO "person" (
+		user_id,
+		name,
+		meta,
+		color
+	) VALUES (?, ?, ?, ?) RETURNING id;`)
+
+	err := s.db.QueryRowx(insertSql,
+		newPerson.UserId,
+		newPerson.Name,
+		newPerson.Meta,
+		newPerson.Color).Scan(&personId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	newPerson.Id = personId
+
 	return newPerson, nil
 }
