@@ -97,6 +97,20 @@ func (m *MockDbService) GetPeople(userId int) ([]Person, error) {
 	return nil, args.Error(1)
 }
 
+func (m *MockDbService) CreatePerson(userId int, name string, meta hstore.Hstore, color sql.NullInt64) (*Person, error) {
+	args := m.Mock.Called(userId, name, meta, color)
+	if args.Get(0) != nil {
+		person := args.Get(0).(*Person)
+		person.Id = 2
+		person.UserId = userId
+		person.Name = name
+		person.Meta = meta
+		person.Color = color
+		return person, nil
+	}
+	return nil, args.Error(1)
+}
+
 func mockMiddlewareParams() (web.ResponseWriter, *web.Request, *MockNext, *httptest.ResponseRecorder) {
 	// Build the ResponseRecorder
 	recorder := httptest.NewRecorder()
