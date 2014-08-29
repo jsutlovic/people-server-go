@@ -364,3 +364,33 @@ func TestCreatePersonQueryError(t *testing.T) {
 
 	assert.Equal(t, err.Error(), "Could not insert")
 }
+
+func TestCreatePerson(t *testing.T) {
+	pgdbs := NewPgDbService("mock", "")
+
+	personNewId := 2
+	userId := 1
+	name := "Person1"
+	meta := hstore.Hstore{}
+	MapToHstore(map[string]string{"a": "b"}, &meta)
+	color := sql.NullInt64{0, true}
+
+	metaVal, _ := meta.Value()
+	colorVal, _ := color.Value()
+
+	sqlmock.ExpectQuery(`INSERT INTO "person" \( user_id, name, meta, color \) VALUES \(\?, \?, \?, \?\) RETURNING id;`).
+		WithArgs(userId, name, metaVal, colorVal).
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(personNewId))
+
+	p, err := pgdbs.CreatePerson(userId, name, meta, color)
+
+	if !assert.Nil(t, err, "Error should be nil") {
+		return
+	}
+
+	if !assert.NotNil(t, p, "Person should not be nil") {
+		return
+	}
+
+	assert.Equal(t, p.Id, personNewId)
+}
