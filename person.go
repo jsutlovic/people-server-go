@@ -74,6 +74,9 @@ func (p *Person) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+/*
+Fetch a Person by id from the database
+*/
 func (s *pgDbService) GetPerson(userId, id int) (*Person, error) {
 	person := new(Person)
 
@@ -84,6 +87,9 @@ func (s *pgDbService) GetPerson(userId, id int) (*Person, error) {
 	return person, nil
 }
 
+/*
+Fetch all Person objects related to the user
+*/
 func (s *pgDbService) GetPeople(userId int) ([]Person, error) {
 	people := []Person{}
 
@@ -95,6 +101,9 @@ func (s *pgDbService) GetPeople(userId int) ([]Person, error) {
 	return people, nil
 }
 
+/*
+Create a Person in the database with the given userId, name, meta and color
+*/
 func (s *pgDbService) CreatePerson(userId int, name string, meta hstore.Hstore, color sql.NullInt64) (*Person, error) {
 	newPerson := new(Person)
 
