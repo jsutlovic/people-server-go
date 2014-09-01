@@ -779,3 +779,14 @@ func TestGetPersonListApi(t *testing.T) {
 	assert.Equal(t, rec.Code, http.StatusOK)
 	assert.Equal(t, rec.Body.String(), Jsonify(pp))
 }
+
+func TestCreatePersonApiJsonOnly(t *testing.T) {
+	rw, req, rec := mockHandlerParams("POST", "application/x-www-form-urlencode", "")
+
+	ac, _ := mockAuthContext(nil)
+
+	(*AuthContext).CreatePersonApi(ac, rw, req)
+
+	assert.Equal(t, rec.Code, http.StatusBadRequest)
+	assert.Equal(t, rec.Body.String(), JsonContentTypeError+"\n")
+}
