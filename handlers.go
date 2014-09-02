@@ -46,19 +46,19 @@ type AuthContext struct {
 
 // JSON structs for web APIs
 
-type UserErrors map[string]string
+type JsonErrors map[string]string
 
 // Expected format of JSON data for creating a User
 type UserCreate struct {
 	Email    string     `json:"email"`
 	Password string     `json:"password"`
 	Name     string     `json:"name"`
-	errors   UserErrors `json:"-"`
+	errors   JsonErrors `json:"-"`
 }
 
-func (u *UserCreate) Errors() UserErrors {
+func (u *UserCreate) Errors() JsonErrors {
 	if u.errors == nil {
-		u.errors = UserErrors{}
+		u.errors = JsonErrors{}
 	}
 	return u.errors
 }
@@ -68,7 +68,7 @@ func (u *UserCreate) Validate() bool {
 	anyBlank := false
 	fieldErrors := false
 
-	u.errors = UserErrors{}
+	u.errors = JsonErrors{}
 
 	email := strings.TrimSpace(u.Email)
 	name := strings.TrimSpace(u.Name)
