@@ -396,3 +396,77 @@ func TestCreatePerson(t *testing.T) {
 
 	assert.Equal(t, p.Id, personNewId)
 }
+
+func TestPersonErrors(t *testing.T) {
+	person := Person{}
+
+	err := person.Errors()
+
+	assert.NotNil(t, err)
+}
+
+func TestPersonValidate(t *testing.T) {
+	personValidateTests := []struct {
+		in     Person
+		out    bool
+		errors JsonErrors
+	}{
+		{
+			in:  Person{},
+			out: false,
+			errors: JsonErrors{
+				"name": PersonNameEmpty,
+			},
+		},
+		{
+			in: Person{
+				Id:     1,
+				UserId: 1,
+				Name:   "Test Person",
+				Meta:   hstore.Hstore{map[string]sql.NullString{}},
+				Color:  sql.NullInt64{1, true},
+			},
+			out:    true,
+			errors: JsonErrors{},
+		},
+	}
+
+	for _, test := range personValidateTests {
+		actualValid := test.in.Validate()
+
+		assert.Equal(t, actualValid, test.out)
+		assert.Equal(t, test.in.Errors(), test.errors)
+	}
+}
+
+func TestPersonJSONValidate(t *testing.T) {
+	personValidateJSONTests := []struct {
+		in     string
+		out    bool
+		errors JsonErrors
+	}{
+		{
+			in:  "{}",
+			out: false,
+			errors: JsonErrors{
+				"name": PersonNameEmpty,
+			},
+		},
+		{
+			in:     `{"name": "Test Person"}`,
+			out:    true,
+			errors: JsonErrors{},
+		},
+	}
+
+	for _, test := range personValidateJSONTests {
+		person := Person{}
+
+		_ = person.UnmarshalJSON([]byte(test.in))
+
+		actualValid := person.Validate()
+
+		assert.Equal(t, actualValid, test.out)
+		assert.Equal(t, person.Errors(), test.errors)
+	}
+}
