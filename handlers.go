@@ -105,6 +105,15 @@ func (u *UserCreate) Validate() bool {
 	return !fieldErrors
 }
 
+// Expected format of JSON data for a Person
+type PersonJSON struct {
+	Id     int               `json:"id"`
+	UserId int               `json:"user_id"`
+	Name   string            `json:"name"`
+	Meta   map[string]string `json:"meta"`
+	Color  json.RawMessage   `json:"color"`
+}
+
 func jsonResponse(rw web.ResponseWriter, data interface{}) {
 	rw.Header().Set("Content-Type", JsonContentType)
 	fmt.Fprint(rw, Jsonify(data))

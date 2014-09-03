@@ -24,21 +24,13 @@ type Person struct {
 	Color  sql.NullInt64
 }
 
-type personJSON struct {
-	Id     int               `json:"id"`
-	UserId int               `json:"user_id"`
-	Name   string            `json:"name"`
-	Meta   map[string]string `json:"meta"`
-	Color  json.RawMessage   `json:"color"`
-}
-
 func (p *Person) MarshalJSON() ([]byte, error) {
 	colorVal, _ := p.Color.Value()
 	colorJSON := []byte(Jsonify(colorVal))
 
 	metaVal := HstoreToMap(&p.Meta)
 
-	pJson := personJSON{
+	pJson := PersonJSON{
 		Id:     p.Id,
 		UserId: p.UserId,
 		Name:   p.Name,
@@ -50,7 +42,7 @@ func (p *Person) MarshalJSON() ([]byte, error) {
 }
 
 func (p *Person) UnmarshalJSON(b []byte) error {
-	pJson := new(personJSON)
+	pJson := new(PersonJSON)
 
 	err := json.Unmarshal(b, pJson)
 	if err != nil {
