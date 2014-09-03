@@ -9,6 +9,11 @@ import (
 	"strings"
 )
 
+const (
+	// Person.Validate errors
+	PersonNameEmpty = "Name cannot be empty"
+)
+
 type PersonService interface {
 	// People related methods
 	GetPerson(userId, id int) (*Person, error)
@@ -22,6 +27,7 @@ type Person struct {
 	Name   string
 	Meta   hstore.Hstore
 	Color  sql.NullInt64
+	errors JsonErrors
 }
 
 func (p *Person) MarshalJSON() ([]byte, error) {

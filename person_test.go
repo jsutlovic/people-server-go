@@ -14,19 +14,21 @@ func TestPersonFields(t *testing.T) {
 	personType := reflect.TypeOf(Person{})
 
 	fieldCount := personType.NumField()
-	assert.Equal(t, fieldCount, 5)
+	assert.Equal(t, fieldCount, 6)
 
 	_, idExists := personType.FieldByName("Id")
 	_, userIdExists := personType.FieldByName("UserId")
 	_, nameExists := personType.FieldByName("Name")
 	_, metaExists := personType.FieldByName("Meta")
 	_, colorExists := personType.FieldByName("Color")
+	_, errorsExists := personType.FieldByName("errors")
 
 	assert.True(t, idExists)
 	assert.True(t, userIdExists)
 	assert.True(t, nameExists)
 	assert.True(t, metaExists)
 	assert.True(t, colorExists)
+	assert.True(t, errorsExists)
 }
 
 func TestPersonFieldsDb(t *testing.T) {

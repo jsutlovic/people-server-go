@@ -34,6 +34,7 @@ func newTestPerson(userId int) *Person {
 			"other": sql.NullString{"", false},
 		}},
 		sql.NullInt64{1, true},
+		JsonErrors{},
 	}
 
 	return &person
