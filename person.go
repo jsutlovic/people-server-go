@@ -72,6 +72,26 @@ func (p *Person) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+func (p *Person) Errors() JsonErrors {
+	if p.errors == nil {
+		p.errors = JsonErrors{}
+	}
+	return p.errors
+}
+
+func (p *Person) Validate() bool {
+	p.errors = JsonErrors{}
+
+	name := strings.TrimSpace(p.Name)
+
+	if name == "" {
+		p.errors["name"] = PersonNameEmpty
+		return false
+	}
+
+	return true
+}
+
 /*
 Fetch a Person by id from the database
 */
