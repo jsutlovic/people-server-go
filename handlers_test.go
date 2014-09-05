@@ -790,3 +790,56 @@ func TestCreatePersonApiJsonOnly(t *testing.T) {
 	assert.Equal(t, rec.Code, http.StatusBadRequest)
 	assert.Equal(t, rec.Body.String(), JsonContentTypeError+"\n")
 }
+
+func TestCreatePersonApiMalformedJson(t *testing.T) {
+	personMalformedJsonTests := []string{
+		"",
+		" ",
+		"name=test",
+		"name=test,meta='a=>b,c=>d',color=1",
+	}
+
+	ac, _ := mockAuthContext(nil)
+
+	for _, test := range personMalformedJsonTests {
+		rw, req, rec := mockHandlerParams("POST", JsonContentType, test)
+		(*AuthContext).CreatePersonApi(ac, rw, req)
+
+		assert.Equal(t, rec.Code, http.StatusBadRequest)
+		assert.Equal(t, rec.Body.String(), JsonMalformedError+"\n")
+	}
+}
+
+func TestCreatePersonApiInvalidPerson(t *testing.T) {
+	invalidPersonTests := []struct {
+		in  string
+		out map[string]string
+	}{
+		{
+			in: "{}",
+			out: map[string]string{
+				"name": PersonNameEmpty,
+			},
+		},
+		{
+			in: `{"color": 1}`,
+			out: map[string]string{
+				"name": PersonNameEmpty,
+			},
+		},
+	}
+
+	ac, _ := mockAuthContext(nil)
+
+	for _, test := range invalidPersonTests {
+		rw, req, rec := mockHandlerParams("POST", JsonContentType, test.in)
+		(*AuthContext).CreatePersonApi(ac, rw, req)
+
+		assert.Equal(t, rec.Code, http.StatusBadRequest)
+
+		dec := json.NewDecoder(rec.Body)
+		var actualOutJson map[string]string
+		dec.Decode(&actualOutJson)
+		assert.Equal(t, actualOutJson, test.out)
+	}
+}
