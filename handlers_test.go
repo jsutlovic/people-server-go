@@ -797,6 +797,7 @@ func TestCreatePersonApiMalformedJson(t *testing.T) {
 		" ",
 		"name=test",
 		"name=test,meta='a=>b,c=>d',color=1",
+		`{"name":"test", "meta":"a=>b,c=>d"}`,
 	}
 
 	ac, _ := mockAuthContext(nil)
@@ -823,6 +824,18 @@ func TestCreatePersonApiInvalidPerson(t *testing.T) {
 		},
 		{
 			in: `{"color": 1}`,
+			out: map[string]string{
+				"name": PersonNameEmpty,
+			},
+		},
+		{
+			in: `{"color": 1, "meta": {}}`,
+			out: map[string]string{
+				"name": PersonNameEmpty,
+			},
+		},
+		{
+			in: `{"user_id": 1, "color": 1, "meta": {}}`,
 			out: map[string]string{
 				"name": PersonNameEmpty,
 			},
