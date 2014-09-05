@@ -270,4 +270,17 @@ func (c *AuthContext) CreatePersonApi(rw web.ResponseWriter, req *web.Request) {
 		http.Error(rw, JsonContentTypeError, http.StatusBadRequest)
 		return
 	}
+
+	dec := json.NewDecoder(req.Body)
+	newPerson := new(Person)
+	err := dec.Decode(&newPerson)
+	if err != nil {
+		http.Error(rw, JsonMalformedError, http.StatusBadRequest)
+		return
+	}
+
+	if !newPerson.Validate() {
+		http.Error(rw, Jsonify(newPerson.Errors()), http.StatusBadRequest)
+		return
+	}
 }
