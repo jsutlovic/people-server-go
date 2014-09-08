@@ -266,6 +266,11 @@ Handler for POST Person API
 Takes a JSON representation of a Person and creates it for the user logged in.
 */
 func (c *AuthContext) CreatePersonApi(rw web.ResponseWriter, req *web.Request) {
+	if c.User == nil || c.User.Id == 0 {
+		http.Error(rw, InvalidUser, http.StatusUnauthorized)
+		return
+	}
+
 	ct, ctok := req.Header["Content-Type"]
 	if !ctok || len(ct) < 1 || (len(ct) >= 1 && ct[0] != "application/json") {
 		http.Error(rw, JsonContentTypeError, http.StatusBadRequest)
