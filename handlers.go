@@ -15,6 +15,7 @@ const (
 
 	// Auth errors
 	InvalidCredentials = "Invalid credentials"
+	InvalidUser        = "Invalid user"
 	ParamsRequired     = "Email and password are required"
 	InactiveUser       = "User disabled"
 

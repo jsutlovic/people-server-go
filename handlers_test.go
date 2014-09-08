@@ -780,10 +780,26 @@ func TestGetPersonListApi(t *testing.T) {
 	assert.Equal(t, rec.Body.String(), Jsonify(pp))
 }
 
+func TestCreatePersonNoUser(t *testing.T) {
+	// Nil or default user are invalid
+	invalidUsers := []*User{nil, &User{}}
+
+	for _, user := range invalidUsers {
+		rw, req, rec := mockHandlerParams("POST", "", "")
+
+		ac, _ := mockAuthContext(user)
+
+		(*AuthContext).CreatePersonApi(ac, rw, req)
+
+		assert.Equal(t, rec.Code, http.StatusUnauthorized)
+		assert.Equal(t, rec.Body.String(), InvalidUser+"\n")
+	}
+}
+
 func TestCreatePersonApiJsonOnly(t *testing.T) {
 	rw, req, rec := mockHandlerParams("POST", "application/x-www-form-urlencode", "")
 
-	ac, _ := mockAuthContext(nil)
+	ac, _ := mockAuthContext(newTestUser())
 
 	(*AuthContext).CreatePersonApi(ac, rw, req)
 
@@ -800,7 +816,7 @@ func TestCreatePersonApiMalformedJson(t *testing.T) {
 		`{"name":"test", "meta":"a=>b,c=>d"}`,
 	}
 
-	ac, _ := mockAuthContext(nil)
+	ac, _ := mockAuthContext(newTestUser())
 
 	for _, test := range personMalformedJsonTests {
 		rw, req, rec := mockHandlerParams("POST", JsonContentType, test)
@@ -842,7 +858,7 @@ func TestCreatePersonApiInvalidPerson(t *testing.T) {
 		},
 	}
 
-	ac, _ := mockAuthContext(nil)
+	ac, _ := mockAuthContext(newTestUser())
 
 	for _, test := range invalidPersonTests {
 		rw, req, rec := mockHandlerParams("POST", JsonContentType, test.in)
