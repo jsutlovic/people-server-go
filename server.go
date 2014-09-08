@@ -54,9 +54,9 @@ func (s *Server) setupRoutes() *web.Router {
 	s.routes = append(s.routes, PathRoute{web.HttpMethodGet, "/api/user", (*AuthContext).GetUserApi})
 
 	// Person-related
-	apiRouter.Get("/person/:id:\\d+/", (*AuthContext).GetPersonApi)
+	apiRouter.Get("/person/:id:\\d+", (*AuthContext).GetPersonApi)
 	s.routes = append(s.routes, PathRoute{web.HttpMethodGet, "/api/person/:id", (*AuthContext).GetPersonApi})
-	apiRouter.Get("/person/", (*AuthContext).GetPersonListApi)
+	apiRouter.Get("/person", (*AuthContext).GetPersonListApi)
 	s.routes = append(s.routes, PathRoute{web.HttpMethodGet, "/api/person", (*AuthContext).GetPersonListApi})
 
 	return rootRouter
