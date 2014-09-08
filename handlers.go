@@ -293,4 +293,18 @@ func (c *AuthContext) CreatePersonApi(rw web.ResponseWriter, req *web.Request) {
 		http.Error(rw, Jsonify(newPerson.Errors()), http.StatusBadRequest)
 		return
 	}
+
+	person, err := c.DB.CreatePerson(
+		c.User.Id,
+		newPerson.Name,
+		newPerson.Meta,
+		newPerson.Color)
+
+	if err != nil {
+		http.Error(rw, PersonCreateError, http.StatusInternalServerError)
+		return
+	}
+
+	rw.WriteHeader(http.StatusCreated)
+	jsonResponse(rw, person)
 }
