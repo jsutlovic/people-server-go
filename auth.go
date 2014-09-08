@@ -12,6 +12,8 @@ const (
 	AuthHeaderKey string = "Authorization"
 	EmailField    string = "email"
 	KeyField      string = "key"
+
+	ApiKeyRequiredError = "Apikey authorization required"
 )
 
 // Errors
@@ -31,7 +33,7 @@ type AuthParams struct {
 // Set HTTP 401 and return WWW-Authenticate header with message
 func UnauthorizedHeader(rw http.ResponseWriter) {
 	rw.Header().Set("WWW-Authenticate", "Apikey")
-	http.Error(rw, "Apikey authorization required", http.StatusUnauthorized)
+	http.Error(rw, ApiKeyRequiredError, http.StatusUnauthorized)
 }
 
 /*

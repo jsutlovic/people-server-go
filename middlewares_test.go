@@ -77,7 +77,7 @@ func TestAuthRequiredNoHeader(t *testing.T) {
 	dbs.Mock.AssertNotCalled(t, "GetUser", user.Email)
 	assert.Nil(t, ac.User)
 	assert.Equal(t, rec.Code, http.StatusUnauthorized)
-	assert.Equal(t, rec.Body.String(), "Apikey authorization required\n")
+	assert.Equal(t, rec.Body.String(), ApiKeyRequiredError+"\n")
 }
 
 func TestAuthRequiredInvalidAuthScheme(t *testing.T) {
@@ -99,7 +99,7 @@ func TestAuthRequiredInvalidAuthScheme(t *testing.T) {
 	dbs.Mock.AssertNotCalled(t, "GetUser", user.Email)
 	assert.Nil(t, ac.User)
 	assert.Equal(t, rec.Code, http.StatusUnauthorized)
-	assert.Equal(t, rec.Body.String(), "Apikey authorization required\n")
+	assert.Equal(t, rec.Body.String(), ApiKeyRequiredError+"\n")
 }
 
 func TestAuthRequiredBadCreds(t *testing.T) {
