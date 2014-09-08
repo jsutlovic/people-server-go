@@ -780,22 +780,6 @@ func TestGetPersonListApi(t *testing.T) {
 	assert.Equal(t, rec.Body.String(), Jsonify(pp))
 }
 
-func TestCreatePersonNoUser(t *testing.T) {
-	// Nil or default user are invalid
-	invalidUsers := []*User{nil, &User{}}
-
-	for _, user := range invalidUsers {
-		rw, req, rec := mockHandlerParams("POST", "", "")
-
-		ac, _ := mockAuthContext(user)
-
-		(*AuthContext).CreatePersonApi(ac, rw, req)
-
-		assert.Equal(t, rec.Code, http.StatusUnauthorized)
-		assert.Equal(t, rec.Body.String(), InvalidUser+"\n")
-	}
-}
-
 func TestCreatePersonApiJsonOnly(t *testing.T) {
 	rw, req, rec := mockHandlerParams("POST", "application/x-www-form-urlencode", "")
 
