@@ -111,8 +111,8 @@ func (u *UserCreate) Validate() bool {
 
 // Expected format of JSON data for a Person
 type PersonJSON struct {
-	Id     int               `json:"id"`
-	UserId int               `json:"user_id"`
+	Id     int               `json:"id,omitempty"`
+	UserId int               `json:"user_id,omitempty"`
 	Name   string            `json:"name"`
 	Meta   map[string]string `json:"meta"`
 	Color  json.RawMessage   `json:"color"`
