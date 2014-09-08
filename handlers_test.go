@@ -194,12 +194,10 @@ func TestUserCreateJsonTags(t *testing.T) {
 	emailField, _ := userCreateType.FieldByName("Email")
 	passwordField, _ := userCreateType.FieldByName("Password")
 	nameField, _ := userCreateType.FieldByName("Name")
-	errorsField, _ := userCreateType.FieldByName("errors")
 
 	assert.Equal(t, emailField.Tag.Get("json"), "email")
 	assert.Equal(t, passwordField.Tag.Get("json"), "password")
 	assert.Equal(t, nameField.Tag.Get("json"), "name")
-	assert.Equal(t, errorsField.Tag.Get("json"), "-")
 }
 
 func TestUserCreateValidateCreatesNewErrors(t *testing.T) {

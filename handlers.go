@@ -51,10 +51,10 @@ type JsonErrors map[string]string
 
 // Expected format of JSON data for creating a User
 type UserCreate struct {
-	Email    string     `json:"email"`
-	Password string     `json:"password"`
-	Name     string     `json:"name"`
-	errors   JsonErrors `json:"-"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Name     string `json:"name"`
+	errors   JsonErrors
 }
 
 func (u *UserCreate) Errors() JsonErrors {
