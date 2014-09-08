@@ -2,8 +2,10 @@ package main
 
 import (
 	"code.google.com/p/go.crypto/bcrypt"
+	"database/sql"
 	"encoding/json"
 	"errors"
+	"github.com/lib/pq/hstore"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"net/http"
@@ -869,4 +871,51 @@ func TestCreatePersonApiInvalidPerson(t *testing.T) {
 		dec.Decode(&actualOutJson)
 		assert.Equal(t, actualOutJson, test.out)
 	}
+}
+
+func TestCreatePersonApiInsertError(t *testing.T) {
+	user := newTestUser()
+
+	personName := "Test Person"
+	personMeta := hstore.Hstore{map[string]sql.NullString{}}
+	personColor := sql.NullInt64{1, true}
+
+	newPerson := Person{Name: personName, Meta: personMeta, Color: personColor}
+
+	rw, req, rec := mockHandlerParams("POST", JsonContentType, Jsonify(&newPerson))
+
+	ac, dbs := mockAuthContext(user)
+
+	dbs.Mock.On("CreatePerson", user.Id, personName, personMeta, personColor).
+		Return(nil, errors.New(""))
+
+	(*AuthContext).CreatePersonApi(ac, rw, req)
+
+	assert.Equal(t, rec.Code, http.StatusInternalServerError)
+	assert.Equal(t, rec.Body.String(), PersonCreateError+"\n")
+}
+
+func TestCreatePersonApi(t *testing.T) {
+	user := newTestUser()
+	user.Id = 1
+
+	personId := 2
+	personName := "Test Person"
+	personMeta := hstore.Hstore{map[string]sql.NullString{}}
+	personColor := sql.NullInt64{1, true}
+
+	newPerson := Person{Name: personName, Meta: personMeta, Color: personColor}
+	person := &Person{personId, user.Id, personName, personMeta, personColor, nil}
+
+	rw, req, rec := mockHandlerParams("POST", JsonContentType, Jsonify(&newPerson))
+
+	ac, dbs := mockAuthContext(user)
+
+	dbs.Mock.On("CreatePerson", user.Id, personName, personMeta, personColor).
+		Return(person, nil)
+
+	(*AuthContext).CreatePersonApi(ac, rw, req)
+
+	assert.Equal(t, rec.Code, http.StatusCreated)
+	assert.Equal(t, rec.Body.String(), Jsonify(person))
 }

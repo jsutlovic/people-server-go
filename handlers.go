@@ -32,6 +32,9 @@ const (
 	JsonMalformedError   = "Malformed JSON"
 	InvalidUserDataError = "Invalid User data"
 	UserExistsError      = "User already exists"
+
+	// PersonCreateApi errors
+	PersonCreateError = "Error creating person"
 )
 
 // Basic Context available to all handlers
