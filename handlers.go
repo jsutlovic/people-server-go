@@ -25,9 +25,9 @@ const (
 	UserCreateNameEmpty      = "Name cannot be empty"
 	UserCreatePasswordLength = "Password must be at least 6 characters long"
 	UserCreateInvalidEmail   = "Invalid email address"
-	UserCreateError          = "Error creating user"
 
 	// UserCreateApi errors
+	UserCreateError      = "Error creating user"
 	JsonContentTypeError = "Content-Type is not JSON"
 	JsonMalformedError   = "Malformed JSON"
 	InvalidUserDataError = "Invalid User data"
