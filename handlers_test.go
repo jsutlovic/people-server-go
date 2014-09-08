@@ -627,7 +627,7 @@ func TestCreateUserApi(t *testing.T) {
 
 	(*Context).CreateUserApi(c, rw, req)
 
-	assert.Equal(t, rec.Code, http.StatusOK)
+	assert.Equal(t, rec.Code, http.StatusCreated)
 	assert.Equal(t, rec.Body.String(), Jsonify(user))
 	assert.True(t, user.CheckPassword(userPassword))
 	assert.Len(t, user.ApiKey, 40)

@@ -211,6 +211,7 @@ func (c *Context) CreateUserApi(rw web.ResponseWriter, req *web.Request) {
 		return
 	}
 
+	rw.WriteHeader(http.StatusCreated)
 	jsonResponse(rw, user)
 }
 
