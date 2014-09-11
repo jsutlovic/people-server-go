@@ -9,14 +9,16 @@ import (
 )
 
 const (
-	passwordCost = 10
+	passwordCost     = 10
+	defaultActive    = true
+	defaultSuperuser = false
 )
 
 type UserService interface {
 	// User related methods
 	GetUser(email string) (*User, error)
 	PasswordCost() int
-	CreateUser(email, pwhash, name, apikey string) (*User, error)
+	CreateUser(email, pwhash, name, apikey string, isActive, isSuperuser bool) (*User, error)
 }
 
 /*
@@ -76,7 +78,7 @@ Create a User in the database with the given email, password hash, name and apik
 
 IsActive is set to true, IsSuperuser is set to false for the user
 */
-func (s *pgDbService) CreateUser(email, pwhash, name, apikey string) (*User, error) {
+func (s *pgDbService) CreateUser(email, pwhash, name, apikey string, isActive, isSuperuser bool) (*User, error) {
 	newUser := new(User)
 
 	if strings.TrimSpace(email) == "" {
@@ -88,8 +90,8 @@ func (s *pgDbService) CreateUser(email, pwhash, name, apikey string) (*User, err
 	newUser.Email = email
 	newUser.Pwhash = pwhash
 	newUser.Name = name
-	newUser.IsActive = true
-	newUser.IsSuperuser = false
+	newUser.IsActive = isActive
+	newUser.IsSuperuser = isSuperuser
 	newUser.ApiKey = apikey
 
 	insertSql := s.db.Rebind(`INSERT INTO "user" (

@@ -180,7 +180,7 @@ func TestCreateUserInsertError(t *testing.T) {
 		WithArgs(userEmail, userPwhash, userName, true, false, userApikey).
 		WillReturnError(errors.New("Could not insert"))
 
-	u, err := pgdbs.CreateUser(userEmail, userPwhash, userName, userApikey)
+	u, err := pgdbs.CreateUser(userEmail, userPwhash, userName, userApikey, defaultActive, defaultSuperuser)
 
 	if !assert.Nil(t, u, "User should be nil") {
 		return
@@ -201,7 +201,7 @@ func TestCreateUserEmailError(t *testing.T) {
 	userName := "Test User"
 	userApikey := GenerateApiKey()
 
-	u, err := pgdbs.CreateUser(userEmail, userPwhash, userName, userApikey)
+	u, err := pgdbs.CreateUser(userEmail, userPwhash, userName, userApikey, defaultActive, defaultSuperuser)
 
 	if !assert.Nil(t, u, "User should be nil") {
 		return
@@ -222,12 +222,14 @@ func TestCreateUser(t *testing.T) {
 	userPwhash := "$2a$04$2a2qnoery/ULUw2WgKVd0OyeHhsHWINab9w9WTPoXqe8xY4PBrwXe"
 	userName := "Test User"
 	userApikey := GenerateApiKey()
+	userIsActive := true
+	userIsSuperuser := false
 
 	sqlmock.ExpectQuery(`INSERT INTO "user" \( email, pwhash, name, is_active, is_superuser, apikey \) VALUES \(\?, \?, \?, \?, \?, \?\) RETURNING id;`).
-		WithArgs(userEmail, userPwhash, userName, true, false, userApikey).
+		WithArgs(userEmail, userPwhash, userName, userIsActive, userIsSuperuser, userApikey).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(userNewId))
 
-	u, err := pgdbs.CreateUser(userEmail, userPwhash, userName, userApikey)
+	u, err := pgdbs.CreateUser(userEmail, userPwhash, userName, userApikey, userIsActive, userIsSuperuser)
 
 	if !assert.Nil(t, err, "Error should be nil") {
 		return

@@ -207,7 +207,9 @@ func (c *Context) CreateUserApi(rw web.ResponseWriter, req *web.Request) {
 		newUser.Email,
 		GeneratePasswordHash(newUser.Password, c.DB.PasswordCost()),
 		newUser.Name,
-		GenerateApiKey())
+		GenerateApiKey(),
+		defaultActive,
+		defaultSuperuser)
 
 	if err != nil {
 		http.Error(rw, UserCreateError, http.StatusInternalServerError)
