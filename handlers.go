@@ -19,19 +19,13 @@ const (
 	ParamsRequired     = "Email and password are required"
 	InactiveUser       = "User disabled"
 
-	// UserCreate.Validate errors
-	UserCreateEmailEmpty     = "Email cannot be empty"
-	UserCreatePasswordEmpty  = "Password cannot be empty"
-	UserCreateNameEmpty      = "Name cannot be empty"
-	UserCreatePasswordLength = "Password must be at least 6 characters long"
-	UserCreateInvalidEmail   = "Invalid email address"
-
 	// UserCreateApi errors
-	UserCreateError      = "Error creating user"
-	JsonContentTypeError = "Content-Type is not JSON"
-	JsonMalformedError   = "Malformed JSON"
-	InvalidUserDataError = "Invalid User data"
-	UserExistsError      = "User already exists"
+	UserCreatePasswordLength = "Password is too short"
+	UserCreateError          = "Error creating user"
+	JsonContentTypeError     = "Content-Type is not JSON"
+	JsonMalformedError       = "Malformed JSON"
+	InvalidUserDataError     = "Invalid User data"
+	UserExistsError          = "User already exists"
 
 	// PersonCreateApi errors
 	PersonCreateError = "Error creating person"
@@ -78,16 +72,16 @@ func (u *UserCreate) Validate() bool {
 	name := strings.TrimSpace(u.Name)
 
 	if email == "" {
-		u.errors["email"] = UserCreateEmailEmpty
+		u.errors["email"] = UserEmailEmpty
 		anyBlank = true
 	}
 	// Spaces are valid in passwords
 	if u.Password == "" {
-		u.errors["password"] = UserCreatePasswordEmpty
+		u.errors["password"] = UserPasswordEmpty
 		anyBlank = true
 	}
 	if name == "" {
-		u.errors["name"] = UserCreateNameEmpty
+		u.errors["name"] = UserNameEmpty
 		anyBlank = true
 	}
 	if anyBlank {
@@ -102,7 +96,7 @@ func (u *UserCreate) Validate() bool {
 	re := regexp.MustCompile(".+@.+\\..+")
 	matched := re.Match([]byte(email))
 	if !matched {
-		u.errors["email"] = UserCreateInvalidEmail
+		u.errors["email"] = UserInvalidEmail
 		fieldErrors = true
 	}
 

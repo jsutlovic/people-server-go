@@ -12,6 +12,12 @@ const (
 	passwordCost     = 10
 	defaultActive    = true
 	defaultSuperuser = false
+
+	// UserCreate.Validate errors
+	UserEmailEmpty    = "Email cannot be empty"
+	UserPasswordEmpty = "Password cannot be empty"
+	UserNameEmpty     = "Name cannot be empty"
+	UserInvalidEmail  = "Invalid email address"
 )
 
 type UserService interface {

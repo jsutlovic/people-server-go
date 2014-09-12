@@ -233,89 +233,89 @@ func TestUserCreateValidate(t *testing.T) {
 			in:  UserCreate{"", "", "", nil},
 			out: false,
 			errors: JsonErrors{
-				"email":    UserCreateEmailEmpty,
-				"password": UserCreatePasswordEmpty,
-				"name":     UserCreateNameEmpty,
+				"email":    UserEmailEmpty,
+				"password": UserPasswordEmpty,
+				"name":     UserNameEmpty,
 			},
 		},
 		{
 			in:  UserCreate{" ", " ", " ", nil},
 			out: false,
 			errors: JsonErrors{
-				"email": UserCreateEmailEmpty,
-				"name":  UserCreateNameEmpty,
+				"email": UserEmailEmpty,
+				"name":  UserNameEmpty,
 			},
 		},
 		{
 			in:  UserCreate{"\t", "", "\t ", nil},
 			out: false,
 			errors: JsonErrors{
-				"email":    UserCreateEmailEmpty,
-				"password": UserCreatePasswordEmpty,
-				"name":     UserCreateNameEmpty,
+				"email":    UserEmailEmpty,
+				"password": UserPasswordEmpty,
+				"name":     UserNameEmpty,
 			},
 		},
 		{
 			in:  UserCreate{" \n\r ", "", "\r\n ", nil},
 			out: false,
 			errors: JsonErrors{
-				"email":    UserCreateEmailEmpty,
-				"password": UserCreatePasswordEmpty,
-				"name":     UserCreateNameEmpty,
+				"email":    UserEmailEmpty,
+				"password": UserPasswordEmpty,
+				"name":     UserNameEmpty,
 			},
 		},
 		{
 			in:  UserCreate{" \n\t\r ", "", "\r\n ", nil},
 			out: false,
 			errors: JsonErrors{
-				"email":    UserCreateEmailEmpty,
-				"password": UserCreatePasswordEmpty,
-				"name":     UserCreateNameEmpty,
+				"email":    UserEmailEmpty,
+				"password": UserPasswordEmpty,
+				"name":     UserNameEmpty,
 			},
 		},
 		{
 			in:  UserCreate{"test@example.com", "", "", nil},
 			out: false,
 			errors: JsonErrors{
-				"password": UserCreatePasswordEmpty,
-				"name":     UserCreateNameEmpty,
+				"password": UserPasswordEmpty,
+				"name":     UserNameEmpty,
 			},
 		},
 		{
 			in:  UserCreate{"", "asdf", "", nil},
 			out: false,
 			errors: JsonErrors{
-				"email": UserCreateEmailEmpty,
-				"name":  UserCreateNameEmpty,
+				"email": UserEmailEmpty,
+				"name":  UserNameEmpty,
 			},
 		},
 		{
 			in:  UserCreate{"", "", "Test User", nil},
 			out: false,
 			errors: JsonErrors{
-				"email":    UserCreateEmailEmpty,
-				"password": UserCreatePasswordEmpty,
+				"email":    UserEmailEmpty,
+				"password": UserPasswordEmpty,
 			},
 		},
 		{
 			in:  UserCreate{"test@example.com", "asdf", "", nil},
 			out: false,
 			errors: JsonErrors{
-				"name": UserCreateNameEmpty,
+				"name": UserNameEmpty,
 			},
 		},
 		{
 			in:  UserCreate{"", "asdf", "Test User", nil},
 			out: false,
 			errors: JsonErrors{
-				"email": UserCreateEmailEmpty,
+				"email": UserEmailEmpty,
 			},
 		},
 		{
 			in:  UserCreate{"test@example.com", "", "Test User", nil},
 			out: false,
 			errors: JsonErrors{
-				"password": UserCreatePasswordEmpty,
+				"password": UserPasswordEmpty,
 			},
 		},
 		{
@@ -329,49 +329,49 @@ func TestUserCreateValidate(t *testing.T) {
 			in:  UserCreate{"test", "asdf", "Test User", nil},
 			out: false,
 			errors: JsonErrors{
-				"email": UserCreateInvalidEmail,
+				"email": UserInvalidEmail,
 			},
 		},
 		{
 			in:  UserCreate{"test@example", "asdf", "Test User", nil},
 			out: false,
 			errors: JsonErrors{
-				"email": UserCreateInvalidEmail,
+				"email": UserInvalidEmail,
 			},
 		},
 		{
 			in:  UserCreate{"@example", "asdf", "Test User", nil},
 			out: false,
 			errors: JsonErrors{
-				"email": UserCreateInvalidEmail,
+				"email": UserInvalidEmail,
 			},
 		},
 		{
 			in:  UserCreate{"@example.com", "asdf", "Test User", nil},
 			out: false,
 			errors: JsonErrors{
-				"email": UserCreateInvalidEmail,
+				"email": UserInvalidEmail,
 			},
 		},
 		{
 			in:  UserCreate{"@example.co.uk", "asdf", "Test User", nil},
 			out: false,
 			errors: JsonErrors{
-				"email": UserCreateInvalidEmail,
+				"email": UserInvalidEmail,
 			},
 		},
 		{
 			in:  UserCreate{"example.com", "asdf", "Test User", nil},
 			out: false,
 			errors: JsonErrors{
-				"email": UserCreateInvalidEmail,
+				"email": UserInvalidEmail,
 			},
 		},
 		{
 			in:  UserCreate{"test@example", "a", "Test User", nil},
 			out: false,
 			errors: JsonErrors{
-				"email":    UserCreateInvalidEmail,
+				"email":    UserInvalidEmail,
 				"password": UserCreatePasswordLength,
 			},
 		},
@@ -379,21 +379,21 @@ func TestUserCreateValidate(t *testing.T) {
 			in:  UserCreate{"test@example", "a", "", nil},
 			out: false,
 			errors: JsonErrors{
-				"name": UserCreateNameEmpty,
+				"name": UserNameEmpty,
 			},
 		},
 		{
 			in:  UserCreate{"", "a", "Test User", nil},
 			out: false,
 			errors: JsonErrors{
-				"email": UserCreateEmailEmpty,
+				"email": UserEmailEmpty,
 			},
 		},
 		{
 			in:  UserCreate{"test@example", "", "Test User", nil},
 			out: false,
 			errors: JsonErrors{
-				"password": UserCreatePasswordEmpty,
+				"password": UserPasswordEmpty,
 			},
 		},
 
@@ -436,9 +436,9 @@ func TestCreateUserApiInvalidUserDataJson(t *testing.T) {
 				"user": "test@example.com",
 			},
 			out: map[string]string{
-				"email":    UserCreateEmailEmpty,
-				"password": UserCreatePasswordEmpty,
-				"name":     UserCreateNameEmpty,
+				"email":    UserEmailEmpty,
+				"password": UserPasswordEmpty,
+				"name":     UserNameEmpty,
 			},
 		},
 		{
@@ -446,8 +446,8 @@ func TestCreateUserApiInvalidUserDataJson(t *testing.T) {
 				"email": "test@example.com",
 			},
 			out: map[string]string{
-				"password": UserCreatePasswordEmpty,
-				"name":     UserCreateNameEmpty,
+				"password": UserPasswordEmpty,
+				"name":     UserNameEmpty,
 			},
 		},
 		{
@@ -456,7 +456,7 @@ func TestCreateUserApiInvalidUserDataJson(t *testing.T) {
 				"name":  "Test User",
 			},
 			out: map[string]string{
-				"password": UserCreatePasswordEmpty,
+				"password": UserPasswordEmpty,
 			},
 		},
 		{
@@ -465,7 +465,7 @@ func TestCreateUserApiInvalidUserDataJson(t *testing.T) {
 				"password": "asdf",
 			},
 			out: map[string]string{
-				"name": UserCreateNameEmpty,
+				"name": UserNameEmpty,
 			},
 		},
 		{
@@ -474,15 +474,15 @@ func TestCreateUserApiInvalidUserDataJson(t *testing.T) {
 				"name":     "Test User",
 			},
 			out: map[string]string{
-				"email": UserCreateEmailEmpty,
+				"email": UserEmailEmpty,
 			},
 		},
 		{
 			in: map[string]string{},
 			out: map[string]string{
-				"email":    UserCreateEmailEmpty,
-				"password": UserCreatePasswordEmpty,
-				"name":     UserCreateNameEmpty,
+				"email":    UserEmailEmpty,
+				"password": UserPasswordEmpty,
+				"name":     UserNameEmpty,
 			},
 		},
 		{
@@ -490,9 +490,9 @@ func TestCreateUserApiInvalidUserDataJson(t *testing.T) {
 				"username": "testuser",
 			},
 			out: map[string]string{
-				"email":    UserCreateEmailEmpty,
-				"password": UserCreatePasswordEmpty,
-				"name":     UserCreateNameEmpty,
+				"email":    UserEmailEmpty,
+				"password": UserPasswordEmpty,
+				"name":     UserNameEmpty,
 			},
 		},
 		{
@@ -502,7 +502,7 @@ func TestCreateUserApiInvalidUserDataJson(t *testing.T) {
 				"name":     "Test User",
 			},
 			out: map[string]string{
-				"email": UserCreateInvalidEmail,
+				"email": UserInvalidEmail,
 			},
 		},
 		{
@@ -522,7 +522,7 @@ func TestCreateUserApiInvalidUserDataJson(t *testing.T) {
 				"name":     "Test User",
 			},
 			out: map[string]string{
-				"email":    UserCreateInvalidEmail,
+				"email":    UserInvalidEmail,
 				"password": UserCreatePasswordLength,
 			},
 		},
