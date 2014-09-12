@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/lib/pq/hstore"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -160,5 +161,96 @@ func TestHstoreToMap(t *testing.T) {
 
 	for _, test := range hstoreToMapTests {
 		assert.Equal(t, HstoreToMap(&test.in), test.out)
+	}
+}
+
+func TestValidateEmail(t *testing.T) {
+	emailTests := []struct {
+		in  string
+		out bool
+	}{
+		// Invalid emails
+		{
+			in:  "",
+			out: false,
+		},
+		{
+			in:  "test",
+			out: false,
+		},
+		{
+			in:  "test@",
+			out: false,
+		},
+		{
+			in:  "test@example",
+			out: false,
+		},
+		{
+			in:  "test@example.",
+			out: false,
+		},
+		{
+			in:  "test.example@example",
+			out: false,
+		},
+		{
+			in:  "test example@example.com ",
+			out: false,
+		},
+		{
+			in:  "test.example@ example.com",
+			out: false,
+		},
+		{
+			in:  "test.example@ example.com ",
+			out: false,
+		},
+		{
+			in:  " ",
+			out: false,
+		},
+		{
+			in:  " test @example.com",
+			out: false,
+		},
+		{
+			in:  " test @ example com",
+			out: false,
+		},
+		{
+			in:  "test@test@example.com",
+			out: false,
+		},
+		{
+			in:  "test.test@example@example.co.uk",
+			out: false,
+		},
+
+		// Valid emails
+		{
+			in:  "test@example.com",
+			out: true,
+		},
+		{
+			in:  "test.example@example.com",
+			out: true,
+		},
+		{
+			in:  "test.example@example.co.uk",
+			out: true,
+		},
+		{
+			in:  "test@example.co.uk",
+			out: true,
+		},
+	}
+
+	for i, test := range emailTests {
+		assert.Equal(
+			t,
+			ValidateEmail(test.in),
+			test.out,
+			fmt.Sprintf("Test %d: %#v", i+1, test.in))
 	}
 }
