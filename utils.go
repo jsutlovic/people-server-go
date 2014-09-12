@@ -9,6 +9,16 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"github.com/lib/pq/hstore"
+	"regexp"
+	"strings"
+)
+
+const (
+	EmailRegex = "\\S+@\\S+\\.\\S+"
+)
+
+var (
+	emailCompiled = regexp.MustCompile(EmailRegex)
 )
 
 // Convert a given interface to JSON with indentation
@@ -54,4 +64,12 @@ func HstoreToMap(h *hstore.Hstore) map[string]string {
 	}
 
 	return m
+}
+
+func ValidateEmail(email string) bool {
+	if strings.Count(email, "@") != 1 || strings.Count(email, " ") > 0 {
+		return false
+	}
+	matched := emailCompiled.Match([]byte(email))
+	return matched
 }
