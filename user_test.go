@@ -241,3 +241,90 @@ func TestCreateUser(t *testing.T) {
 
 	assert.Equal(t, u.Id, userNewId)
 }
+
+func TestUserErrors(t *testing.T) {
+	user := User{}
+
+	assert.NotNil(t, user.Errors())
+}
+
+func TestUserValidate(t *testing.T) {
+	userValidateTests := []struct {
+		in     User
+		out    bool
+		errors JsonErrors
+	}{
+		// Invalid users
+		{
+			in:  User{},
+			out: false,
+			errors: JsonErrors{
+				"email":  UserEmailEmpty,
+				"name":   UserNameEmpty,
+				"pwhash": UserPasswordEmpty,
+			},
+		},
+		{
+			in: User{
+				Name:  "Test User",
+				Email: "test@example.com",
+			},
+			out: false,
+			errors: JsonErrors{
+				"pwhash": UserPasswordEmpty,
+			},
+		},
+		{
+			in: User{
+				Name:   "Test User",
+				Pwhash: "$2a$04$2a2qnoery/ULUw2WgKVd0OyeHhsHWINab9w9WTPoXqe8xY4PBrwXe",
+			},
+			out: false,
+			errors: JsonErrors{
+				"email": UserEmailEmpty,
+			},
+		},
+		{
+			in: User{
+				Email:  "test@example.com",
+				Pwhash: "$2a$04$2a2qnoery/ULUw2WgKVd0OyeHhsHWINab9w9WTPoXqe8xY4PBrwXe",
+			},
+			out: false,
+			errors: JsonErrors{
+				"name": UserNameEmpty,
+			},
+		},
+		{
+			in: User{
+				Email:  "test",
+				Name:   "Test User",
+				Pwhash: "$2a$04$2a2qnoery/ULUw2WgKVd0OyeHhsHWINab9w9WTPoXqe8xY4PBrwXe",
+			},
+			out: false,
+			errors: JsonErrors{
+				"email": UserInvalidEmail,
+			},
+		},
+
+		// Valid users
+		{
+			in: User{
+				Id:          1,
+				Email:       "test@example.com",
+				Name:        "Test User",
+				Pwhash:      "$2a$04$2a2qnoery/ULUw2WgKVd0OyeHhsHWINab9w9WTPoXqe8xY4PBrwXe",
+				IsActive:    defaultActive,
+				IsSuperuser: defaultSuperuser,
+				ApiKey:      "abcdef",
+				errors:      nil,
+			},
+			out:    true,
+			errors: JsonErrors{},
+		},
+	}
+
+	for _, test := range userValidateTests {
+		assert.Equal(t, test.in.Validate(), test.out)
+		assert.Equal(t, test.in.Errors(), test.errors)
+	}
+}
