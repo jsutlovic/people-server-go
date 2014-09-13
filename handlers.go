@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/gocraft/web"
 	"net/http"
-	"regexp"
 	"strconv"
 	"strings"
 )
@@ -93,9 +92,7 @@ func (u *UserCreate) Validate() bool {
 		fieldErrors = true
 	}
 
-	re := regexp.MustCompile(".+@.+\\..+")
-	matched := re.Match([]byte(email))
-	if !matched {
+	if !ValidateEmail(u.Email) {
 		u.errors["email"] = UserInvalidEmail
 		fieldErrors = true
 	}
