@@ -196,3 +196,24 @@ func TestValidateEmail(t *testing.T) {
 		assert.Equal(t, ValidateEmail(test), true, "Test %d: %#v", i+1, test)
 	}
 }
+
+func TestValidatePassword(t *testing.T) {
+	invalidPasswords := []string{
+		"a",
+		"ab",
+		"abc",
+	}
+
+	validPasswords := []string{
+		"abcd",
+		"abcdefg",
+	}
+
+	for i, test := range invalidPasswords {
+		assert.Equal(t, ValidatePassword(test), false, "Test %d: %#v", i+1, test)
+	}
+
+	for i, test := range validPasswords {
+		assert.Equal(t, ValidatePassword(test), true, "Test %d: %#v", i+1, test)
+	}
+}
