@@ -87,7 +87,7 @@ func (u *UserCreate) Validate() bool {
 		return false
 	}
 
-	if len(u.Password) < 4 {
+	if !ValidatePassword(u.Password) {
 		u.errors["password"] = UserCreatePasswordLength
 		fieldErrors = true
 	}
