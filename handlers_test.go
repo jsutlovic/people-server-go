@@ -405,10 +405,8 @@ func TestUserCreateValidate(t *testing.T) {
 		},
 	}
 
-	for _, test := range validateTests {
-		actualValid := test.in.Validate()
-
-		assert.Equal(t, actualValid, test.out)
+	for i, test := range validateTests {
+		assert.Equal(t, test.in.Validate(), test.out, "%d: %#v", i+1, test.in)
 		assert.Equal(t, test.in.Errors(), test.errors)
 	}
 }
