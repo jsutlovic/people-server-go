@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -244,10 +243,9 @@ func TestParseCredentials(t *testing.T) {
 	for i, test := range parseCredentialsTests {
 		actualEmail, actualKey, actualErr := ParseCredentials(test.in)
 
-		errMsg := fmt.Sprintf("Input %d: %q", i, test.in)
-		assert.Equal(t, test.email, actualEmail, errMsg)
-		assert.Equal(t, test.apikey, actualKey, errMsg)
-		assert.Equal(t, test.err, actualErr, errMsg)
+		assert.Equal(t, test.email, actualEmail)
+		assert.Equal(t, test.apikey, actualKey)
+		assert.Equal(t, test.err, actualErr, "Input %d: %q", i, test.in)
 	}
 }
 
@@ -317,10 +315,9 @@ func TestSplitAuthHeader(t *testing.T) {
 	for i, test := range splitAuthHeaderTests {
 		actualScheme, actualCreds, actualErr := SplitAuthHeader(test.in)
 
-		errMsg := fmt.Sprintf("Input %d: %q", i, test.in)
-		assert.Equal(t, test.scheme, actualScheme, errMsg)
-		assert.Equal(t, test.creds, actualCreds, errMsg)
-		assert.Equal(t, test.err, actualErr, errMsg)
+		assert.Equal(t, test.scheme, actualScheme)
+		assert.Equal(t, test.creds, actualCreds)
+		assert.Equal(t, test.err, actualErr, "Input %d: %q", i, test.in)
 	}
 }
 
@@ -390,10 +387,9 @@ func TestGetAuthHeader(t *testing.T) {
 	for i, test := range getAuthHeaderTests {
 		actualScheme, actualCreds, actualErr := GetAuthHeader(test.in)
 
-		errMsg := fmt.Sprintf("Input %d: %q", i, test.in)
-		assert.Equal(t, test.scheme, actualScheme, errMsg)
-		assert.Equal(t, test.creds, actualCreds, errMsg)
-		assert.Equal(t, test.err, actualErr, errMsg)
+		assert.Equal(t, test.scheme, actualScheme)
+		assert.Equal(t, test.creds, actualCreds)
+		assert.Equal(t, test.err, actualErr, "Input %d: %q", i, test.in)
 	}
 }
 
