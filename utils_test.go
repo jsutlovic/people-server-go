@@ -164,88 +164,35 @@ func TestHstoreToMap(t *testing.T) {
 }
 
 func TestValidateEmail(t *testing.T) {
-	emailTests := []struct {
-		in  string
-		out bool
-	}{
-		// Invalid emails
-		{
-			in:  "",
-			out: false,
-		},
-		{
-			in:  "test",
-			out: false,
-		},
-		{
-			in:  "test@",
-			out: false,
-		},
-		{
-			in:  "test@example",
-			out: false,
-		},
-		{
-			in:  "test@example.",
-			out: false,
-		},
-		{
-			in:  "test.example@example",
-			out: false,
-		},
-		{
-			in:  "test example@example.com ",
-			out: false,
-		},
-		{
-			in:  "test.example@ example.com",
-			out: false,
-		},
-		{
-			in:  "test.example@ example.com ",
-			out: false,
-		},
-		{
-			in:  " ",
-			out: false,
-		},
-		{
-			in:  " test @example.com",
-			out: false,
-		},
-		{
-			in:  " test @ example com",
-			out: false,
-		},
-		{
-			in:  "test@test@example.com",
-			out: false,
-		},
-		{
-			in:  "test.test@example@example.co.uk",
-			out: false,
-		},
-
-		// Valid emails
-		{
-			in:  "test@example.com",
-			out: true,
-		},
-		{
-			in:  "test.example@example.com",
-			out: true,
-		},
-		{
-			in:  "test.example@example.co.uk",
-			out: true,
-		},
-		{
-			in:  "test@example.co.uk",
-			out: true,
-		},
+	invalidEmails := []string{
+		"",
+		" ",
+		"test",
+		"test@",
+		"test@example",
+		"test@example.",
+		" test @example.com",
+		" test @ example com",
+		"test.example@example",
+		"test@test@example.com",
+		"test example@example.com ",
+		"test.example@ example.com",
+		"test.example@ example.com ",
+		"test.test@example@example.co.uk",
 	}
 
-	for i, test := range emailTests {
-		assert.Equal(t, ValidateEmail(test.in), test.out, "Test %d: %#v", i+1, test.in)
+	validEmails := []string{
+		"test@example.com",
+		"test.example@example.com",
+		"test.example@example.co.uk",
+		"test@example.co.uk",
+	}
+
+	for i, test := range invalidEmails {
+		assert.Equal(t, ValidateEmail(test), false, "Test %d: %#v", i+1, test)
+	}
+
+	for i, test := range validEmails {
+		assert.Equal(t, ValidateEmail(test), true, "Test %d: %#v", i+1, test)
 	}
 }
