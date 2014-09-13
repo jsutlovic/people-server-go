@@ -44,6 +44,49 @@ type User struct {
 	errors      JsonErrors
 }
 
+func (u *User) Errors() JsonErrors {
+	if u.errors == nil {
+		u.errors = JsonErrors{}
+	}
+	return u.errors
+}
+
+// Validate the User
+func (u *User) Validate() bool {
+	anyBlank := false
+	fieldErrors := false
+
+	u.errors = JsonErrors{}
+
+	email := strings.TrimSpace(u.Email)
+	name := strings.TrimSpace(u.Name)
+
+	// TODO: valid email shouldn't contain spaces
+	if email == "" {
+		u.errors["email"] = UserEmailEmpty
+		anyBlank = true
+	}
+
+	if u.Pwhash == "" {
+		u.errors["pwhash"] = UserPasswordEmpty
+		anyBlank = true
+	}
+	if name == "" {
+		u.errors["name"] = UserNameEmpty
+		anyBlank = true
+	}
+	if anyBlank {
+		return false
+	}
+
+	if !ValidateEmail(u.Email) {
+		u.errors["email"] = UserInvalidEmail
+		fieldErrors = true
+	}
+
+	return !fieldErrors
+}
+
 // Compare a given password to this user's current password (hashed)
 func (u *User) CheckPassword(password string) bool {
 	incorrect := bcrypt.CompareHashAndPassword([]byte(u.Pwhash), []byte(password))
@@ -125,4 +168,8 @@ func (s *pgDbService) CreateUser(email, pwhash, name, apikey string, isActive, i
 	newUser.Id = userId
 
 	return newUser, nil
+}
+
+func (s *pgDbService) UpdateUser(user *User) error {
+	return nil
 }
