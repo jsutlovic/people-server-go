@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/lib/pq/hstore"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -247,10 +246,6 @@ func TestValidateEmail(t *testing.T) {
 	}
 
 	for i, test := range emailTests {
-		assert.Equal(
-			t,
-			ValidateEmail(test.in),
-			test.out,
-			fmt.Sprintf("Test %d: %#v", i+1, test.in))
+		assert.Equal(t, ValidateEmail(test.in), test.out, "Test %d: %#v", i+1, test.in)
 	}
 }
