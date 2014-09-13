@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	EmailRegex = "\\S+@\\S+\\.\\S+"
+	EmailRegex        = "\\S+@\\S+\\.\\S+"
+	MinPasswordLength = 4
 )
 
 var (
@@ -64,6 +65,16 @@ func HstoreToMap(h *hstore.Hstore) map[string]string {
 	}
 
 	return m
+}
+
+func ValidatePassword(password string) bool {
+	// Get the number of runes, not just bytes
+	pwlen := strings.Count(password, "") - 1
+
+	if pwlen < MinPasswordLength {
+		return false
+	}
+	return true
 }
 
 func ValidateEmail(email string) bool {
