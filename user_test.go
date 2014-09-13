@@ -59,7 +59,7 @@ func TestUserFields(t *testing.T) {
 	userType := reflect.TypeOf(User{})
 
 	fieldCount := userType.NumField()
-	assert.Equal(t, fieldCount, 7)
+	assert.Equal(t, fieldCount, 8)
 	_, idExists := userType.FieldByName("Id")
 	_, emailExists := userType.FieldByName("Email")
 	_, pwExists := userType.FieldByName("Pwhash")

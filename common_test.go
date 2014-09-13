@@ -16,9 +16,10 @@ func newTestUser() *User {
 		"test@example.com",
 		"",
 		"Test User",
-		true,
-		false,
+		defaultActive,
+		defaultSuperuser,
 		"",
+		nil,
 	}
 
 	return &user

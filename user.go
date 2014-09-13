@@ -41,6 +41,7 @@ type User struct {
 	IsActive    bool   `db:"is_active" json:"is_active"`
 	IsSuperuser bool   `db:"is_superuser" json:"is_superuser"`
 	ApiKey      string `db:"apikey" json:"api_key"`
+	errors      JsonErrors
 }
 
 // Compare a given password to this user's current password (hashed)
