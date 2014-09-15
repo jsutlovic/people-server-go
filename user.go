@@ -173,5 +173,31 @@ func (s *pgDbService) CreateUser(email, pwhash, name, apikey string, isActive, i
 }
 
 func (s *pgDbService) UpdateUser(user *User) error {
+	if !user.Validate() {
+		return NewValidationError(UserInvalid, user.Errors())
+	}
+
+	updateSql := s.db.Rebind(`UPDATE "user" SET
+		email = ?,
+		pwhash = ?,
+		name = ?,
+		is_active = ?,
+		is_superuser = ?,
+		apikey = ?
+	WHERE id=?;`)
+
+	_, err := s.db.Exec(updateSql,
+		user.Email,
+		user.Pwhash,
+		user.Name,
+		user.IsActive,
+		user.IsSuperuser,
+		user.ApiKey,
+		user.Id)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
