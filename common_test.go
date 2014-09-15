@@ -72,7 +72,7 @@ func (m *MockDbService) PasswordCost() int {
 }
 
 func (m *MockDbService) CreateUser(email, pwhash, name, apikey string, isActive, isSuperuser bool) (*User, error) {
-	args := m.Mock.Called(email, pwhash, name, apikey)
+	args := m.Mock.Called(email, pwhash, name, apikey, isActive, isSuperuser)
 	if args.Get(0) != nil {
 		user := args.Get(0).(*User)
 		user.Id = 1
