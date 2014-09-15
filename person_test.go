@@ -76,7 +76,7 @@ func TestGetPerson(t *testing.T) {
 	userId := 2
 	cols := []string{"id", "user_id", "name", "meta", "color"}
 
-	meta := hstore.Hstore{map[string]sql.NullString{"type": sql.NullString{"asdf", true}}}
+	meta := hstore.Hstore{map[string]sql.NullString{"type": {"asdf", true}}}
 	metaVal, _ := meta.Value()
 
 	color := sql.NullInt64{1, true}
@@ -134,7 +134,7 @@ func TestGetPeople(t *testing.T) {
 	name2 := "Person 2"
 
 	meta1 := hstore.Hstore{nil}
-	meta2 := hstore.Hstore{map[string]sql.NullString{"type": sql.NullString{"asdf", true}}}
+	meta2 := hstore.Hstore{map[string]sql.NullString{"type": {"asdf", true}}}
 
 	metaVal1, _ := meta1.Value()
 	metaVal2, _ := meta2.Value()
@@ -193,7 +193,7 @@ var personJSONtests = []struct {
 			UserId: 1,
 			Name:   "Test 1",
 			Meta: hstore.Hstore{map[string]sql.NullString{
-				"type": sql.NullString{"asdf", true},
+				"type": {"asdf", true},
 			}},
 			Color: sql.NullInt64{1, true},
 		},
@@ -232,8 +232,8 @@ func TestPersonMarshalAnomalousJSON(t *testing.T) {
 				UserId: 1,
 				Name:   "Test 1",
 				Meta: hstore.Hstore{map[string]sql.NullString{
-					"type":  sql.NullString{"asdf", true},
-					"other": sql.NullString{"", false},
+					"type":  {"asdf", true},
+					"other": {"", false},
 				}},
 				Color: sql.NullInt64{1, true},
 			},
@@ -282,8 +282,8 @@ func TestPersonUnmarshalAnomalousJSON(t *testing.T) {
 				UserId: 1,
 				Name:   "Test 1",
 				Meta: hstore.Hstore{map[string]sql.NullString{
-					"type":  sql.NullString{"asdf", true},
-					"other": sql.NullString{"", true},
+					"type":  {"asdf", true},
+					"other": {"", true},
 				}},
 				Color: sql.NullInt64{1, true},
 			},

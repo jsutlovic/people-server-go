@@ -56,12 +56,12 @@ func TestSetupRoutes(t *testing.T) {
 	_ = serv.setupRoutes()
 
 	expectedRoutes := []PathRoute{
-		PathRoute{web.HttpMethodPost, "/auth", (*Context).ApiAuth},
-		PathRoute{web.HttpMethodPost, "/api/user", (*Context).CreateUserApi},
-		PathRoute{web.HttpMethodGet, "/api/user", (*AuthContext).GetUserApi},
-		PathRoute{web.HttpMethodGet, "/api/person/:id:\\d+", (*AuthContext).GetPersonApi},
-		PathRoute{web.HttpMethodGet, "/api/person", (*AuthContext).GetPersonListApi},
-		PathRoute{web.HttpMethodPost, "/api/person", (*AuthContext).CreatePersonApi},
+		{web.HttpMethodPost, "/auth", (*Context).ApiAuth},
+		{web.HttpMethodPost, "/api/user", (*Context).CreateUserApi},
+		{web.HttpMethodGet, "/api/user", (*AuthContext).GetUserApi},
+		{web.HttpMethodGet, "/api/person/:id:\\d+", (*AuthContext).GetPersonApi},
+		{web.HttpMethodGet, "/api/person", (*AuthContext).GetPersonListApi},
+		{web.HttpMethodPost, "/api/person", (*AuthContext).CreatePersonApi},
 	}
 
 	assert.Equal(t, serv.routes, expectedRoutes)

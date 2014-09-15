@@ -31,8 +31,8 @@ func newTestPerson(userId int) *Person {
 		userId,
 		"Test Person",
 		hstore.Hstore{map[string]sql.NullString{
-			"type":  sql.NullString{"asdf", true},
-			"other": sql.NullString{"", false},
+			"type":  {"asdf", true},
+			"other": {"", false},
 		}},
 		sql.NullInt64{1, true},
 		JsonErrors{},

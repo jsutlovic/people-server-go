@@ -69,11 +69,11 @@ func TestApiAuth(t *testing.T) {
 
 func TestApiAuthInvalidForm(t *testing.T) {
 	var testInvalidParams []url.Values = []url.Values{
-		url.Values{"email": []string{"test@example.com"}},
-		url.Values{"email": []string{"test@example.com"}, "pw": []string{"adsf"}},
-		url.Values{"username": []string{"test@example.com"}, "password": []string{"asdf"}},
-		url.Values{"password": []string{"asdf"}},
-		url.Values{"pw": []string{"asdf"}},
+		{"email": []string{"test@example.com"}},
+		{"email": []string{"test@example.com"}, "pw": []string{"adsf"}},
+		{"username": []string{"test@example.com"}, "password": []string{"asdf"}},
+		{"password": []string{"asdf"}},
+		{"pw": []string{"asdf"}},
 	}
 
 	for _, params := range testInvalidParams {

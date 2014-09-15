@@ -89,8 +89,8 @@ func TestMapToHstore(t *testing.T) {
 				"c": "d",
 			},
 			out: hstore.Hstore{map[string]sql.NullString{
-				"a": sql.NullString{"b", true},
-				"c": sql.NullString{"d", true},
+				"a": {"b", true},
+				"c": {"d", true},
 			}},
 		},
 		{
@@ -99,8 +99,8 @@ func TestMapToHstore(t *testing.T) {
 				"b": "",
 			},
 			out: hstore.Hstore{map[string]sql.NullString{
-				"a": sql.NullString{"", true},
-				"b": sql.NullString{"", true},
+				"a": {"", true},
+				"b": {"", true},
 			}},
 		},
 		{
@@ -127,8 +127,8 @@ func TestHstoreToMap(t *testing.T) {
 	}{
 		{
 			in: hstore.Hstore{map[string]sql.NullString{
-				"a": sql.NullString{"b", true},
-				"c": sql.NullString{"d", true},
+				"a": {"b", true},
+				"c": {"d", true},
 			}},
 			out: map[string]string{
 				"a": "b",
@@ -137,8 +137,8 @@ func TestHstoreToMap(t *testing.T) {
 		},
 		{
 			in: hstore.Hstore{map[string]sql.NullString{
-				"a": sql.NullString{"", true},
-				"b": sql.NullString{"", true},
+				"a": {"", true},
+				"b": {"", true},
 			}},
 			out: map[string]string{
 				"a": "",
@@ -147,8 +147,8 @@ func TestHstoreToMap(t *testing.T) {
 		},
 		{
 			in: hstore.Hstore{map[string]sql.NullString{
-				"a": sql.NullString{"", false},
-				"b": sql.NullString{"asdfasdf", false},
+				"a": {"", false},
+				"b": {"asdfasdf", false},
 			}},
 			out: map[string]string{},
 		},
