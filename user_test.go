@@ -334,3 +334,60 @@ func TestUserValidate(t *testing.T) {
 		assert.Equal(t, test.in.Errors(), test.errors)
 	}
 }
+
+func TestUpdateUserInvalidUser(t *testing.T) {
+	pgdbs := NewPgDbService("mock", "")
+
+	user := newTestUser()
+	user.Name = ""
+	jsonErrors := JsonErrors{
+		"name": UserNameEmpty,
+	}
+
+	err := pgdbs.UpdateUser(user)
+
+	if !assert.NotNil(t, err) {
+		return
+	}
+
+	if verr, ok := err.(ValidationError); assert.True(t, ok) {
+		assert.Error(t, verr)
+		assert.Equal(t, verr.JsonErrors(), jsonErrors)
+	}
+}
+
+func TestUpdateUserUpdateError(t *testing.T) {
+	pgdbs := NewPgDbService("mock", "")
+
+	user := newTestUser()
+
+	sqlmock.ExpectExec(`UPDATE "user" SET email = \?, pwhash = \?, name = \?, is_active = \?, is_superuser = \?, apikey = \? WHERE id=\?;`).
+		WithArgs(user.Email, user.Pwhash, user.Name, user.IsActive, user.IsSuperuser, user.ApiKey, user.Id).
+		WillReturnError(errors.New("Could not execute"))
+
+	err := pgdbs.UpdateUser(user)
+
+	if !assert.NotNil(t, err) {
+		return
+	}
+
+	if !assert.Equal(t, err.Error(), "Could not execute") {
+		return
+	}
+}
+
+func TestUpdateUser(t *testing.T) {
+	pgdbs := NewPgDbService("mock", "")
+
+	user := newTestUser()
+
+	sqlmock.ExpectExec(`UPDATE "user" SET email = \?, pwhash = \?, name = \?, is_active = \?, is_superuser = \?, apikey = \? WHERE id=\?;`).
+		WithArgs(user.Email, user.Pwhash, user.Name, user.IsActive, user.IsSuperuser, user.ApiKey, user.Id).
+		WillReturnResult(sqlmock.NewResult(0, 1))
+
+	err := pgdbs.UpdateUser(user)
+
+	if !assert.Nil(t, err) {
+		return
+	}
+}
