@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"github.com/lib/pq/hstore"
 	"strings"
 )
 
 const (
+	PersonInvalid = "Person is not valid"
 	// Person.Validate errors
 	PersonNameEmpty = "Name cannot be empty"
 )
@@ -125,16 +125,16 @@ Create a Person in the database with the given userId, name, meta and color
 func (s *pgDbService) CreatePerson(userId int, name string, meta hstore.Hstore, color sql.NullInt64) (*Person, error) {
 	newPerson := new(Person)
 
-	if strings.TrimSpace(name) == "" {
-		return nil, errors.New("Person name cannot be empty")
-	}
-
 	var personId int
 
 	newPerson.UserId = userId
 	newPerson.Name = name
 	newPerson.Meta = meta
 	newPerson.Color = color
+
+	if !newPerson.Validate() {
+		return nil, NewValidationError(PersonInvalid, newPerson.Errors())
+	}
 
 	insertSql := s.db.Rebind(`INSERT INTO "person" (
 		user_id,

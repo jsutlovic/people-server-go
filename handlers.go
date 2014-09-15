@@ -41,10 +41,6 @@ type AuthContext struct {
 	User *User
 }
 
-// JSON structs for web APIs
-
-type JsonErrors map[string]string
-
 // Expected format of JSON data for creating a User
 type UserCreate struct {
 	Email    string `json:"email"`

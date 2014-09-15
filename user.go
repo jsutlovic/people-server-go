@@ -13,7 +13,9 @@ const (
 	defaultActive    = true
 	defaultSuperuser = false
 
-	// UserCreate.Validate errors
+	UserInvalid = "User is not valid"
+
+	// User.Validate errors
 	UserEmailEmpty    = "Email cannot be empty"
 	UserPasswordEmpty = "Password cannot be empty"
 	UserNameEmpty     = "Name cannot be empty"
@@ -131,10 +133,6 @@ IsActive is set to true, IsSuperuser is set to false for the user
 func (s *pgDbService) CreateUser(email, pwhash, name, apikey string, isActive, isSuperuser bool) (*User, error) {
 	newUser := new(User)
 
-	if strings.TrimSpace(email) == "" {
-		return nil, errors.New("Email cannot be empty")
-	}
-
 	var userId int
 
 	newUser.Email = email
@@ -143,6 +141,10 @@ func (s *pgDbService) CreateUser(email, pwhash, name, apikey string, isActive, i
 	newUser.IsActive = isActive
 	newUser.IsSuperuser = isSuperuser
 	newUser.ApiKey = apikey
+
+	if !newUser.Validate() {
+		return nil, NewValidationError(UserInvalid, newUser.Errors())
+	}
 
 	insertSql := s.db.Rebind(`INSERT INTO "user" (
         email,

@@ -200,10 +200,13 @@ func TestCreateUserEmailError(t *testing.T) {
 	userPwhash := "$2a$04$2a2qnoery/ULUw2WgKVd0OyeHhsHWINab9w9WTPoXqe8xY4PBrwXe"
 	userName := "Test User"
 	userApikey := GenerateApiKey()
+	userErrors := JsonErrors{
+		"email": UserEmailEmpty,
+	}
 
 	u, err := pgdbs.CreateUser(userEmail, userPwhash, userName, userApikey, defaultActive, defaultSuperuser)
 
-	if !assert.Nil(t, u, "User should be nil") {
+	if !assert.Nil(t, u, UserInvalid) {
 		return
 	}
 
@@ -211,7 +214,10 @@ func TestCreateUserEmailError(t *testing.T) {
 		return
 	}
 
-	assert.Equal(t, err.Error(), "Email cannot be empty")
+	if verr, ok := err.(ValidationError); assert.True(t, ok, "Error should be a JsonError") {
+		assert.Equal(t, verr.Error(), UserInvalid)
+		assert.Equal(t, verr.JsonErrors(), userErrors)
+	}
 }
 
 func TestCreateUser(t *testing.T) {

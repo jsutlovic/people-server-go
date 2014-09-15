@@ -331,13 +331,20 @@ func TestCreatePersonEmptyName(t *testing.T) {
 	userId := 1
 	meta := hstore.Hstore{}
 	color := sql.NullInt64{1, true}
+	perr := JsonErrors{
+		"name": PersonNameEmpty,
+	}
 
 	names := []string{"", " ", "\t", "\n"}
 
 	for _, name := range names {
 		_, err := pgdbs.CreatePerson(userId, name, meta, color)
-		assert.Error(t, err, "Empty name should cause error")
-		assert.Equal(t, err.Error(), "Person name cannot be empty")
+
+		if verr, ok := err.(ValidationError); assert.True(t, ok) {
+			assert.Error(t, verr, "Empty name should cause error")
+			assert.Equal(t, verr.Error(), PersonInvalid)
+			assert.Equal(t, verr.JsonErrors(), perr)
+		}
 	}
 }
 
