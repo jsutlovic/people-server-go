@@ -14,7 +14,7 @@ func newTestUser() *User {
 	user := User{
 		1,
 		"test@example.com",
-		"",
+		"$2a$04$2a2qnoery/ULUw2WgKVd0OyeHhsHWINab9w9WTPoXqe8xY4PBrwXe",
 		"Test User",
 		defaultActive,
 		defaultSuperuser,
