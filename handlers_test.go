@@ -598,7 +598,7 @@ func TestCreateUserApiInsertError(t *testing.T) {
 
 	pwhash := mock.AnythingOfType("string")
 	apikey := mock.AnythingOfType("string")
-	dbs.Mock.On("CreateUser", userEmail, pwhash, userName, apikey).Return(nil, errors.New(""))
+	dbs.Mock.On("CreateUser", userEmail, pwhash, userName, apikey, defaultActive, defaultSuperuser).Return(nil, errors.New(""))
 
 	(*Context).CreateUserApi(c, rw, req)
 
@@ -623,7 +623,7 @@ func TestCreateUserApi(t *testing.T) {
 
 	pwhash := mock.AnythingOfType("string")
 	apikey := mock.AnythingOfType("string")
-	dbs.Mock.On("CreateUser", userEmail, pwhash, userName, apikey).Return(user, nil)
+	dbs.Mock.On("CreateUser", userEmail, pwhash, userName, apikey, defaultActive, defaultSuperuser).Return(user, nil)
 
 	(*Context).CreateUserApi(c, rw, req)
 
