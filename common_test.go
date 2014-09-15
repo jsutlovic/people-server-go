@@ -76,8 +76,12 @@ func (m *MockDbService) CreateUser(email, pwhash, name, apikey string, isActive,
 	if args.Get(0) != nil {
 		user := args.Get(0).(*User)
 		user.Id = 1
+		user.Name = name
+		user.Email = email
 		user.Pwhash = pwhash
 		user.ApiKey = apikey
+		user.IsActive = isActive
+		user.IsSuperuser = isSuperuser
 		return user, nil
 	}
 	return nil, args.Error(1)
