@@ -27,6 +27,7 @@ type UserService interface {
 	GetUser(email string) (*User, error)
 	PasswordCost() int
 	CreateUser(email, pwhash, name, apikey string, isActive, isSuperuser bool) (*User, error)
+	UpdateUser(*User) error
 }
 
 /*
