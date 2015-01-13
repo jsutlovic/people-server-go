@@ -66,6 +66,14 @@ func methodToRouter(method web.HttpMethod) func(*web.Router, string, interface{}
 	return nil
 }
 
+var (
+	httpMethodGet    = httpMethod{"GET", (*web.Router).Get}
+	httpMethodPost   = httpMethod{"POST", (*web.Router).Post}
+	httpMethodPut    = httpMethod{"PUT", (*web.Router).Put}
+	httpMethodPatch  = httpMethod{"PATCH", (*web.Router).Patch}
+	httpMethodDelete = httpMethod{"DELETE", (*web.Router).Delete}
+)
+
 // Helper method to register a route with the router and server.routes
 func (s *Server) registerRoute(router *PrefixRouter, method web.HttpMethod, routePath string, handler interface{}) {
 	action := methodToRouter(method)
