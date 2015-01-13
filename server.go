@@ -49,23 +49,6 @@ func NewPrefixSubrouter(root *web.Router, prefix string, context interface{}) *P
 	return &PrefixRouter{subrouter, prefix}
 }
 
-// Utility to map a web.HttpMethod to it's counterpart on web.Router
-func methodToRouter(method web.HttpMethod) func(*web.Router, string, interface{}) *web.Router {
-	switch method {
-	case web.HttpMethodGet:
-		return (*web.Router).Get
-	case web.HttpMethodPost:
-		return (*web.Router).Post
-	case web.HttpMethodPut:
-		return (*web.Router).Put
-	case web.HttpMethodDelete:
-		return (*web.Router).Delete
-	case web.HttpMethodPatch:
-		return (*web.Router).Patch
-	}
-	return nil
-}
-
 var (
 	httpMethodGet    = httpMethod{"GET", (*web.Router).Get}
 	httpMethodPost   = httpMethod{"POST", (*web.Router).Post}
@@ -75,8 +58,8 @@ var (
 )
 
 // Helper method to register a route with the router and server.routes
-func (s *Server) registerRoute(router *PrefixRouter, method web.HttpMethod, routePath string, handler interface{}) {
-	action := methodToRouter(method)
+func (s *Server) registerRoute(router *PrefixRouter, method httpMethod, routePath string, handler interface{}) {
+	action := method.action
 	action(router.router, routePath, handler)
 	s.routes = append(s.routes, PathRoute{method, path.Join(router.pathPrefix, routePath), handler})
 }
