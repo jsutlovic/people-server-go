@@ -125,7 +125,7 @@ func (m *MockDbService) CreatePerson(userId int, name string, meta hstore.Hstore
 func mockMiddlewareParams() (web.ResponseWriter, *web.Request, *MockNext, *httptest.ResponseRecorder) {
 	// Build the ResponseRecorder
 	recorder := httptest.NewRecorder()
-	rw := new(web.AppResponseWriter)
+	rw := new(testResponseWriter)
 	rw.ResponseWriter = recorder
 
 	// Build the request
@@ -169,7 +169,7 @@ func mockAuthContext(user *User) (*AuthContext, *MockDbService) {
 
 func mockHandlerParams(method, contenttype, content string) (web.ResponseWriter, *web.Request, *httptest.ResponseRecorder) {
 	recorder := httptest.NewRecorder()
-	rw := new(web.AppResponseWriter)
+	rw := new(testResponseWriter)
 	rw.ResponseWriter = recorder
 
 	buf := strings.NewReader(content)
