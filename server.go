@@ -25,6 +25,13 @@ type PrefixRouter struct {
 	pathPrefix string
 }
 
+type methodAction func(r *web.Router, path string, fn interface{}) *web.Router
+
+type httpMethod struct {
+	name   string
+	action methodAction
+}
+
 type PathRoute struct {
 	Method  web.HttpMethod
 	Path    string
