@@ -33,7 +33,7 @@ type httpMethod struct {
 }
 
 type PathRoute struct {
-	Method  web.HttpMethod
+	Method  httpMethod
 	Path    string
 	Handler interface{}
 }
@@ -80,16 +80,16 @@ func (s *Server) setupRoutes() *web.Router {
 	apiRouter.router.Middleware((*AuthContext).AuthRequired)
 
 	// Routes
-	s.registerRoute(authRouter, web.HttpMethodPost, "/auth", (*Context).ApiAuth)
-	s.registerRoute(createUserRouter, web.HttpMethodPost, "/api/user", (*Context).CreateUserApi)
+	s.registerRoute(authRouter, httpMethodPost, "/auth", (*Context).ApiAuth)
+	s.registerRoute(createUserRouter, httpMethodPost, "/api/user", (*Context).CreateUserApi)
 
 	// User-related
-	s.registerRoute(apiRouter, web.HttpMethodGet, "/user", (*AuthContext).GetUserApi)
+	s.registerRoute(apiRouter, httpMethodGet, "/user", (*AuthContext).GetUserApi)
 
 	// Person-related
-	s.registerRoute(apiRouter, web.HttpMethodGet, "/person/:id:\\d+", (*AuthContext).GetPersonApi)
-	s.registerRoute(apiRouter, web.HttpMethodGet, "/person", (*AuthContext).GetPersonListApi)
-	s.registerRoute(apiRouter, web.HttpMethodPost, "/person", (*AuthContext).CreatePersonApi)
+	s.registerRoute(apiRouter, httpMethodGet, "/person/:id:\\d+", (*AuthContext).GetPersonApi)
+	s.registerRoute(apiRouter, httpMethodGet, "/person", (*AuthContext).GetPersonListApi)
+	s.registerRoute(apiRouter, httpMethodPost, "/person", (*AuthContext).CreatePersonApi)
 
 	return rootRouter
 }
