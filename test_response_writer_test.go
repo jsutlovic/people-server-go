@@ -50,7 +50,7 @@ func (c *closeNotifyingRecorder) CloseNotify() <-chan bool {
 
 func TestResponseWriterWrite(t *testing.T) {
 	rec := httptest.NewRecorder()
-	rw := web.ResponseWriter(&testResponseWriter{ResponseWriter: rec})
+	rw := &testResponseWriter{ResponseWriter: rec}
 
 	assert.Equal(t, rw.Written(), false)
 
@@ -68,7 +68,7 @@ func TestResponseWriterWrite(t *testing.T) {
 
 func TestResponseWriterWriteHeader(t *testing.T) {
 	rec := httptest.NewRecorder()
-	rw := web.ResponseWriter(&testResponseWriter{ResponseWriter: rec})
+	rw := &testResponseWriter{ResponseWriter: rec}
 
 	rw.WriteHeader(http.StatusNotFound)
 	assert.Equal(t, rec.Code, rw.StatusCode())
@@ -86,13 +86,13 @@ func TestResponseWriterHijack(t *testing.T) {
 }
 
 func TestResponseWriterHijackNotOK(t *testing.T) {
-	rw := web.ResponseWriter(&testResponseWriter{ResponseWriter: httptest.NewRecorder()})
+	rw := &testResponseWriter{ResponseWriter: httptest.NewRecorder()}
 	_, _, err := rw.Hijack()
 	assert.Error(t, err)
 }
 
 func TestResponseWriterFlush(t *testing.T) {
-	rw := web.ResponseWriter(&testResponseWriter{ResponseWriter: httptest.NewRecorder()})
+	rw := &testResponseWriter{ResponseWriter: httptest.NewRecorder()}
 	rw.Flush()
 }
 
