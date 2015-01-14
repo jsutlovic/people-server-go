@@ -23,7 +23,8 @@
 		},
 		{
 			"ImportPath": "github.com/gocraft/web",
-			"Rev": "91f6740db03bb0a8a1c7231e3464124057501a92"
+			"Comment": "v1.1-4-g24976c2",
+			"Rev": "24976c22acc59538596d0fc5a961d50ab0415e25"
 		},
 		{
 			"ImportPath": "github.com/jmoiron/sqlx",
