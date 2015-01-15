@@ -41,8 +41,26 @@ func newTestPerson(userId int) *Person {
 	return &person
 }
 
-func newTestConfig() *Config {
-	return &Config{"mock", "", "127.0.0.1:3000"}
+type mockConfig struct {
+	dbType     string
+	dbCreds    string
+	listenAddr string
+}
+
+func (mc *mockConfig) DbType() string {
+	return mc.dbType
+}
+
+func (mc *mockConfig) DbCreds() string {
+	return mc.dbCreds
+}
+
+func (mc *mockConfig) ListenAddr() string {
+	return mc.listenAddr
+}
+
+func newTestConfig() Config {
+	return &mockConfig{"mock", "", "127.0.0.1:3000"}
 }
 
 type MockNext struct {
