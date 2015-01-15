@@ -14,3 +14,35 @@ type Config interface {
 	DbCreds() string
 	ListenAddr() string
 }
+
+type dbConfig struct {
+	Type     string
+	Host     string
+	Port     int
+	User     string
+	Password string
+	DbName   string `yaml="name"`
+}
+
+type listenConfig struct {
+	Host string
+	Port int
+}
+
+type appConfig struct {
+	DbConf     dbConfig     `yaml="db"`
+	ListenConf listenConfig `yaml="listen"`
+}
+
+func (ac *appConfig) DbType() string {
+	return ""
+}
+
+func (ac *appConfig) DbCreds() string {
+	return ""
+}
+
+func (ac *appConfig) ListenAddr() string {
+	return ""
+}
+
