@@ -8,14 +8,8 @@ import (
 	"path"
 )
 
-type Config struct {
-	DbType     string
-	DbCreds    string
-	ListenAddr string
-}
-
 type Server struct {
-	conf       *Config
+	conf       Config
 	rootRouter *web.Router
 	routes     []PathRoute
 }
@@ -38,7 +32,7 @@ type PathRoute struct {
 	Handler interface{}
 }
 
-func NewServer(conf *Config) *Server {
+func NewServer(conf Config) *Server {
 	serv := new(Server)
 	serv.conf = conf
 	return serv
@@ -100,12 +94,12 @@ func (s *Server) Serve() {
 	}
 	fmt.Println("Starting server")
 
-	dbService := NewPgDbService(s.conf.DbType, s.conf.DbCreds)
+	dbService := NewPgDbService(s.conf.DbType(), s.conf.DbCreds())
 
 	s.rootRouter = s.setupRoutes()
 	s.rootRouter.Middleware(DbMiddleware(dbService))
 
-	err := http.ListenAndServe(s.conf.ListenAddr, s.rootRouter)
+	err := http.ListenAndServe(s.conf.ListenAddr(), s.rootRouter)
 	if err != nil {
 		panic(err)
 	}
