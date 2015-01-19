@@ -94,6 +94,49 @@ listen:
 	}
 }
 
+func TestAppConfigDbTyoe(t *testing.T) {
+	validateTests := []struct {
+		in  appConfig
+		out string
+	}{
+		{
+			in:  appConfig{},
+			out: "postgres",
+		},
+		{
+			in: appConfig{
+				dbConfig{
+					Type: "postgres",
+				},
+				listenConfig{},
+			},
+			out: "postgres",
+		},
+		{
+			in: appConfig{
+				dbConfig{
+					Type: "mysql",
+				},
+				listenConfig{},
+			},
+			out: "mysql",
+		},
+		{
+			in: appConfig{
+				dbConfig{
+					Type: "mock",
+				},
+				listenConfig{},
+			},
+			out: "mock",
+		},
+	}
+
+	for _, test := range validateTests {
+		assert.Equal(t, test.out, test.in.DbType())
+	}
+}
+
 func TestAppConfigDbCreds(t *testing.T) {
 	validateTests := []struct {
 		in  appConfig
