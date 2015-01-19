@@ -68,6 +68,16 @@ func (ac *appConfig) DbCreds() string {
 			fmt.Sprintf(KeyValTemplate, "user", ac.DbConf.User))
 	}
 
+	if ac.DbConf.Password != "" {
+		configStrings = append(configStrings,
+			fmt.Sprintf(KeyValTemplate, "password", ac.DbConf.Password))
+	}
+
+	if ac.DbConf.DbName != "" {
+		configStrings = append(configStrings,
+			fmt.Sprintf(KeyValTemplate, "name", ac.DbConf.DbName))
+	}
+
 	appNameStr := fmt.Sprintf(
 		KeyValTemplate, "application_name", DbApplicationName)
 
