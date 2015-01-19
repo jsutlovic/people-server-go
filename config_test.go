@@ -149,11 +149,88 @@ func TestAppConfigDbCreds(t *testing.T) {
 		{
 			in: appConfig{
 				dbConfig{
+					Host: "test1",
+				},
+				listenConfig{},
+			},
+			out: "host=test1 port=5432 application_name=people-go",
+		},
+		{
+			in: appConfig{
+				dbConfig{
+					Port: 6543,
+				},
+				listenConfig{},
+			},
+			out: "host=localhost port=6543 application_name=people-go",
+		},
+		{
+			in: appConfig{
+				dbConfig{
+					Host: "test1",
+					Port: 7654,
+				},
+				listenConfig{},
+			},
+			out: "host=test1 port=7654 application_name=people-go",
+		},
+		{
+			in: appConfig{
+				dbConfig{
 					User: "test1",
 				},
 				listenConfig{},
 			},
 			out: "host=localhost port=5432 user=test1 application_name=people-go",
+		},
+		{
+			in: appConfig{
+				dbConfig{
+					User:     "test1",
+					Password: "test2",
+				},
+				listenConfig{},
+			},
+			out: "host=localhost port=5432 user=test1 password=test2 application_name=people-go",
+		},
+		{
+			in: appConfig{
+				dbConfig{
+					Password: "test2",
+				},
+				listenConfig{},
+			},
+			out: "host=localhost port=5432 password=test2 application_name=people-go",
+		},
+		{
+			in: appConfig{
+				dbConfig{
+					DbName: "testdb",
+				},
+				listenConfig{},
+			},
+			out: "host=localhost port=5432 name=testdb application_name=people-go",
+		},
+		{
+			in: appConfig{
+				dbConfig{
+					User:   "test1",
+					DbName: "testdb",
+				},
+				listenConfig{},
+			},
+			out: "host=localhost port=5432 user=test1 name=testdb application_name=people-go",
+		},
+		{
+			in: appConfig{
+				dbConfig{
+					User:     "test1",
+					Password: "test2",
+					DbName:   "testdb",
+				},
+				listenConfig{},
+			},
+			out: "host=localhost port=5432 user=test1 password=test2 name=testdb application_name=people-go",
 		},
 	}
 
