@@ -63,6 +63,11 @@ func (ac *appConfig) DbCreds() string {
 
 	configStrings = append(configStrings, hostStr, portStr)
 
+	if ac.DbConf.User != "" {
+		configStrings = append(configStrings,
+			fmt.Sprintf(KeyValTemplate, "user", ac.DbConf.User))
+	}
+
 	appNameStr := fmt.Sprintf(
 		KeyValTemplate, "application_name", DbApplicationName)
 
