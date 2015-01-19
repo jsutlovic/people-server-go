@@ -93,7 +93,7 @@ func defaultInt(chk, def int) int {
 	return chk
 }
 
-func ReadConfig(b []byte) (Config, error) {
+func ReadConfig(b []byte) (*appConfig, error) {
 	config := &appConfig{}
 
 	err := yaml.Unmarshal(b, config)
