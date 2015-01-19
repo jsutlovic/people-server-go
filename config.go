@@ -34,8 +34,8 @@ type dbConfig struct {
 	Port     int
 	User     string
 	Password string
-	DbName   string `yaml="name"`
-	SslMode  string `yaml="sslmode"`
+	DbName   string `yaml:"name"`
+	SslMode  string `yaml:"sslmode"`
 }
 
 type listenConfig struct {
@@ -44,8 +44,8 @@ type listenConfig struct {
 }
 
 type appConfig struct {
-	DbConf     dbConfig     `yaml="db"`
-	ListenConf listenConfig `yaml="listen"`
+	DbConf     dbConfig     `yaml:"db"`
+	ListenConf listenConfig `yaml:"listen"`
 }
 
 func (ac *appConfig) DbType() string {
