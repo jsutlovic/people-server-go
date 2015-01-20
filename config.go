@@ -114,6 +114,14 @@ func defaultInt(chk, def int) int {
 	return chk
 }
 
+func MustReadConfigFile(filename string) *appConfig {
+	config, err := ReadConfigFile(filename)
+	if err != nil {
+		panic(err)
+	}
+	return config
+}
+
 func ReadConfigFile(filename string) (*appConfig, error) {
 	b, err := ioutil.ReadFile(filename)
 	if err != nil {
