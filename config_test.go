@@ -283,3 +283,44 @@ func TestAppConfigDbCreds(t *testing.T) {
 		assert.Equal(t, test.out, test.in.DbCreds())
 	}
 }
+
+func TestAppConfigListenAddr(t *testing.T) {
+	validateTests := []struct {
+		in  appConfig
+		out string
+	}{
+		{
+			in:  appConfig{},
+			out: "127.0.0.1:3000",
+		},
+		{
+			in: appConfig{
+				ListenConf: listenConfig{
+					Host: "test",
+				},
+			},
+			out: "test:3000",
+		},
+		{
+			in: appConfig{
+				ListenConf: listenConfig{
+					Port: 4040,
+				},
+			},
+			out: "127.0.0.1:4040",
+		},
+		{
+			in: appConfig{
+				ListenConf: listenConfig{
+					Host: "test",
+					Port: 4040,
+				},
+			},
+			out: "test:4040",
+		},
+	}
+
+	for _, test := range validateTests {
+		assert.Equal(t, test.out, test.in.ListenAddr())
+	}
+}
