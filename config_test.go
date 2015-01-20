@@ -263,6 +263,20 @@ func TestAppConfigDbCreds(t *testing.T) {
 			},
 			out: "host=localhost port=5432 user=test1 password=test2 name=testdb sslmode=verify-full application_name=people-go",
 		},
+		{
+			in: appConfig{
+				DbConf: dbConfig{
+					Type:     "mysql",
+					Host:     "testhost",
+					Port:     3306,
+					User:     "test1",
+					Password: "test2",
+					DbName:   "testdb",
+					SslMode:  "verify-full",
+				},
+			},
+			out: "host=testhost port=3306 user=test1 password=test2 name=testdb sslmode=verify-full application_name=people-go",
+		},
 	}
 
 	for _, test := range validateTests {
