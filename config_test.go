@@ -64,7 +64,7 @@ db:
   sslmode: verify-full
 
 listen:
-  host: 0.0.0.0
+  address: 0.0.0.0
   port: 4321
 `,
 			out: appConfig{
@@ -78,8 +78,8 @@ listen:
 					SslMode:  "verify-full",
 				},
 				ListenConf: listenConfig{
-					Host: "0.0.0.0",
-					Port: 4321,
+					Address: "0.0.0.0",
+					Port:    4321,
 				},
 			},
 		},
@@ -296,10 +296,10 @@ func TestAppConfigListenAddr(t *testing.T) {
 		{
 			in: appConfig{
 				ListenConf: listenConfig{
-					Host: "test",
+					Address: "0.0.0.0",
 				},
 			},
-			out: "test:3000",
+			out: "0.0.0.0:3000",
 		},
 		{
 			in: appConfig{
@@ -312,11 +312,11 @@ func TestAppConfigListenAddr(t *testing.T) {
 		{
 			in: appConfig{
 				ListenConf: listenConfig{
-					Host: "test",
-					Port: 4040,
+					Address: "0.0.0.0",
+					Port:    4040,
 				},
 			},
-			out: "test:4040",
+			out: "0.0.0.0:4040",
 		},
 	}
 

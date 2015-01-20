@@ -8,7 +8,7 @@ import (
 
 // Defaults
 const (
-	DefaultHost       = "127.0.0.1"
+	DefaultAddress    = "127.0.0.1"
 	DefaultPort       = 3000
 	DefaultDbType     = "postgres"
 	DefaultDbHost     = "localhost"
@@ -39,8 +39,8 @@ type dbConfig struct {
 }
 
 type listenConfig struct {
-	Host string
-	Port int
+	Address string
+	Port    int
 }
 
 type appConfig struct {
@@ -94,7 +94,7 @@ func (ac *appConfig) DbCreds() string {
 func (ac *appConfig) ListenAddr() string {
 	return fmt.Sprintf(
 		ListenAddrTemplate,
-		defaultString(ac.ListenConf.Host, DefaultHost),
+		defaultString(ac.ListenConf.Address, DefaultAddress),
 		defaultInt(ac.ListenConf.Port, DefaultPort))
 }
 
