@@ -76,7 +76,7 @@ func (ac *appConfig) DbCreds() string {
 
 	if ac.DbConf.DbName != "" {
 		configStrings = append(configStrings,
-			fmt.Sprintf(KeyValTemplate, "name", ac.DbConf.DbName))
+			fmt.Sprintf(KeyValTemplate, "dbname", ac.DbConf.DbName))
 	}
 
 	if ac.DbConf.SslMode != "" {
