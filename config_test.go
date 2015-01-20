@@ -17,20 +17,18 @@ func TestReadConfigParses(t *testing.T) {
 		{
 			in: `{db: {user: test1}}`,
 			out: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					User: "test1",
 				},
-				listenConfig{},
 			},
 		},
 		{
 			in: `{db: {user: test1, password: test2}}`,
 			out: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					User:     "test1",
 					Password: "test2",
 				},
-				listenConfig{},
 			},
 		},
 		{
@@ -44,11 +42,11 @@ listen:
   port: 4321
 `,
 			out: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					User:     "test1",
 					Password: "test2",
 				},
-				listenConfig{
+				ListenConf: listenConfig{
 					Port: 4321,
 				},
 			},
@@ -70,7 +68,7 @@ listen:
   port: 4321
 `,
 			out: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					Type:     "mysql",
 					Host:     "dbhost",
 					Port:     7654,
@@ -79,7 +77,7 @@ listen:
 					DbName:   "tester3",
 					SslMode:  "verify-full",
 				},
-				listenConfig{
+				ListenConf: listenConfig{
 					Host: "0.0.0.0",
 					Port: 4321,
 				},
@@ -105,28 +103,25 @@ func TestAppConfigDbTyoe(t *testing.T) {
 		},
 		{
 			in: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					Type: "postgres",
 				},
-				listenConfig{},
 			},
 			out: "postgres",
 		},
 		{
 			in: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					Type: "mysql",
 				},
-				listenConfig{},
 			},
 			out: "mysql",
 		},
 		{
 			in: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					Type: "mock",
 				},
-				listenConfig{},
 			},
 			out: "mock",
 		},
@@ -148,87 +143,78 @@ func TestAppConfigDbCreds(t *testing.T) {
 		},
 		{
 			in: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					Host: "test1",
 				},
-				listenConfig{},
 			},
 			out: "host=test1 port=5432 application_name=people-go",
 		},
 		{
 			in: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					Port: 6543,
 				},
-				listenConfig{},
 			},
 			out: "host=localhost port=6543 application_name=people-go",
 		},
 		{
 			in: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					Host: "test1",
 					Port: 7654,
 				},
-				listenConfig{},
 			},
 			out: "host=test1 port=7654 application_name=people-go",
 		},
 		{
 			in: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					User: "test1",
 				},
-				listenConfig{},
 			},
 			out: "host=localhost port=5432 user=test1 application_name=people-go",
 		},
 		{
 			in: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					User:     "test1",
 					Password: "test2",
 				},
-				listenConfig{},
 			},
 			out: "host=localhost port=5432 user=test1 password=test2 application_name=people-go",
 		},
 		{
 			in: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					Password: "test2",
 				},
-				listenConfig{},
 			},
 			out: "host=localhost port=5432 password=test2 application_name=people-go",
 		},
 		{
 			in: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					DbName: "testdb",
 				},
-				listenConfig{},
 			},
 			out: "host=localhost port=5432 name=testdb application_name=people-go",
 		},
 		{
 			in: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					User:   "test1",
 					DbName: "testdb",
 				},
-				listenConfig{},
 			},
 			out: "host=localhost port=5432 user=test1 name=testdb application_name=people-go",
 		},
 		{
 			in: appConfig{
-				dbConfig{
+				DbConf: dbConfig{
 					User:     "test1",
 					Password: "test2",
 					DbName:   "testdb",
 				},
-				listenConfig{},
 			},
 			out: "host=localhost port=5432 user=test1 password=test2 name=testdb application_name=people-go",
 		},
