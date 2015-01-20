@@ -132,6 +132,32 @@ func TestReadConfigFileError(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
+func TestMustReadConfigFileParses(t *testing.T) {
+	expected := appConfig{
+		DbConf: dbConfig{
+			Type:     "postgres",
+			Host:     "dbhost",
+			Port:     5432,
+			User:     "people-user",
+			Password: "people-pw",
+			DbName:   "people-db",
+			SslMode:  "disable",
+		},
+		ListenConf: listenConfig{
+			Address: "0.0.0.0",
+			Port:    3001,
+		},
+	}
+	actualOut := MustReadConfigFile(testConfigFile)
+	assert.Equal(t, &expected, actualOut)
+}
+
+func TestMustReadConfigFilePanics(t *testing.T) {
+	assert.Panics(t, func() {
+		_ = MustReadConfigFile(testNonexistentConfigFile)
+	})
+}
+
 func TestAppConfigDbTyoe(t *testing.T) {
 	validateTests := []struct {
 		in  appConfig
