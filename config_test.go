@@ -263,7 +263,7 @@ func TestAppConfigDbCreds(t *testing.T) {
 					DbName: "testdb",
 				},
 			},
-			out: "host=localhost port=5432 name=testdb application_name=people-go",
+			out: "host=localhost port=5432 dbname=testdb application_name=people-go",
 		},
 		{
 			in: appConfig{
@@ -272,7 +272,7 @@ func TestAppConfigDbCreds(t *testing.T) {
 					DbName: "testdb",
 				},
 			},
-			out: "host=localhost port=5432 user=test1 name=testdb application_name=people-go",
+			out: "host=localhost port=5432 user=test1 dbname=testdb application_name=people-go",
 		},
 		{
 			in: appConfig{
@@ -282,7 +282,7 @@ func TestAppConfigDbCreds(t *testing.T) {
 					DbName:   "testdb",
 				},
 			},
-			out: "host=localhost port=5432 user=test1 password=test2 name=testdb application_name=people-go",
+			out: "host=localhost port=5432 user=test1 password=test2 dbname=testdb application_name=people-go",
 		},
 		{
 			in: appConfig{
@@ -291,7 +291,7 @@ func TestAppConfigDbCreds(t *testing.T) {
 					DbName:   "testdb",
 				},
 			},
-			out: "host=localhost port=5432 password=test2 name=testdb application_name=people-go",
+			out: "host=localhost port=5432 password=test2 dbname=testdb application_name=people-go",
 		},
 		{
 			in: appConfig{
@@ -308,7 +308,7 @@ func TestAppConfigDbCreds(t *testing.T) {
 					SslMode: "verify-full",
 				},
 			},
-			out: "host=localhost port=5432 name=testdb sslmode=verify-full application_name=people-go",
+			out: "host=localhost port=5432 dbname=testdb sslmode=verify-full application_name=people-go",
 		},
 		{
 			in: appConfig{
@@ -319,7 +319,7 @@ func TestAppConfigDbCreds(t *testing.T) {
 					SslMode:  "verify-full",
 				},
 			},
-			out: "host=localhost port=5432 user=test1 password=test2 name=testdb sslmode=verify-full application_name=people-go",
+			out: "host=localhost port=5432 user=test1 password=test2 dbname=testdb sslmode=verify-full application_name=people-go",
 		},
 		{
 			in: appConfig{
@@ -333,7 +333,7 @@ func TestAppConfigDbCreds(t *testing.T) {
 					SslMode:  "verify-full",
 				},
 			},
-			out: "host=testhost port=3306 user=test1 password=test2 name=testdb sslmode=verify-full application_name=people-go",
+			out: "host=testhost port=3306 user=test1 password=test2 dbname=testdb sslmode=verify-full application_name=people-go",
 		},
 	}
 
