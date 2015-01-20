@@ -132,6 +132,14 @@ func TestAppConfigDbTyoe(t *testing.T) {
 	}
 }
 
+func TestReadConfigError(t *testing.T) {
+	invalidString := "{{{"
+
+	actualOut, err := ReadConfig([]byte(invalidString))
+	assert.Nil(t, actualOut)
+	assert.NotNil(t, err)
+}
+
 func TestAppConfigDbCreds(t *testing.T) {
 	validateTests := []struct {
 		in  appConfig
