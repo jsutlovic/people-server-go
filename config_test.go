@@ -5,7 +5,10 @@ import (
 	"testing"
 )
 
-const testConfigFile = "config.yml.example"
+const (
+	testConfigFile            = "config.yml.example"
+	testNonexistentConfigFile = "nonexistent.yml"
+)
 
 func TestReadConfigParses(t *testing.T) {
 	validateTests := []struct {
@@ -124,7 +127,7 @@ func TestReadConfigFileParses(t *testing.T) {
 }
 
 func TestReadConfigFileError(t *testing.T) {
-	actualOut, err := ReadConfigFile("nonexistent.yml")
+	actualOut, err := ReadConfigFile(testNonexistentConfigFile)
 	assert.Nil(t, actualOut)
 	assert.NotNil(t, err)
 }
