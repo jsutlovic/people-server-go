@@ -218,6 +218,15 @@ func TestAppConfigDbCreds(t *testing.T) {
 			},
 			out: "host=localhost port=5432 user=test1 password=test2 name=testdb application_name=people-go",
 		},
+		{
+			in: appConfig{
+				DbConf: dbConfig{
+					Password: "test2",
+					DbName:   "testdb",
+				},
+			},
+			out: "host=localhost port=5432 password=test2 name=testdb application_name=people-go",
+		},
 	}
 
 	for _, test := range validateTests {
