@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"strings"
 )
 
@@ -111,6 +112,14 @@ func defaultInt(chk, def int) int {
 		return def
 	}
 	return chk
+}
+
+func ReadConfigFile(filename string) (*appConfig, error) {
+	b, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	return ReadConfig(b)
 }
 
 func ReadConfig(b []byte) (*appConfig, error) {
