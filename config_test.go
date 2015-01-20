@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+const testConfigFile = "config.yml.example"
+
 func TestReadConfigParses(t *testing.T) {
 	validateTests := []struct {
 		in  string
@@ -96,6 +98,33 @@ func TestReadConfigError(t *testing.T) {
 	invalidString := "{{{"
 
 	actualOut, err := ReadConfig([]byte(invalidString))
+	assert.Nil(t, actualOut)
+	assert.NotNil(t, err)
+}
+
+func TestReadConfigFileParses(t *testing.T) {
+	expected := appConfig{
+		DbConf: dbConfig{
+			Type:     "postgres",
+			Host:     "dbhost",
+			Port:     5432,
+			User:     "people-user",
+			Password: "people-pw",
+			DbName:   "people-db",
+			SslMode:  "disable",
+		},
+		ListenConf: listenConfig{
+			Address: "0.0.0.0",
+			Port:    3001,
+		},
+	}
+	actualOut, err := ReadConfigFile(testConfigFile)
+	assert.Nil(t, err)
+	assert.Equal(t, &expected, actualOut)
+}
+
+func TestReadConfigFileError(t *testing.T) {
+	actualOut, err := ReadConfigFile("nonexistent.yml")
 	assert.Nil(t, actualOut)
 	assert.NotNil(t, err)
 }
