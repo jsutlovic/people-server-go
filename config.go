@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"net"
 	"strings"
 )
 
@@ -26,7 +27,7 @@ const (
 type Config interface {
 	DbType() string
 	DbCreds() string
-	ListenAddr() string
+	Listener() net.Listener
 }
 
 type dbConfig struct {
