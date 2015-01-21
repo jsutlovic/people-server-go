@@ -5,6 +5,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"net"
+	"strconv"
 	"strings"
 )
 
@@ -43,6 +44,7 @@ type dbConfig struct {
 type listenConfig struct {
 	Address string
 	Port    int
+	Ipv6    bool `yaml:"ipv6"`
 }
 
 type appConfig struct {
@@ -93,11 +95,29 @@ func (ac *appConfig) DbCreds() string {
 	return strings.Join(configStrings, " ")
 }
 
-func (ac *appConfig) ListenAddr() string {
-	return fmt.Sprintf(
-		ListenAddrTemplate,
-		defaultString(ac.ListenConf.Address, DefaultAddress),
-		defaultInt(ac.ListenConf.Port, DefaultPort))
+func (ac *appConfig) Listener() net.Listener {
+	var addrType string
+	var addr string
+
+	if strings.HasPrefix(ac.ListenConf.Address, "/") {
+		addrType = "unix"
+		addr = ac.ListenConf.Address
+	} else {
+		addrStr := defaultString(ac.ListenConf.Address, DefaultAddress)
+		addrType = "tcp4"
+		if ac.ListenConf.Ipv6 {
+			addrType = "tcp6"
+		}
+		portStr := strconv.Itoa(defaultInt(ac.ListenConf.Port, DefaultPort))
+		addr = net.JoinHostPort(addrStr, portStr)
+	}
+
+	l, err := net.Listen(addrType, addr)
+
+	if err != nil {
+		panic(err)
+	}
+	return l
 }
 
 // Always returns a string. If chk is empty, returns def
