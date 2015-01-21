@@ -5,6 +5,7 @@ import (
 	"github.com/gocraft/web"
 	"github.com/lib/pq/hstore"
 	"github.com/stretchr/testify/mock"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -42,9 +43,9 @@ func newTestPerson(userId int) *Person {
 }
 
 type mockConfig struct {
-	dbType     string
-	dbCreds    string
-	listenAddr string
+	dbType   string
+	dbCreds  string
+	listener net.Listener
 }
 
 func (mc *mockConfig) DbType() string {
@@ -55,12 +56,12 @@ func (mc *mockConfig) DbCreds() string {
 	return mc.dbCreds
 }
 
-func (mc *mockConfig) ListenAddr() string {
-	return mc.listenAddr
+func (mc *mockConfig) Listener() net.Listener {
+	return mc.listener
 }
 
 func newTestConfig() Config {
-	return &mockConfig{"mock", "", "127.0.0.1:3000"}
+	return &mockConfig{"mock", "", nil}
 }
 
 type MockNext struct {
