@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -342,7 +343,7 @@ func TestAppConfigDbCreds(t *testing.T) {
 	}
 }
 
-func TestAppConfigListenAddr(t *testing.T) {
+func TestAppConfigListenerAddr(t *testing.T) {
 	validateTests := []struct {
 		in  appConfig
 		out string
@@ -376,9 +377,66 @@ func TestAppConfigListenAddr(t *testing.T) {
 			},
 			out: "0.0.0.0:4040",
 		},
+		{
+			in: appConfig{
+				ListenConf: listenConfig{
+					Address: "::1",
+					Ipv6:    true,
+				},
+			},
+			out: "[::1]:3000",
+		},
+		{
+			in: appConfig{
+				ListenConf: listenConfig{
+					Address: "::1",
+					Port:    4040,
+					Ipv6:    true,
+				},
+			},
+			out: "[::1]:4040",
+		},
+		{
+			in: appConfig{
+				ListenConf: listenConfig{
+					Address: "/tmp/people-test.sock",
+				},
+			},
+			out: "/tmp/people-test.sock",
+		},
+		{
+			in: appConfig{
+				ListenConf: listenConfig{
+					Address: "/tmp/people-test.sock",
+					Port:    4040,
+				},
+			},
+			out: "/tmp/people-test.sock",
+		},
+		{
+			in: appConfig{
+				ListenConf: listenConfig{
+					Address: "/tmp/people-test.sock",
+					Ipv6:    true,
+				},
+			},
+			out: "/tmp/people-test.sock",
+		},
 	}
 
-	for _, test := range validateTests {
-		assert.Equal(t, test.out, test.in.ListenAddr())
+	for i, test := range validateTests {
+		msg := fmt.Sprintf("%d", i)
+		safe := assert.NotPanics(t, func() {
+			l := test.in.Listener()
+			l.Close()
+		}, msg)
+
+		if safe {
+			l := test.in.Listener()
+			if assert.NotNil(t, l, msg) {
+				assert.Equal(t, test.out, l.Addr().String(), msg)
+				l.Close()
+			}
+		}
 	}
 }
