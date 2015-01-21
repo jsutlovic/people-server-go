@@ -99,7 +99,7 @@ func (s *Server) Serve() {
 	s.rootRouter = s.setupRoutes()
 	s.rootRouter.Middleware(DbMiddleware(dbService))
 
-	err := http.ListenAndServe(s.conf.ListenAddr(), s.rootRouter)
+	err := http.Serve(s.conf.Listener(), s.rootRouter)
 	if err != nil {
 		panic(err)
 	}
