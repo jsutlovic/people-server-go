@@ -1,0 +1,24 @@
+---
+db:
+  type: postgres
+  host: dbhost
+  port: 5432
+  user: people-user
+  password: people-pw
+  name: people-db
+  sslmode: disable
+
+listen:
+  address: 0.0.0.0
+  port: 3001
+
+## IPv6:
+#listen:
+#  address: ::1
+#  port: 3001
+#  ipv6: true
+
+## Unix socket:
+#listen:
+#  address: /var/run/people.sock
+
