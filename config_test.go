@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/assert"
+	"strconv"
 	"testing"
 )
 
@@ -425,7 +425,7 @@ func TestAppConfigListenerAddr(t *testing.T) {
 	}
 
 	for i, test := range validateTests {
-		msg := fmt.Sprintf("%d", i)
+		msg := strconv.Itoa(i)
 		safe := assert.NotPanics(t, func() {
 			l := test.in.Listener()
 			l.Close()
