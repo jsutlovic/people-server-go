@@ -440,3 +440,25 @@ func TestAppConfigListenerAddr(t *testing.T) {
 		}
 	}
 }
+
+func TestAppConfigListenerPanics(t *testing.T) {
+	invalidTests := []appConfig{
+		appConfig{
+			ListenConf: listenConfig{
+				Address: "127.0.0.1",
+				Ipv6:    true,
+			},
+		},
+		appConfig{
+			ListenConf: listenConfig{
+				Address: "::1",
+			},
+		},
+	}
+
+	for i, test := range invalidTests {
+		assert.Panics(t, func() {
+			test.Listener()
+		}, strconv.Itoa(i))
+	}
+}
