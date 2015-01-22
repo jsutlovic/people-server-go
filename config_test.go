@@ -12,7 +12,7 @@ const (
 )
 
 func TestReadConfigParses(t *testing.T) {
-	validateTests := []struct {
+	validConfigs := []struct {
 		in  string
 		out appConfig
 	}{
@@ -91,7 +91,7 @@ listen:
 		},
 	}
 
-	for _, test := range validateTests {
+	for _, test := range validConfigs {
 		actualOut, err := ReadConfig([]byte(test.in))
 		assert.Nil(t, err)
 		assert.Equal(t, &test.out, actualOut)
@@ -160,7 +160,7 @@ func TestMustReadConfigFilePanics(t *testing.T) {
 }
 
 func TestAppConfigDbTyoe(t *testing.T) {
-	validateTests := []struct {
+	validConfigs := []struct {
 		in  appConfig
 		out string
 	}{
@@ -194,13 +194,13 @@ func TestAppConfigDbTyoe(t *testing.T) {
 		},
 	}
 
-	for _, test := range validateTests {
+	for _, test := range validConfigs {
 		assert.Equal(t, test.out, test.in.DbType())
 	}
 }
 
 func TestAppConfigDbCreds(t *testing.T) {
-	validateTests := []struct {
+	validConfigs := []struct {
 		in  appConfig
 		out string
 	}{
@@ -338,13 +338,13 @@ func TestAppConfigDbCreds(t *testing.T) {
 		},
 	}
 
-	for _, test := range validateTests {
+	for _, test := range validConfigs {
 		assert.Equal(t, test.out, test.in.DbCreds())
 	}
 }
 
 func TestAppConfigListenerAddr(t *testing.T) {
-	validateTests := []struct {
+	validConfigs := []struct {
 		in  appConfig
 		out string
 	}{
@@ -424,7 +424,7 @@ func TestAppConfigListenerAddr(t *testing.T) {
 		},
 	}
 
-	for i, test := range validateTests {
+	for i, test := range validConfigs {
 		msg := strconv.Itoa(i)
 		safe := assert.NotPanics(t, func() {
 			l := test.in.Listener()
@@ -442,7 +442,7 @@ func TestAppConfigListenerAddr(t *testing.T) {
 }
 
 func TestAppConfigListenerPanics(t *testing.T) {
-	invalidTests := []appConfig{
+	invalidConfigs := []appConfig{
 		appConfig{
 			ListenConf: listenConfig{
 				Address: "127.0.0.1",
@@ -456,7 +456,7 @@ func TestAppConfigListenerPanics(t *testing.T) {
 		},
 	}
 
-	for i, test := range invalidTests {
+	for i, test := range invalidConfigs {
 		assert.Panics(t, func() {
 			test.Listener()
 		}, strconv.Itoa(i))
