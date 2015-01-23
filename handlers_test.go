@@ -411,6 +411,53 @@ func TestUserCreateValidate(t *testing.T) {
 	}
 }
 
+func TestCheckJsonHeaderWrongHeaderFails(t *testing.T) {
+	invalidHeaders := []string{
+		"application/x-www-form-urlencode",
+		"text/javascript",
+		"application/xml",
+	}
+
+	for _, test := range invalidHeaders {
+		rw, req, rec := mockHandlerParams("POST", test, "")
+
+		actualOut := checkJsonHeader(rw, req)
+
+		assert.False(t, actualOut)
+		assert.Equal(t, rec.Code, http.StatusBadRequest)
+		assert.Equal(t, rec.Body.String(), JsonContentTypeError+"\n")
+	}
+}
+
+func TestCheckJsonHeaderNoHeaderFails(t *testing.T) {
+	rw, req, rec := mockHandlerParams("POST", "", "")
+
+	req.Request.Header.Del("Content-Type")
+
+	actualOut := checkJsonHeader(rw, req)
+
+	assert.False(t, actualOut)
+	assert.Equal(t, rec.Code, http.StatusBadRequest)
+	assert.Equal(t, rec.Body.String(), NoContentTypeError+"\n")
+}
+
+func TestCheckJsonHeader(t *testing.T) {
+	validHeaders := []string{
+		"application/json",
+		"application/json; charset=utf-8",
+	}
+
+	for _, test := range validHeaders {
+		rw, req, rec := mockHandlerParams("POST", test, "")
+
+		actualOut := checkJsonHeader(rw, req)
+
+		assert.True(t, actualOut)
+		assert.Equal(t, rec.Code, http.StatusOK)
+		assert.Equal(t, rec.Body.String(), "")
+	}
+}
+
 // CreateUserApi allows only JSON data
 func TestCreateUserApiJsonOnly(t *testing.T) {
 	rw, req, rec := mockHandlerParams("POST", "application/x-www-form-urlencode", "")
