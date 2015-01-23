@@ -21,6 +21,7 @@ const (
 	// UserCreateApi errors
 	UserCreatePasswordLength = "Password is too short"
 	UserCreateError          = "Error creating user"
+	NoContentTypeError       = "Content-Type not specified"
 	JsonContentTypeError     = "Content-Type is not JSON"
 	JsonMalformedError       = "Malformed JSON"
 	InvalidUserDataError     = "Invalid User data"
@@ -110,6 +111,24 @@ func jsonResponse(rw web.ResponseWriter, data interface{}) {
 	fmt.Fprint(rw, Jsonify(data))
 }
 
+func checkJsonHeader(rw web.ResponseWriter, req *web.Request) bool {
+	contentTypes, ok := req.Header["Content-Type"]
+	if !ok || len(contentTypes) < 1 {
+		http.Error(rw, NoContentTypeError, http.StatusBadRequest)
+		return false
+	}
+	for _, contentType := range contentTypes {
+		for _, rawPart := range strings.Split(contentType, ";") {
+			part := strings.TrimSpace(rawPart)
+			if part == JsonContentType {
+				return true
+			}
+		}
+	}
+	http.Error(rw, JsonContentTypeError, http.StatusBadRequest)
+	return false
+}
+
 /*
 Handler to authenticate a user.
 
@@ -166,9 +185,7 @@ If a duplicate email is found, return 409 Conflict
 Otherwise, if creation is successful return 201 Created
 */
 func (c *Context) CreateUserApi(rw web.ResponseWriter, req *web.Request) {
-	ct, ctok := req.Header["Content-Type"]
-	if !ctok || len(ct) < 1 || (len(ct) >= 1 && ct[0] != "application/json") {
-		http.Error(rw, JsonContentTypeError, http.StatusBadRequest)
+	if !checkJsonHeader(rw, req) {
 		return
 	}
 
@@ -259,9 +276,7 @@ Handler for POST Person API
 Takes a JSON representation of a Person and creates it for the user logged in.
 */
 func (c *AuthContext) CreatePersonApi(rw web.ResponseWriter, req *web.Request) {
-	ct, ctok := req.Header["Content-Type"]
-	if !ctok || len(ct) < 1 || (len(ct) >= 1 && ct[0] != "application/json") {
-		http.Error(rw, JsonContentTypeError, http.StatusBadRequest)
+	if !checkJsonHeader(rw, req) {
 		return
 	}
 
